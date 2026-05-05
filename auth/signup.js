@@ -5,7 +5,7 @@
 
 const API_BASE_URL = typeof getApiBaseUrl === 'function'
   ? getApiBaseUrl()
-  : 'http://127.0.0.1:8000';
+  : 'https://yeongju-vacant-house-ai.onrender.com';
 
 let selectedRole = null;
 let signupDemoModalConfirmHandler = null;

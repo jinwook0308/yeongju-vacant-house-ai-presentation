@@ -1295,8 +1295,7 @@ function getApiBaseUrl() {
     return String(window.YEONGJU_API_BASE_URL).replace(/\/$/, '');
   }
 
-  // 현재 로컬 시연용 Python FastAPI 주소
-  return 'http://127.0.0.1:8000';
+  return 'https://yeongju-vacant-house-ai.onrender.com';
 }
 
 async function withdrawCurrentUser() {
