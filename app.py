@@ -2330,6 +2330,15 @@ app.add_middleware(
 # =========================================================
 # API
 # =========================================================
+@app.get("/")
+def root():
+    return {
+        "message": "Yeongju Empty House API is running",
+        "health": "/health",
+        "docs": "/docs"
+    }
+
+
 @app.get("/health")
 def health_check() -> dict[str, str]:
     return {"status": "ok"}
