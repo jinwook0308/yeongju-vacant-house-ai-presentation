@@ -3,7 +3,9 @@
  * 영주 빈집 플랫폼 - 회원가입 페이지 스크립트
  */
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = typeof getApiBaseUrl === 'function'
+  ? getApiBaseUrl()
+  : 'http://127.0.0.1:8000';
 
 let selectedRole = null;
 let signupDemoModalConfirmHandler = null;

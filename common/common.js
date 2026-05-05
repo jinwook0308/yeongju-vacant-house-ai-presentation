@@ -1292,16 +1292,11 @@ function logoutUser() {
 
 function getApiBaseUrl() {
   if (window.YEONGJU_API_BASE_URL) {
-    return window.YEONGJU_API_BASE_URL;
+    return String(window.YEONGJU_API_BASE_URL).replace(/\/$/, '');
   }
 
-  const host = window.location.hostname;
-  const isLocalPage = !host || host === 'localhost' || host === '127.0.0.1' || host === '::1';
-  if (isLocalPage || window.location.protocol === 'file:') {
-    return 'http://localhost:8000';
-  }
-
-  return window.location.origin;
+  // 현재 로컬 시연용 Python FastAPI 주소
+  return 'http://127.0.0.1:8000';
 }
 
 async function withdrawCurrentUser() {

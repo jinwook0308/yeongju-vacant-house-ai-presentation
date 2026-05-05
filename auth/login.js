@@ -3,7 +3,9 @@
  * 영주시 공공형 빈집 활용 플랫폼 - 로그인 페이지 스크립트
  */
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = typeof getApiBaseUrl === 'function'
+  ? getApiBaseUrl()
+  : 'http://127.0.0.1:8000';
 
 const ROLE_LABELS = {
   guest: '투숙 희망자',
