@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>신청 내역 - 영주 빈집 플랫폼</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../common/common.css">
+  <link rel="stylesheet" href="owner-requests.css">
+</head>
+<body>
+  <div id="headerPlaceholder"></div>
+
+  <div class="page-header">
+    <div class="page-header__inner">
+      <h1 class="page-header__title">등록 신청 내역</h1>
+    </div>
+  </div>
+
+  <main class="page-layout">
+    <aside class="page-layout__sidebar">
+      <nav class="sidebar-nav">
+        <div class="sidebar-nav__header">소유자 메뉴</div>
+        <a href="owner-register.html" class="sidebar-nav__item">🏠 빈집 등록 신청</a>
+        <a href="owner-requests.html" class="sidebar-nav__item is-active">📋 신청 내역</a>
+        <a href="owner-mypage.html" class="sidebar-nav__item">👤 마이페이지</a>
+      </nav>
+    </aside>
+
+    <div class="page-layout__main">
+      <div class="requests-header">
+        <h2 class="requests-header__title">신청 내역 목록</h2>
+        <a href="owner-register.html" class="btn btn--primary btn--sm">+ 새 빈집 신청</a>
+      </div>
+
+      <!-- 상태 필터 -->
+      <div class="status-filter-tabs" id="statusFilterTabs">
+        <button class="status-filter-tab is-active" data-status="all">전체</button>
+        <button class="status-filter-tab" data-status="submitted">신청 완료</button>
+        <button class="status-filter-tab" data-status="under_review">검토 중</button>
+        <button class="status-filter-tab" data-status="approved">승인 완료</button>
+        <button class="status-filter-tab" data-status="rejected">반려</button>
+      </div>
+
+      <!-- 신청 목록 -->
+      <div id="requestsList"></div>
+    </div>
+  </main>
+
+  <!-- 신청 상세 모달 -->
+  <div class="modal-overlay" id="requestDetailModal">
+    <div class="modal modal--lg">
+      <div class="modal__header">
+        <h3 class="modal__title">신청 상세 내역</h3>
+        <button class="modal__close" onclick="closeModal('requestDetailModal')">✕</button>
+      </div>
+      <div class="modal__body" id="requestDetailContent">
+        <!-- JS로 동적 렌더링 -->
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--ghost" onclick="closeModal('requestDetailModal')">닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="footerPlaceholder"></div>
+
+  <script src="../data/sample-data.js"></script>
+  <script src="../common/common.js"></script>
+  <script src="../common/header.js"></script>
+  <script src="../common/footer.js"></script>
+  <script src="owner-requests.js"></script>
+</body>
+</html>

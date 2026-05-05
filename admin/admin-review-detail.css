@@ -1,0 +1,216 @@
+/**
+ * admin-review-detail.css
+ * 영주시 공공형 빈집 활용 플랫폼 - 관리자 검토 상세 스타일
+ */
+
+/* 검토 상세 레이아웃 */
+.review-detail-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: var(--spacing-xl);
+  align-items: start;
+}
+
+/* 검토 정보 섹션 */
+.review-info-section {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-card);
+  margin-bottom: var(--spacing-lg);
+  overflow: hidden;
+}
+
+.review-info-section__header {
+  padding: var(--spacing-md) var(--spacing-lg);
+  background-color: var(--color-bg-section);
+  border-bottom: 1px solid var(--color-border-light);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.review-info-section__body {
+  padding: var(--spacing-lg);
+}
+
+.review-workflow-banner {
+  margin-bottom: var(--spacing-lg);
+  padding: 14px 16px;
+  border: 1px solid rgba(168, 141, 82, 0.18);
+  border-radius: 10px;
+  background: rgba(255, 250, 240, 0.92);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.review-workflow-banner--locked {
+  border-color: rgba(185, 28, 28, 0.14);
+  background: rgba(254, 242, 242, 0.94);
+  color: #991b1b;
+}
+
+.review-workflow-banner--mine {
+  border-color: rgba(21, 101, 192, 0.16);
+  background: rgba(239, 246, 255, 0.92);
+  color: #1d4ed8;
+}
+
+/* 정보 그리드 */
+.review-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-md);
+}
+
+.review-info-item {
+  background-color: var(--color-bg-section);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-md);
+}
+
+.review-info-item__label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-bottom: 4px;
+}
+
+.review-info-item__value {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+/* 검토 액션 사이드바 */
+.review-action-sidebar {
+  position: sticky;
+  top: calc(var(--header-height) + 16px);
+}
+
+.review-action-card {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  margin-bottom: var(--spacing-lg);
+}
+
+.review-action-card__header {
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: linear-gradient(135deg, #1a1208, #2c1e0a);
+  color: white;
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+}
+
+.review-action-card__body {
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.review-action-card__status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md);
+  background-color: var(--color-bg-section);
+  border-radius: var(--border-radius-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.review-action-card__status-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.review-assignment-box {
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--color-border-light);
+  background: var(--color-bg-section);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+}
+
+.review-assignment-box__sub,
+.review-readonly-note {
+  margin-top: 6px;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  line-height: 1.6;
+}
+
+/* 검토 이력 */
+.review-history-item {
+  display: flex;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) 0;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.review-history-item:last-child {
+  border-bottom: none;
+}
+
+.review-history-item__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.review-history-item__content {
+  flex: 1;
+}
+
+.review-history-item__action {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.review-history-item__meta {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+/* 버튼 색상 확장 */
+.btn--success {
+  background-color: var(--color-success);
+  color: white;
+  border: none;
+}
+
+.btn--success:hover {
+  background-color: #16a34a;
+  color: white;
+}
+
+.btn--danger {
+  background-color: var(--color-danger);
+  color: white;
+  border: none;
+}
+
+.btn--danger:hover {
+  background-color: #dc2626;
+  color: white;
+}
+
+@media (max-width: 1024px) {
+  .review-detail-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .review-action-sidebar {
+    position: static;
+  }
+}

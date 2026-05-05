@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>회원 탈퇴 - 영주 빈집 플랫폼</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../common/common.css">
+  <link rel="stylesheet" href="withdraw.css">
+</head>
+<body class="withdraw-page">
+  <div id="headerPlaceholder"></div>
+
+  <div class="page-header">
+    <div class="page-header__inner">
+      <h1 class="page-header__title">회원 탈퇴</h1>
+    </div>
+  </div>
+
+  <main class="withdraw-main">
+    <div class="container--narrow">
+      <section class="withdraw-panel">
+        <div class="withdraw-panel__eyebrow" id="withdrawRoleEyebrow">회원 탈퇴 안내</div>
+        <h2 class="withdraw-panel__title" id="withdrawTitle">탈퇴 전에 꼭 확인해 주세요</h2>
+        <p class="withdraw-panel__desc" id="withdrawDescription"></p>
+
+        <div class="withdraw-status" id="withdrawStatusBox" hidden></div>
+
+        <div class="withdraw-direct" id="withdrawDirectPanel" hidden>
+          <ul class="withdraw-checklist">
+            <li>탈퇴 후 계정 정보는 복구되지 않습니다.</li>
+            <li>로그인 세션과 저장된 개인 설정이 해제됩니다.</li>
+            <li>운영 중인 서비스 이용 내역은 정책에 따라 별도 보관될 수 있습니다.</li>
+          </ul>
+          <div class="withdraw-actions">
+            <button type="button" class="btn btn--ghost" id="withdrawCancelBtn">취소</button>
+            <button type="button" class="btn btn--danger" id="withdrawConfirmBtn">회원 탈퇴 진행</button>
+          </div>
+        </div>
+
+        <div class="withdraw-owner" id="withdrawOwnerPanel" hidden>
+          <div class="withdraw-owner__notice">
+            빈집 소유자 계정은 등록 신청, 승인 빈집, 운영 이력 확인이 필요하므로 영주시 검토 승인 후 탈퇴할 수 있습니다.
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="withdrawReasonInput">탈퇴 요청 사유</label>
+            <textarea id="withdrawReasonInput" class="form-control" rows="5" placeholder="탈퇴 요청 사유를 입력해 주세요. 검토에 필요한 경우 담당자가 추가 확인할 수 있습니다."></textarea>
+          </div>
+          <div class="withdraw-actions">
+            <button type="button" class="btn btn--ghost" id="withdrawOwnerCancelBtn">취소</button>
+            <button type="button" class="btn btn--primary" id="withdrawRequestBtn">탈퇴 요청 접수</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div id="footerPlaceholder"></div>
+
+  <script src="../common/common.js"></script>
+  <script src="../common/header.js"></script>
+  <script src="../common/footer.js"></script>
+  <script src="withdraw.js"></script>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>회원가입 - 영주 빈집 플랫폼</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../common/common.css">
+  <link rel="stylesheet" href="login.css">
+  <link rel="stylesheet" href="signup.css">
+</head>
+<body class="auth-page">
+  <div id="headerPlaceholder"></div>
+
+  <main class="auth-main">
+    <div class="auth-container signup-container">
+      <div class="auth-logo">
+        <div class="auth-logo__text">
+          <div class="auth-logo__title">영주 빈집 플랫폼</div>
+          <div class="auth-logo__subtitle">회원가입</div>
+        </div>
+      </div>
+
+      <!-- 회원 유형 선택 -->
+      <div class="role-selector" id="roleSelector">
+        <h3 class="role-selector__title">회원 유형을 선택하세요</h3>
+        <div class="role-selector__options">
+          <button class="role-option" data-role="guest" onclick="selectRole('guest')">
+            <span class="role-option__icon">🏨</span>
+            <span class="role-option__label">투숙 희망자</span>
+            <span class="role-option__desc">빈집 예약 요청</span>
+          </button>
+          <button class="role-option" data-role="owner" onclick="selectRole('owner')">
+            <span class="role-option__icon">🏠</span>
+            <span class="role-option__label">빈집 소유자</span>
+            <span class="role-option__desc">빈집 등록 신청</span>
+          </button>
+          <button class="role-option" data-role="admin" onclick="selectRole('admin')">
+            <span class="role-option__icon">🏛️</span>
+            <span class="role-option__label">공공기관 관리자</span>
+            <span class="role-option__desc">데모 기관코드 자유 입력</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 회원가입 폼 -->
+      <form class="auth-form signup-form" id="signupForm" novalidate hidden>
+        <!-- 공통 필드 -->
+        <div class="form-group">
+          <label class="form-label" for="signupName">이름 <span class="required-mark">*</span></label>
+          <input type="text" id="signupName" class="form-control" placeholder="실명을 입력하세요">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="signupEmail">이메일 <span class="required-mark">*</span></label>
+          <input type="email" id="signupEmail" class="form-control" placeholder="이메일 주소">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="signupPhone">연락처 <span class="required-mark">*</span></label>
+          <input type="tel" id="signupPhone" class="form-control" placeholder="010-0000-0000">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="signupPassword">비밀번호 <span class="required-mark">*</span></label>
+          <input type="password" id="signupPassword" class="form-control" placeholder="8자 이상">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="signupPasswordConfirm">비밀번호 확인 <span class="required-mark">*</span></label>
+          <input type="password" id="signupPasswordConfirm" class="form-control" placeholder="비밀번호 재입력">
+        </div>
+
+        <!-- 소유자 전용 필드 -->
+        <div id="ownerFields" class="signup-form__extra-fields signup-form__extra-fields--owner" hidden>
+          <div class="form-group">
+            <label class="form-label" for="ownerAddress">소유 빈집 주소 (영주시 한정)</label>
+            <input type="text" id="ownerAddress" class="form-control" placeholder="영주시 ...">
+            <span class="form-hint">영주시 내 빈집만 등록 가능합니다.</span>
+          </div>
+        </div>
+
+        <!-- 관리자 전용 필드 -->
+        <div id="adminFields" class="signup-form__extra-fields signup-form__extra-fields--admin" hidden>
+          <div class="form-group">
+            <label class="form-label" for="adminOrgCode">기관 코드 <span class="required-mark">*</span></label>
+            <input type="text" id="adminOrgCode" class="form-control" placeholder="데모용 기관코드를 자유롭게 입력하세요">
+            <span class="form-hint">데모 버전에서는 기관코드를 자유롭게 입력할 수 있습니다.</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="adminDept">소속 부서</label>
+            <input type="text" id="adminDept" class="form-control" placeholder="예: 도시재생과">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="agreeTerms">
+            <span>이용약관 및 개인정보처리방침에 동의합니다 <span class="required-mark">*</span></span>
+          </label>
+        </div>
+
+        <div class="signup-form__actions">
+          <button type="button" class="btn btn--ghost btn--full" onclick="resetRoleSelection()">이전</button>
+          <button type="submit" class="btn btn--primary btn--full btn--lg">가입 완료</button>
+        </div>
+      </form>
+
+      <div class="auth-footer-links">
+        <span>이미 회원이신가요?</span>
+        <a href="login.html">로그인</a>
+      </div>
+
+      <div class="signup-sns-section" id="signupSnsSection">
+        <p class="signup-sns-section__title" id="signupSnsTitle">회원유형을 선택하고 간편 가입을 진행하세요</p>
+        <div class="sns-login-buttons signup-sns-buttons">
+          <button type="button" class="sns-btn sns-btn--kakao" onclick="handleSignupSns('kakao')" aria-label="카카오로 간편 회원가입">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M12 4C7.03 4 3 7.13 3 10.98c0 2.49 1.69 4.67 4.23 5.91l-.88 3.11a.43.43 0 00.66.47l3.71-2.51c.42.05.85.07 1.28.07 4.97 0 9-3.13 9-6.98S16.97 4 12 4z" fill="#191600"/>
+            </svg>
+          </button>
+          <button type="button" class="sns-btn sns-btn--google" onclick="handleSignupSns('google')" aria-label="구글로 간편 회원가입">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M21.8 12.2c0-.7-.06-1.36-.17-2H12v3.79h5.5a4.7 4.7 0 01-2.04 3.08v2.56h3.3c1.93-1.78 3.04-4.4 3.04-7.43z" fill="#4285F4"/>
+              <path d="M12 22c2.76 0 5.08-.91 6.77-2.47l-3.3-2.56c-.91.61-2.08.97-3.47.97-2.67 0-4.93-1.8-5.73-4.22H2.86v2.64A10 10 0 0012 22z" fill="#34A853"/>
+              <path d="M6.27 13.72A5.99 5.99 0 016 12c0-.6.1-1.18.27-1.72V7.64H2.86A10 10 0 002 12c0 1.61.38 3.13 1.06 4.48l3.21-2.76z" fill="#FBBC05"/>
+              <path d="M12 6.06c1.5 0 2.85.52 3.91 1.54l2.93-2.93C17.07 3.01 14.75 2 12 2 8.13 2 4.78 4.2 2.86 7.44l3.41 2.64C7.07 7.86 9.33 6.06 12 6.06z" fill="#EA4335"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="signup-demo-modal" id="signupDemoModal" hidden>
+        <div class="signup-demo-modal__backdrop" data-demo-close></div>
+        <div class="signup-demo-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="signupDemoModalTitle">
+          <span class="signup-demo-modal__eyebrow">DEMO NOTICE</span>
+          <h3 class="signup-demo-modal__title" id="signupDemoModalTitle">공공기관 관리자 데모 안내</h3>
+          <p class="signup-demo-modal__text">현재 데모 버전에서는 공공기관 관리자 회원가입 시 총괄 승인 절차가 제거된 상태입니다.</p>
+          <p class="signup-demo-modal__text">기관코드도 데모용으로 설정되어 있어, 형식만 맞게 자유롭게 입력하시면 바로 이용할 수 있습니다.</p>
+          <button type="button" class="btn btn--primary btn--full" id="signupDemoModalConfirm">확인하고 시작하기</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="footerPlaceholder"></div>
+
+  <script src="../data/sample-data.js"></script>
+  <script src="../common/common.js?v=6"></script>
+  <script src="../common/header.js"></script>
+  <script src="../common/footer.js"></script>
+  <script src="signup.js?v=3"></script>
+</body>
+</html>

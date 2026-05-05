@@ -1,0 +1,958 @@
+/**
+ * vendor-list.css
+ * 영주시 공공형 빈집 활용 플랫폼 - 협력업체 목록 스타일
+ */
+
+.vendor-page {
+  padding: 34px 0 74px;
+  background:
+    radial-gradient(circle at 8% 4%, rgba(201, 168, 76, 0.05) 0%, transparent 30%),
+    linear-gradient(180deg, #ffffff 0%, #faf7f1 100%);
+}
+
+.vendor-list-page .page-header__inner {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding-left: clamp(18px, 2.4vw, 42px);
+  padding-right: clamp(18px, 2.4vw, 42px);
+  text-align: left;
+}
+
+.vendor-list-page .page-header__breadcrumb {
+  display: none;
+}
+
+.vendor-list-page .page-header__title {
+  font-size: clamp(1.38rem, 2.45vw, 1.95rem);
+  line-height: 1.16;
+  margin-bottom: 5px;
+}
+
+.vendor-list-page .page-header__subtitle {
+  max-width: 700px;
+  font-size: clamp(0.8rem, 1.05vw, 0.9rem);
+  line-height: 1.58;
+}
+
+.vendor-list-page .page-header {
+  background:
+    linear-gradient(135deg, rgba(255, 251, 241, 0.98), rgba(240, 231, 211, 0.92)),
+    radial-gradient(circle at 92% 20%, rgba(201, 168, 76, 0.16), transparent 30%);
+  padding: 40px 0 34px;
+}
+
+@media (max-width: 640px) {
+  .vendor-list-page .page-header__inner {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .vendor-list-page .page-header__title {
+    font-size: 1.28rem;
+  }
+
+  .vendor-list-page .page-header__subtitle {
+    font-size: 0.8rem;
+  }
+}
+
+.vendor-top-panel {
+  margin-bottom: 26px;
+  border-radius: 22px;
+  border: 1px solid rgba(168, 141, 82, 0.24);
+  background: linear-gradient(180deg, #fffefb 0%, #faf6ee 100%);
+  overflow: hidden;
+}
+
+.vendor-top-panel__header {
+  padding: 22px 24px 18px;
+  border-bottom: 1px solid rgba(168, 141, 82, 0.16);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(249, 244, 235, 0.92));
+}
+
+.vendor-top-panel__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 5px 11px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #7f5f18;
+  letter-spacing: 0.04em;
+  background: rgba(201, 168, 76, 0.16);
+  border: 1px solid rgba(168, 141, 82, 0.24);
+  margin-bottom: 10px;
+}
+
+.vendor-top-panel__title {
+  margin: 0 0 8px;
+  font-size: clamp(1.1rem, 1.8vw, 1.34rem);
+  font-weight: 850;
+  line-height: 1.4;
+  letter-spacing: -0.02em;
+  color: #2b2216;
+}
+
+.vendor-top-panel__desc {
+  margin: 0;
+  color: #69563a;
+  font-size: 0.89rem;
+  line-height: 1.7;
+  max-width: 840px;
+}
+
+.vendor-filter-panel {
+  padding: 14px 20px 16px;
+}
+
+.vendor-filter-panel__label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.vendor-filter-panel__title {
+  margin: 0;
+  color: #372c1b;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.vendor-filter-panel__hint {
+  color: #8d7a58;
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+.vendor-filter-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.vendor-filter-tab {
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1.5px solid rgba(168, 141, 82, 0.24);
+  border-radius: 999px;
+  background: #fffefb;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #645233;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.vendor-filter-tab:hover {
+  border-color: rgba(168, 141, 82, 0.5);
+  color: #503d1f;
+  transform: translateY(-1px);
+}
+
+.vendor-filter-tab.is-active {
+  background: linear-gradient(145deg, #caa74f 0%, #9a7420 100%);
+  border-color: rgba(122, 90, 23, 0.68);
+  color: #fffef9;
+}
+
+.vendor-result-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 20px 14px;
+  border-top: 1px solid rgba(168, 141, 82, 0.16);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(250, 246, 238, 0.94));
+}
+
+.vendor-result-meta__label {
+  color: #5f4b2a;
+  font-size: 0.83rem;
+  font-weight: 700;
+}
+
+.vendor-result-meta__count {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 4px 11px;
+  font-size: 0.77rem;
+  font-weight: 800;
+  color: #6e5217;
+  background: rgba(201, 168, 76, 0.14);
+  border: 1px solid rgba(168, 141, 82, 0.24);
+}
+
+.vendor-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.vendor-card {
+  min-height: 336px;
+  background: linear-gradient(180deg, #fffefb 0%, #fbf7ef 100%);
+  border: 1px solid rgba(168, 141, 82, 0.22);
+  border-radius: 16px;
+  padding: 16px;
+  transition: transform 0.22s ease, border-color 0.22s ease, background-color 0.22s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+}
+
+.vendor-card:hover {
+  border-color: rgba(168, 141, 82, 0.42);
+  background: linear-gradient(180deg, #fffdf8 0%, #f8f1e4 100%);
+  transform: translateY(-2px);
+}
+
+.vendor-card__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  margin-bottom: 10px;
+}
+
+.vendor-card__logo {
+  width: 52px;
+  height: 52px;
+  background: linear-gradient(145deg, #cba952, #9a7422);
+  border: 1px solid rgba(125, 92, 24, 0.55);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.vendor-card__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.vendor-card__name {
+  font-size: 1rem;
+  font-weight: 850;
+  color: #231a0f;
+  margin-bottom: 4px;
+  line-height: 1.35;
+  letter-spacing: -0.012em;
+}
+
+.vendor-card__type {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  border: 1px solid rgba(168, 141, 82, 0.24);
+  background: rgba(201, 168, 76, 0.12);
+  color: #644b1d;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: 5px 10px;
+}
+
+.vendor-card__desc {
+  font-size: 0.84rem;
+  color: #5b4b31;
+  line-height: 1.7;
+  min-height: 72px;
+  margin-bottom: 11px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
+.vendor-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+  min-height: 58px;
+  align-content: flex-start;
+}
+
+.vendor-card__tag {
+  background: linear-gradient(145deg, rgba(139, 105, 20, 0.07), rgba(201, 168, 76, 0.09));
+  border: 1px solid rgba(168, 141, 82, 0.2);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.73rem;
+  font-weight: 600;
+  color: #604f33;
+  line-height: 1;
+}
+
+.vendor-card__footer {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(168, 141, 82, 0.16);
+}
+
+.vendor-card__rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: #8d6516;
+  font-weight: 800;
+}
+
+.vendor-card__projects {
+  font-size: 0.74rem;
+  color: #7a6750;
+  font-weight: 700;
+}
+
+.vendor-card__cta {
+  font-size: 0.74rem;
+  color: #6b511b;
+  font-weight: 800;
+}
+
+.vendor-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  border-radius: 16px;
+  border: 1px dashed rgba(168, 141, 82, 0.35);
+  background: rgba(255, 255, 255, 0.65);
+  color: #7b6645;
+  padding: 44px 20px;
+}
+
+.vendor-empty__icon {
+  font-size: 2.2rem;
+  margin-bottom: 8px;
+}
+
+.vendor-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: var(--spacing-lg);
+}
+
+.vendor-detail-item {
+  background: linear-gradient(145deg, #fffefb, #f9f4eb);
+  border: 1px solid rgba(168, 141, 82, 0.22);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+}
+
+.vendor-detail-item__label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-bottom: 2px;
+}
+
+.vendor-detail-item__value {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.vendor-ai-helper {
+  margin-top: var(--spacing-lg);
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(168, 141, 82, 0.24);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 242, 232, 0.96));
+}
+
+.vendor-ai-helper__header {
+  margin-bottom: 12px;
+}
+
+.vendor-ai-helper__header strong {
+  display: block;
+  color: #2c2214;
+  font-size: 0.92rem;
+  margin-bottom: 6px;
+}
+
+.vendor-ai-helper__header p {
+  margin: 0;
+  color: #6b5738;
+  font-size: 0.82rem;
+  line-height: 1.65;
+}
+
+.vendor-ai-helper__label {
+  display: block;
+  margin-bottom: 6px;
+  color: #5f4a28;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.vendor-ai-helper__input,
+.vendor-ai-helper__output {
+  min-height: 120px;
+  margin-bottom: 12px;
+}
+
+.vendor-ai-helper__output {
+  min-height: 180px;
+}
+
+.vendor-ai-helper__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 1120px) {
+  .vendor-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .vendor-page {
+    padding: 22px 0 54px;
+  }
+
+  .vendor-top-panel__header,
+  .vendor-filter-panel,
+  .vendor-result-meta {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .vendor-filter-panel__label-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .vendor-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .vendor-card {
+    min-height: 0;
+  }
+
+  .vendor-card__desc,
+  .vendor-card__tags {
+    min-height: 0;
+  }
+}
+
+/* ============================================================
+   White Redesign Override
+   ============================================================ */
+
+.vendor-page {
+  background: #f7f8fa;
+}
+
+.vendor-list-page .page-header {
+  background: #ffffff;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.vendor-list-page .page-header__title,
+.vendor-list-page .page-header__subtitle {
+  color: #111827;
+}
+
+.vendor-top-panel,
+.vendor-card,
+.vendor-ai-helper {
+  background: #ffffff;
+  border-color: rgba(15, 23, 42, 0.12);
+  box-shadow: none;
+}
+
+.vendor-top-panel__header,
+.vendor-filter-panel,
+.vendor-result-meta {
+  background: #ffffff;
+  border-color: rgba(15, 23, 42, 0.08);
+}
+
+.vendor-top-panel__eyebrow,
+.vendor-result-meta__count {
+  background: #f3f4f6;
+  border-color: rgba(15, 23, 42, 0.12);
+  color: #4b5563;
+}
+
+.vendor-top-panel__title,
+.vendor-filter-panel__title,
+.vendor-card__name,
+.vendor-ai-helper__header strong,
+.vendor-detail-item__value {
+  color: #111827;
+}
+
+.vendor-top-panel__desc,
+.vendor-filter-panel__hint,
+.vendor-result-meta__label,
+.vendor-card__desc,
+.vendor-ai-helper__header p,
+.vendor-ai-helper__label,
+.vendor-detail-item__label {
+  color: #6b7280;
+}
+
+.vendor-filter-tab {
+  background: #ffffff;
+  border-color: rgba(15, 23, 42, 0.14);
+  color: #374151;
+}
+
+.vendor-filter-tab:hover {
+  background: #f9fafb;
+  border-color: rgba(15, 23, 42, 0.22);
+  color: #111827;
+}
+
+.vendor-filter-tab.is-active {
+  background: #111827;
+  border-color: #111827;
+  color: #ffffff;
+}
+
+.vendor-card:hover {
+  background: #ffffff;
+  border-color: rgba(15, 23, 42, 0.2);
+  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.08);
+}
+
+.vendor-card__logo {
+  background: #f3f4f6;
+  border-color: rgba(15, 23, 42, 0.12);
+}
+
+.vendor-card__type,
+.vendor-chip {
+  background: #f9fafb;
+  border-color: rgba(15, 23, 42, 0.12);
+  color: #374151;
+}
+
+.vendor-card__footer {
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.vendor-card__rating,
+.vendor-card__projects,
+.vendor-card__cta {
+  color: #111827;
+}
+
+.vendor-detail-item {
+  background: #ffffff;
+  border-color: rgba(15, 23, 42, 0.12);
+}
+
+.vendor-ai-helper__input,
+.vendor-ai-helper__output {
+  background: #f9fafb;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+}
+
+/* ============================================================
+   Monochrome White Refresh
+   ============================================================ */
+
+.vendor-page {
+  background: #f5f6f8 !important;
+}
+
+.vendor-top-panel,
+.vendor-filter-panel,
+.vendor-result-meta,
+.vendor-card,
+.vendor-ai-helper,
+.vendor-detail-item {
+  background: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+  box-shadow: none !important;
+}
+
+.vendor-top-panel__eyebrow,
+.vendor-result-meta__count,
+.vendor-card__type,
+.vendor-chip {
+  background: #f4f5f7 !important;
+  border-color: rgba(15, 23, 42, 0.14) !important;
+  color: #374151 !important;
+}
+
+.vendor-top-panel__title,
+.vendor-filter-panel__title,
+.vendor-card__name,
+.vendor-card__rating,
+.vendor-card__projects,
+.vendor-card__cta,
+.vendor-ai-helper__header strong,
+.vendor-detail-item__value {
+  color: #111827 !important;
+}
+
+.vendor-top-panel__desc,
+.vendor-filter-panel__hint,
+.vendor-card__desc,
+.vendor-ai-helper__header p,
+.vendor-ai-helper__label,
+.vendor-detail-item__label {
+  color: #6b7280 !important;
+}
+
+.vendor-filter-tab {
+  background: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.16) !important;
+  color: #374151 !important;
+}
+
+.vendor-filter-tab:hover {
+  background: #f8fafc !important;
+  border-color: rgba(15, 23, 42, 0.24) !important;
+  color: #111827 !important;
+}
+
+.vendor-filter-tab.is-active {
+  background: #111827 !important;
+  border-color: #111827 !important;
+  color: #ffffff !important;
+}
+
+.vendor-card {
+  transition: border-color 180ms ease, background 180ms ease;
+}
+
+.vendor-card:hover {
+  background: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.22) !important;
+  box-shadow: none !important;
+}
+
+.vendor-card__logo {
+  background: #f3f4f6 !important;
+  border: 1px solid rgba(15, 23, 42, 0.12) !important;
+}
+
+.vendor-card__footer {
+  border-top-color: rgba(15, 23, 42, 0.08) !important;
+}
+
+.vendor-ai-helper__input,
+.vendor-ai-helper__output {
+  background: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.14) !important;
+}
+
+/* ============================================================
+   Institutional White System Override
+   ============================================================ */
+
+.vendor-page {
+  background: #f5f6f8 !important;
+}
+
+.vendor-top-panel,
+.vendor-filter-panel,
+.vendor-result-meta,
+.vendor-card,
+.vendor-ai-helper,
+.vendor-detail-item {
+  background: #ffffff !important;
+  border: 1px solid rgba(17, 24, 39, 0.12) !important;
+  box-shadow: none !important;
+}
+
+.vendor-top-panel {
+  border-radius: 32px;
+  overflow: hidden;
+}
+
+.vendor-top-panel__header {
+  padding: 30px 32px 24px;
+  background: #ffffff !important;
+  border-bottom: 1px solid rgba(17, 24, 39, 0.08) !important;
+}
+
+.vendor-top-panel__eyebrow,
+.vendor-result-meta__count,
+.vendor-card__type,
+.vendor-chip {
+  background: #f3f4f6 !important;
+  border: 1px solid rgba(17, 24, 39, 0.12) !important;
+  color: #374151 !important;
+}
+
+.vendor-top-panel__title,
+.vendor-filter-panel__title,
+.vendor-card__name,
+.vendor-card__rating,
+.vendor-card__projects,
+.vendor-card__cta,
+.vendor-ai-helper__header strong,
+.vendor-detail-item__value {
+  color: #111827 !important;
+}
+
+.vendor-top-panel__desc,
+.vendor-filter-panel__hint,
+.vendor-result-meta__label,
+.vendor-card__desc,
+.vendor-ai-helper__header p,
+.vendor-ai-helper__label,
+.vendor-detail-item__label {
+  color: #6b7280 !important;
+}
+
+.vendor-filter-panel {
+  padding: 24px 32px;
+  background: #f9fafb !important;
+}
+
+.vendor-filter-tabs {
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.vendor-filter-tab {
+  background: #ffffff !important;
+  border: 1px solid rgba(17, 24, 39, 0.16) !important;
+  color: #374151 !important;
+  border-radius: 999px;
+  min-height: 48px;
+  padding: 0 18px;
+}
+
+.vendor-filter-tab:hover {
+  background: #f8fafc !important;
+  border-color: rgba(17, 24, 39, 0.24) !important;
+  color: #111827 !important;
+}
+
+.vendor-filter-tab.is-active {
+  background: #111827 !important;
+  border-color: #111827 !important;
+  color: #ffffff !important;
+}
+
+.vendor-result-meta {
+  padding: 16px 24px;
+}
+
+.vendor-card {
+  padding: 28px 28px 22px;
+  transition: border-color 180ms ease, transform 180ms ease, background-color 180ms ease;
+}
+
+.vendor-card:hover {
+  background: #fcfcfd !important;
+  border-color: rgba(17, 24, 39, 0.24) !important;
+  box-shadow: none !important;
+  transform: translateY(-3px);
+}
+
+.vendor-card__logo {
+  background: #f3f4f6 !important;
+  border: 1px solid rgba(17, 24, 39, 0.12) !important;
+}
+
+.vendor-card__footer {
+  border-top-color: rgba(17, 24, 39, 0.08) !important;
+}
+
+.vendor-ai-helper__input,
+.vendor-ai-helper__output {
+  background: #ffffff !important;
+  border: 1px solid rgba(17, 24, 39, 0.14) !important;
+}
+
+/* ============================================================
+   Final White/Gray Vendor Refresh
+   ============================================================ */
+
+.vendor-page {
+  background: #f4f6f8 !important;
+}
+
+.vendor-top-panel,
+.vendor-filter-panel,
+.vendor-result-meta,
+.vendor-card,
+.vendor-ai-helper,
+.vendor-detail-item,
+.modal {
+  background: #ffffff !important;
+  border: 1px solid rgba(15, 23, 42, 0.14) !important;
+  box-shadow: none !important;
+}
+
+.vendor-top-panel__header,
+.vendor-filter-panel,
+.vendor-result-meta {
+  background: #ffffff !important;
+}
+
+.vendor-top-panel__eyebrow,
+.vendor-result-meta__count,
+.vendor-card__type,
+.vendor-chip {
+  background: #f3f4f6 !important;
+  border: 1px solid rgba(15, 23, 42, 0.12) !important;
+  color: #4b5563 !important;
+}
+
+.vendor-top-panel__title,
+.vendor-filter-panel__title,
+.vendor-card__name,
+.vendor-card__rating,
+.vendor-card__projects,
+.vendor-card__cta,
+.vendor-ai-helper__header strong,
+.vendor-detail-item__value,
+.modal__title {
+  color: #111827 !important;
+}
+
+.vendor-top-panel__desc,
+.vendor-filter-panel__hint,
+.vendor-card__desc,
+.vendor-ai-helper__header p,
+.vendor-ai-helper__label,
+.vendor-detail-item__label,
+.vendor-result-meta__label {
+  color: #6b7280 !important;
+}
+
+.vendor-filter-tab {
+  background: #ffffff !important;
+  border: 1px solid rgba(15, 23, 42, 0.16) !important;
+  color: #374151 !important;
+}
+
+.vendor-filter-tab:hover {
+  background: #f8fafc !important;
+  border-color: rgba(15, 23, 42, 0.26) !important;
+  color: #111827 !important;
+}
+
+.vendor-filter-tab.is-active {
+  background: #111827 !important;
+  border-color: #111827 !important;
+  color: #ffffff !important;
+}
+
+.vendor-card {
+  transition: border-color 180ms ease, transform 180ms ease, background-color 180ms ease !important;
+}
+
+.vendor-card:hover {
+  background: #fcfcfd !important;
+  border-color: rgba(15, 23, 42, 0.24) !important;
+  transform: translateY(-2px);
+}
+
+.vendor-card__logo,
+.vendor-ai-helper__input,
+.vendor-ai-helper__output {
+  background: #ffffff !important;
+  border: 1px solid rgba(15, 23, 42, 0.14) !important;
+}
+
+/* ============================================================
+   Pure White Vendor Redesign
+   ============================================================ */
+
+.vendor-list-page,
+.vendor-page {
+  background: #f4f6f8 !important;
+  color: #111827 !important;
+}
+
+.vendor-top-panel,
+.vendor-filter-panel,
+.vendor-result-meta,
+.vendor-card,
+.vendor-ai-helper,
+.vendor-detail-item,
+.modal {
+  background: #ffffff !important;
+  border: 1px solid rgba(17, 24, 39, 0.14) !important;
+  box-shadow: none !important;
+}
+
+.vendor-top-panel__header,
+.vendor-filter-panel,
+.vendor-result-meta {
+  background: #ffffff !important;
+}
+
+.vendor-top-panel__eyebrow,
+.vendor-card__type,
+.vendor-chip {
+  background: #f3f4f6 !important;
+  border: 1px solid rgba(17, 24, 39, 0.12) !important;
+  color: #4b5563 !important;
+}
+
+.vendor-result-meta__count {
+  background: #ffffff !important;
+  border: 1px solid rgba(17, 24, 39, 0.12) !important;
+  color: #111827 !important;
+}
+
+.vendor-top-panel__title,
+.vendor-filter-panel__title,
+.vendor-card__name,
+.vendor-card__rating,
+.vendor-card__projects,
+.vendor-card__cta,
+.vendor-ai-helper__header strong,
+.vendor-detail-item__value,
+.modal__title {
+  color: #111827 !important;
+}
+
+.vendor-top-panel__desc,
+.vendor-filter-panel__hint,
+.vendor-card__desc,
+.vendor-ai-helper__header p,
+.vendor-ai-helper__label,
+.vendor-detail-item__label,
+.vendor-result-meta__label {
+  color: #6b7280 !important;
+}
+
+.vendor-filter-tab {
+  background: #ffffff !important;
+  border: 1px solid rgba(17, 24, 39, 0.16) !important;
+  color: #374151 !important;
+}
+
+.vendor-filter-tab:hover {
+  background: #f8fafc !important;
+  border-color: rgba(17, 24, 39, 0.28) !important;
+  color: #111827 !important;
+}
+
+.vendor-filter-tab.is-active {
+  background: #111827 !important;
+  border-color: #111827 !important;
+  color: #ffffff !important;
+}
+
+.vendor-card:hover {
+  background: #ffffff !important;
+  border-color: rgba(17, 24, 39, 0.28) !important;
+  transform: translateY(-2px);
+}

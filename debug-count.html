@@ -1,0 +1,30 @@
+﻿<!doctype html>
+<html>
+<body>
+<pre id="out">loading...</pre>
+<script src="./data/sample-data.js"></script>
+<script src="./common/common.js"></script>
+<script>
+(function(){
+  try {
+    const houses = getAllVacantHouses();
+    const approved = houses.filter(h => h && h.isApproved && h.reviewStatus === 'approved').length;
+    const registration = houses.length;
+    const approvedRequests = getAllRegistrationRequests().filter(r => r.reviewStatus === 'approved' && r.makePublic !== false).length;
+    const storedApproved = getStoredApprovedHouses().length;
+    const allRequests = getAllRegistrationRequests();
+    document.getElementById('out').textContent = JSON.stringify({
+      approved,
+      registration,
+      approvedRequests,
+      storedApproved,
+      requestCount: allRequests.length,
+      latestApprovedIds: houses.filter(h => h && h.isApproved && h.reviewStatus === 'approved').slice(0,12).map(h => ({id:h.id, requestId:h.requestId || null, name:h.name || h.title || ''}))
+    }, null, 2);
+  } catch (e) {
+    document.getElementById('out').textContent = 'ERROR\n' + (e && e.stack || e);
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>협력업체 - 영주 빈집 플랫폼</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../common/common.css?v=16">
+  <link rel="stylesheet" href="vendor-list.css?v=4">
+</head>
+<body class="vendor-list-page">
+  <div id="headerPlaceholder"></div>
+
+  <div class="page-header">
+    <div class="page-header__inner">
+      <h1 class="page-header__title">협력업체 네트워크</h1>
+    </div>
+  </div>
+
+  <main class="vendor-page">
+    <div class="container">
+      <section class="vendor-top-panel" aria-label="협력업체 네트워크 안내">
+        <div class="vendor-top-panel__header">
+          <span class="vendor-top-panel__eyebrow">공공형 파트너 디렉토리</span>
+          <h2 class="vendor-top-panel__title">검증된 협력업체를 한눈에 비교하고 선택하세요</h2>
+          <p class="vendor-top-panel__desc">전문 분야, 핵심 태그, 평점, 프로젝트 경험을 빠르게 확인할 수 있도록 정리한 영주시 협력업체 네트워크입니다.</p>
+        </div>
+
+        <div class="vendor-filter-panel">
+          <div class="vendor-filter-panel__label-row">
+            <h3 class="vendor-filter-panel__title">카테고리 필터</h3>
+            <span class="vendor-filter-panel__hint">분야별 전문 업체를 바로 탐색</span>
+          </div>
+
+          <div class="vendor-filter-tabs" id="vendorFilterTabs">
+            <button class="vendor-filter-tab is-active" data-type="all">전체</button>
+            <button class="vendor-filter-tab" data-type="construction">건축·리모델링</button>
+            <button class="vendor-filter-tab" data-type="interior">인테리어</button>
+            <button class="vendor-filter-tab" data-type="operation">운영·관리</button>
+            <button class="vendor-filter-tab" data-type="consulting">컨설팅</button>
+          </div>
+        </div>
+
+        <div class="vendor-result-meta" id="vendorResultMeta" aria-live="polite">
+          <div class="vendor-result-meta__left">
+            <span class="vendor-result-meta__label" id="vendorResultLabel">전체 협력업체</span>
+          </div>
+          <div class="vendor-result-meta__count" id="vendorResultCount">0개 업체</div>
+        </div>
+      </section>
+
+      <!-- 업체 목록 -->
+      <div class="vendor-grid" id="vendorGrid">
+        <!-- JS로 동적 렌더링 -->
+      </div>
+    </div>
+  </main>
+
+  <!-- 업체 상세 모달 -->
+  <div class="modal-overlay" id="vendorDetailModal">
+    <div class="modal modal--lg">
+      <div class="modal__header">
+        <h3 class="modal__title" id="vendorModalTitle">업체 상세</h3>
+        <button class="modal__close" onclick="closeModal('vendorDetailModal')">✕</button>
+      </div>
+      <div class="modal__body" id="vendorModalBody"></div>
+      <div class="modal__footer">
+        <button class="btn btn--ghost" onclick="closeModal('vendorDetailModal')">닫기</button>
+        <button class="btn btn--primary" onclick="contactVendor()">문의하기</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="footerPlaceholder"></div>
+
+  <script src="../data/sample-data.js"></script>
+  <script src="../common/common.js?v=17"></script>
+  <script src="../common/header.js"></script>
+  <script src="../common/footer.js"></script>
+  <script src="vendor-list.js"></script>
+</body>
+</html>

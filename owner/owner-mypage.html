@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>빈집 소유자 마이페이지 - 영주 빈집 플랫폼</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../common/common.css?v=16">
+  <link rel="stylesheet" href="owner-mypage.css?v=6">
+</head>
+<body>
+  <div id="headerPlaceholder"></div>
+
+  <div class="page-header">
+    <div class="page-header__inner">
+      <h1 class="page-header__title">빈집 소유자 마이페이지</h1>
+    </div>
+  </div>
+
+  <main class="page-layout">
+    <aside class="page-layout__sidebar">
+      <nav class="sidebar-nav">
+        <div class="sidebar-nav__header">소유자 메뉴</div>
+        <a href="owner-register.html" class="sidebar-nav__item">빈집 등록 신청</a>
+        <a href="owner-requests.html" class="sidebar-nav__item">신청 내역</a>
+        <a href="owner-mypage.html" class="sidebar-nav__item is-active">마이페이지</a>
+      </nav>
+    </aside>
+
+    <div class="page-layout__main">
+      <div class="owner-stats-grid" id="ownerStatsGrid"></div>
+
+      <div class="owner-section">
+        <div class="owner-section__header">
+          <h2 class="owner-section__title">최근 신청 내역</h2>
+          <a href="owner-requests.html" class="btn btn--ghost btn--sm">전체 보기</a>
+        </div>
+        <div id="ownerRecentRequests"></div>
+      </div>
+
+      <div class="owner-section">
+        <div class="owner-section__header">
+          <h2 class="owner-section__title">예약 요청 관리</h2>
+        </div>
+        <div id="ownerBookingRequests"></div>
+      </div>
+
+      <div class="owner-section">
+        <h2 class="owner-section__title">알림</h2>
+        <div id="ownerNotifications"></div>
+      </div>
+    </div>
+  </main>
+
+  <div id="footerPlaceholder"></div>
+
+  <script src="../data/sample-data.js"></script>
+  <script src="../common/common.js?v=18"></script>
+  <script src="../common/header.js"></script>
+  <script src="../common/footer.js"></script>
+  <script src="owner-mypage.js?v=5"></script>
+</body>
+</html>

@@ -1,0 +1,302 @@
+/**
+ * floating-actions.css
+ * 영주시 공공형 빈집 활용 플랫폼 - 플로팅 액션 버튼 UI 스타일
+ * AI 상담 및 맨 위로 이동 버튼
+ */
+
+/* ============================================================
+   플로팅 액션 컨테이너
+   ============================================================ */
+.floating-actions {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+}
+
+.floating-ai-link {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 90px;
+  height: 90px;
+  gap: 0;
+  text-decoration: none;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: 0 16px 34px rgba(28, 22, 13, 0.34);
+  overflow: visible;
+  transition: transform 0.28s ease, box-shadow 0.28s ease;
+}
+
+.floating-ai-link:hover,
+.floating-ai-link:focus-visible {
+  transform: none;
+  box-shadow: 0 20px 42px rgba(28, 22, 13, 0.42);
+}
+
+.floating-ai-link__label {
+  display: none;
+}
+
+.floating-ai-link::after {
+  content: 'AI\C0C1 \B2F4 \C5F0 \ACB0';
+  position: absolute;
+  right: calc(100% + 10px);
+  top: 50%;
+  transform: translate(6px, -50%);
+  color: #1f1a0f;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+  letter-spacing: 0;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(44, 36, 22, 0.16);
+  border-radius: 999px;
+  padding: 8px 10px;
+  box-shadow: 0 10px 24px rgba(28, 22, 13, 0.2);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 950;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.floating-ai-link:hover::after,
+.floating-ai-link:focus-visible::after {
+  opacity: 1;
+  transform: translate(0, -50%);
+}
+
+/* ============================================================
+   플로팅 버튼 기본 스타일
+   ============================================================ */
+.floating-btn {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  color: white;
+  border: none;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 16px 34px rgba(28, 22, 13, 0.34);
+  position: relative;
+  overflow: visible;
+}
+
+.floating-btn:hover {
+  transform: scale(1.12);
+  box-shadow: 0 20px 42px rgba(28, 22, 13, 0.42);
+}
+
+.floating-btn:active {
+  transform: scale(1.08);
+}
+
+/* ============================================================
+   AI 상담 버튼
+   ============================================================ */
+.floating-btn--ai {
+  background: transparent;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  margin-top: 0;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.floating-btn--ai:hover {
+  background: transparent;
+  transform: none;
+  box-shadow: none;
+}
+
+.floating-btn--ai .floating-btn__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  border: none;
+  filter: none;
+}
+
+.floating-btn--ai .floating-btn__label {
+  display: none;
+}
+
+/* ============================================================
+   맨 위로 버튼
+   ============================================================ */
+.floating-btn--top {
+  background: linear-gradient(135deg, #2c2416 0%, #1a1510 100%);
+  font-size: 12px;
+  font-weight: 700;
+  opacity: 0;
+  transform: scale(0.8) translateY(20px);
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.floating-btn--top.is-visible {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  pointer-events: auto;
+}
+
+.floating-btn--top:hover {
+  background: linear-gradient(135deg, #3a3120 0%, #2c2416 100%);
+}
+
+.floating-btn--top .floating-btn__label {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  line-height: 1;
+}
+
+/* ============================================================
+   버튼 라벨 공통 스타일
+   ============================================================ */
+.floating-btn__label {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', Arial, sans-serif;
+  color: white;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.floating-btn__img {
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   반응형 - 태블릿
+   ============================================================ */
+@media (max-width: 1024px) {
+  .floating-actions {
+    bottom: 24px;
+    right: 24px;
+    gap: 12px;
+  }
+
+  .floating-ai-link {
+    width: 75px;
+    height: 75px;
+  }
+
+  .floating-btn {
+    width: 75px;
+    height: 75px;
+  }
+
+  .floating-btn--ai {
+    width: 100%;
+    height: 100%;
+    margin-top: 0;
+  }
+
+  .floating-btn--ai .floating-btn__img {
+    width: 100%;
+    height: 100%;
+  }
+
+  .floating-ai-link::after {
+    font-size: 12px;
+  }
+
+  .floating-btn--top .floating-btn__label {
+    font-size: 11px;
+  }
+}
+
+/* ============================================================
+   반응형 - 모바일
+   ============================================================ */
+@media (max-width: 640px) {
+  .floating-actions {
+    bottom: 16px;
+    right: 16px;
+    gap: 10px;
+  }
+
+  .floating-ai-link {
+    width: 65px;
+    height: 65px;
+  }
+
+  .floating-btn {
+    width: 65px;
+    height: 65px;
+    box-shadow: 0 12px 26px rgba(28, 22, 13, 0.32);
+  }
+
+  .floating-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 16px 34px rgba(28, 22, 13, 0.38);
+  }
+
+  .floating-btn--ai {
+    width: 100%;
+    height: 100%;
+    margin-top: 0;
+  }
+
+  .floating-btn--ai .floating-btn__img {
+    width: 100%;
+    height: 100%;
+  }
+
+  .floating-ai-link::after {
+    right: auto;
+    left: 50%;
+    top: auto;
+    bottom: calc(100% + 8px);
+    transform: translate(-50%, 4px);
+    font-size: 12px;
+  }
+
+  .floating-ai-link:hover::after,
+  .floating-ai-link:focus-visible::after {
+    transform: translate(-50%, 0);
+  }
+
+  .floating-btn--top .floating-btn__label {
+    font-size: 10px;
+    letter-spacing: 0.5px;
+  }
+}
+
+/* ============================================================
+   접근성 - 포커스 상태
+   ============================================================ */
+.floating-btn:focus {
+  outline: 2px solid #1565c0;
+  outline-offset: 2px;
+}
+
+.floating-btn--top:focus {
+  outline: 2px solid #2c2416;
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   프린트 - 숨김
+   ============================================================ */
+@media print {
+  .floating-actions {
+    display: none;
+  }
+}

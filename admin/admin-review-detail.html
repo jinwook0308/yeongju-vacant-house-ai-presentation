@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>신청 검토 상세 - 영주 빈집 플랫폼</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../common/common.css">
+  <link rel="stylesheet" href="admin.css?v=11">
+  <link rel="stylesheet" href="admin-review-detail.css">
+</head>
+<body class="admin-body">
+  <div id="headerPlaceholder"></div>
+
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="admin-sidebar__header">
+        <div class="admin-sidebar__logo">🏛️</div>
+        <div>
+          <div class="admin-sidebar__title">영주시 관리자</div>
+          <div class="admin-sidebar__subtitle">공공기관 전용</div>
+        </div>
+      </div>
+      <nav class="admin-nav">
+        <div class="admin-nav__group-label">대시보드</div>
+        <a href="admin-dashboard.html" class="admin-nav__item">
+          <span class="admin-nav__icon">📊</span> 대시보드
+        </a>
+        <div class="admin-nav__group-label">빈집 관리</div>
+        <a href="admin-review-list.html" class="admin-nav__item is-active">
+          <span class="admin-nav__icon">📋</span> 신청 검토 목록
+        </a>
+        <a href="admin-district.html" class="admin-nav__item">
+          <span class="admin-nav__icon">🗺️</span> 지역별 현황
+        </a>
+        <a href="admin-analytics.html" class="admin-nav__item">
+          <span class="admin-nav__icon">📈</span> 빈집 분석
+        </a>
+        <div class="admin-nav__group-label">시스템</div>
+        <a href="../vendor/vendor-list.html" class="admin-nav__item">
+          <span class="admin-nav__icon">🔧</span> 협력업체 관리
+        </a>
+      </nav>
+    </aside>
+
+    <main class="admin-main" id="reviewDetailMain">
+      <div class="flex-center" style="min-height:60vh;">
+        <div class="spinner"></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- 승인 확인 모달 -->
+  <div class="modal-overlay" id="approveModal">
+    <div class="modal">
+      <div class="modal__header">
+        <h3 class="modal__title">✅ 등록 신청 승인</h3>
+        <button class="modal__close" onclick="closeModal('approveModal')">✕</button>
+      </div>
+      <div class="modal__body">
+        <p style="margin-bottom:16px;color:var(--color-text-secondary);">
+          이 빈집 등록 신청을 승인하면 공개 목록에 등재됩니다.
+        </p>
+        <div class="form-group">
+          <label class="form-label">상태 등급 설정 <span class="required-mark">*</span></label>
+          <select id="approveGrade" class="form-control form-select">
+            <option value="A">A등급 - 즉시 활용 가능</option>
+            <option value="B">B등급 - 소규모 보수 후 활용</option>
+            <option value="C">C등급 - 대규모 보수 필요</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">운영 유형 설정 <span class="required-mark">*</span></label>
+          <select id="approveOperationType" class="form-control form-select">
+            <option value="lodging">숙박 가능</option>
+            <option value="longterm">장기체류형</option>
+            <option value="experience">체험공간형</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">검토 의견 (소유자에게 전달)</label>
+          <textarea id="approveComment" class="form-control" rows="3"
+            placeholder="승인 사유, 주의사항 등을 입력하세요."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="approvePublic" checked>
+            <span>승인 즉시 공개 목록에 등재</span>
+          </label>
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--ghost" onclick="closeModal('approveModal')">취소</button>
+        <button class="btn btn--success" onclick="submitApproval()">승인 확정</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 반려 확인 모달 -->
+  <div class="modal-overlay" id="rejectModal">
+    <div class="modal">
+      <div class="modal__header">
+        <h3 class="modal__title">❌ 등록 신청 반려</h3>
+        <button class="modal__close" onclick="closeModal('rejectModal')">✕</button>
+      </div>
+      <div class="modal__body">
+        <div class="booking-notice" style="margin-bottom:16px;">
+          <span>⚠️</span>
+          <p>반려 처리 시 소유자에게 반려 사유가 통보됩니다.</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label">반려 사유 <span class="required-mark">*</span></label>
+          <select id="rejectReason" class="form-control form-select">
+            <option value="">선택</option>
+            <option value="location">영주시 외 지역</option>
+            <option value="condition">건물 상태 불량</option>
+            <option value="docs">서류 미비</option>
+            <option value="duplicate">중복 신청</option>
+            <option value="other">기타</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">상세 사유</label>
+          <textarea id="rejectComment" class="form-control" rows="3"
+            placeholder="소유자에게 전달할 상세 반려 사유를 입력하세요."></textarea>
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--ghost" onclick="closeModal('rejectModal')">취소</button>
+        <button class="btn btn--danger" onclick="submitRejection()">반려 확정</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="footerPlaceholder"></div>
+
+  <script src="../data/sample-data.js"></script>
+<script src="../common/common.js?v=17"></script>
+  <script src="../common/header.js"></script>
+  <script src="../common/footer.js"></script>
+  <script src="admin-review-detail.js?v=4"></script>
+</body>
+</html>

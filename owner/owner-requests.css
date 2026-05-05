@@ -1,0 +1,224 @@
+/**
+ * owner-requests.css
+ * 영주시 공공형 빈집 활용 플랫폼 - 소유자 신청 내역 페이지 스타일
+ */
+
+.requests-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-lg);
+}
+
+.requests-header__title {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+/* 상태 필터 탭 */
+.status-filter-tabs {
+  display: flex;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-lg);
+  flex-wrap: wrap;
+}
+
+.status-filter-tab {
+  padding: var(--spacing-xs) var(--spacing-md);
+  border: 1.5px solid var(--color-border);
+  border-radius: 20px;
+  background-color: var(--color-bg-card);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.status-filter-tab:hover {
+  border-color: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.status-filter-tab.is-active {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+  font-weight: 600;
+}
+
+/* 신청 카드 */
+.request-card {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+  box-shadow: var(--shadow-card);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.request-card:hover {
+  border-color: var(--color-primary-light);
+  box-shadow: var(--shadow-md);
+}
+
+.request-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-md);
+}
+
+.request-card__title {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.request-card__address {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+.request-card__body {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) 0;
+  border-top: 1px solid var(--color-border-light);
+  border-bottom: 1px solid var(--color-border-light);
+  margin-bottom: var(--spacing-md);
+}
+
+.request-card__meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.request-card__meta-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.request-card__meta-value {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.request-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.request-card__date {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* 신청 상세 모달 */
+.request-detail-section {
+  margin-bottom: var(--spacing-lg);
+}
+
+.request-detail-section__title {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--spacing-sm);
+}
+
+.request-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-sm);
+}
+
+.request-detail-item {
+  background-color: var(--color-bg-section);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+}
+
+.request-detail-item__label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-bottom: 2px;
+}
+
+.request-detail-item__value {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+/* 진행 상태 타임라인 */
+.status-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.status-timeline-item {
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: flex-start;
+}
+
+.status-timeline-item__dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--color-border);
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.status-timeline-item.is-done .status-timeline-item__dot {
+  background-color: var(--color-success);
+}
+
+.status-timeline-item.is-current .status-timeline-item__dot {
+  background-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.2);
+}
+
+.status-timeline-item__label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.status-timeline-item.is-done .status-timeline-item__label,
+.status-timeline-item.is-current .status-timeline-item__label {
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+.request-detail-rejected-comment {
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-sm);
+  background: rgba(198, 40, 40, 0.06);
+  border: 1px solid rgba(198, 40, 40, 0.16);
+}
+
+.request-detail-rejected-comment strong {
+  display: block;
+  margin-bottom: 6px;
+  color: #9d2727;
+  font-size: var(--font-size-sm);
+}
+
+.request-detail-rejected-comment p {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  line-height: 1.65;
+}

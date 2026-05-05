@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>빈집 등록 신청 - 영주 빈집 플랫폼</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../common/common.css">
+  <link rel="stylesheet" href="owner-register.css">
+</head>
+<body>
+  <div id="headerPlaceholder"></div>
+
+  <div class="page-header">
+    <div class="page-header__inner">
+      <h1 class="page-header__title">빈집 등록 신청</h1>
+    </div>
+  </div>
+
+  <main class="owner-register-main">
+    <div class="container--narrow">
+      <section class="register-intro-panel">
+        <div class="register-intro-panel__eyebrow">공공형 신청 접수</div>
+        <h2 class="register-intro-panel__title">단계별로 빈집 정보를 차분하게 입력해 주세요</h2>
+        <p class="register-intro-panel__desc">소유자 정보부터 건물 상태, 희망 활용 방식까지 순서대로 입력하면 공공기관 검토에 필요한 정보를 빠짐없이 제출할 수 있습니다.</p>
+        <div class="register-limit-notice" id="ownerRegistrationLimitNotice" hidden></div>
+      </section>
+
+      <!-- 단계 표시 -->
+      <div class="register-steps-panel">
+        <div class="register-steps" id="registerSteps">
+          <div class="register-step is-active" data-step="1">
+            <div class="register-step__num">1</div>
+            <div class="register-step__label">소유자 정보</div>
+          </div>
+          <div class="register-step__line"></div>
+          <div class="register-step" data-step="2">
+            <div class="register-step__num">2</div>
+            <div class="register-step__label">빈집 위치</div>
+          </div>
+          <div class="register-step__line"></div>
+          <div class="register-step" data-step="3">
+            <div class="register-step__num">3</div>
+            <div class="register-step__label">건물 정보</div>
+          </div>
+          <div class="register-step__line"></div>
+          <div class="register-step" data-step="4">
+            <div class="register-step__num">4</div>
+            <div class="register-step__label">활용 방식</div>
+          </div>
+          <div class="register-step__line"></div>
+          <div class="register-step" data-step="5">
+            <div class="register-step__num">5</div>
+            <div class="register-step__label">제출 완료</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 폼 영역 -->
+      <form id="ownerRegistrationForm" novalidate>
+        <!-- Step 1: 소유자 정보 -->
+        <div class="register-form-panel" id="step1Panel">
+          <div class="register-form-panel__header">
+            <div>
+              <div class="register-form-panel__eyebrow">STEP 1</div>
+              <h3 class="register-form-panel__title">소유자 정보</h3>
+              <p class="register-form-panel__desc">신청자와의 연락, 검토 결과 안내에 필요한 기본 정보를 입력합니다.</p>
+            </div>
+          </div>
+          <div class="register-form-section">
+            <div class="form-group">
+              <label class="form-label" for="ownerName">소유자 이름 <span class="required-mark">*</span></label>
+              <input type="text" id="ownerName" class="form-control" placeholder="실명 입력">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="ownerContact">연락처 <span class="required-mark">*</span></label>
+              <input type="tel" id="ownerContact" class="form-control" placeholder="010-0000-0000">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="ownerEmail">이메일</label>
+              <input type="email" id="ownerEmail" class="form-control" placeholder="이메일 주소">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="ownerIdType">소유자 유형 <span class="required-mark">*</span></label>
+              <select id="ownerIdType" class="form-control form-select">
+                <option value="">선택</option>
+                <option value="individual">개인</option>
+                <option value="corporation">법인</option>
+                <option value="public">공공기관</option>
+              </select>
+            </div>
+          </div>
+          <div class="register-form-panel__actions">
+            <button type="button" class="btn btn--primary" onclick="goToStep(2)">다음 단계</button>
+          </div>
+        </div>
+
+        <!-- Step 2: 빈집 위치 -->
+        <div class="register-form-panel" id="step2Panel" style="display:none;">
+          <div class="register-form-panel__header">
+            <div>
+              <div class="register-form-panel__eyebrow">STEP 2</div>
+              <h3 class="register-form-panel__title">빈집 위치</h3>
+              <p class="register-form-panel__desc">영주시 행정구역 기준으로 위치 정보를 입력합니다. 공공기관 검토를 위해 실제 위치가 중요합니다.</p>
+            </div>
+          </div>
+          <div class="location-notice">
+            📍 본 플랫폼은 <strong>영주시 내 빈집만</strong> 등록 가능합니다.
+          </div>
+          <div class="register-form-section">
+            <div class="form-group">
+              <label class="form-label" for="houseDistrict">읍면동 <span class="required-mark">*</span></label>
+              <select id="houseDistrict" class="form-control form-select">
+                <option value="">영주시 읍면동 선택</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="houseAddress">상세 주소 <span class="required-mark">*</span></label>
+              <input type="text" id="houseAddress" class="form-control" placeholder="순흥면 111">
+              <span class="form-hint">읍면동 선택으로 이미 영주시 주소가 결정됩니다. 상세 주소만 입력하세요.</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="houseAddressDetail">상세 주소 (동/호수)</label>
+              <input type="text" id="houseAddressDetail" class="form-control" placeholder="동, 호수 등">
+            </div>
+          </div>
+          <div class="register-form-panel__actions">
+            <button type="button" class="btn btn--ghost" onclick="goToStep(1)">이전</button>
+            <button type="button" class="btn btn--primary" onclick="goToStep(3)">다음 단계</button>
+          </div>
+        </div>
+
+        <!-- Step 3: 건물 정보 -->
+        <div class="register-form-panel" id="step3Panel" style="display:none;">
+          <div class="register-form-panel__header">
+            <div>
+              <div class="register-form-panel__eyebrow">STEP 3</div>
+              <h3 class="register-form-panel__title">건물 기본 정보</h3>
+              <p class="register-form-panel__desc">건물 유형, 면적, 상태 등 활용 가능성을 판단하는 핵심 정보를 입력합니다.</p>
+            </div>
+          </div>
+          <div class="register-form-section">
+            <div class="form-group">
+              <label class="form-label" for="buildingType">건물 유형 <span class="required-mark">*</span></label>
+              <select id="buildingType" class="form-control form-select">
+                <option value="">선택</option>
+                <option value="hanok">한옥</option>
+                <option value="farmhouse">농가주택</option>
+                <option value="modern">근현대 주택</option>
+                <option value="apartment">아파트/빌라</option>
+                <option value="other">기타</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="buildingYear">건축 연도</label>
+              <input type="number" id="buildingYear" class="form-control" placeholder="예: 1985" min="1900" max="2025">
+            </div>
+            <div class="form-group">
+              <label class="form-label">건물 면적</label>
+              <div class="area-input-set">
+                <div class="area-input-set__cell">
+                  <label class="area-input-set__label" for="buildingArea">건물 면적 (㎡)</label>
+                  <input type="number" id="buildingArea" class="form-control area-input-set__control" placeholder="예: 85" min="0" step="0.1">
+                </div>
+                <div class="area-input-set__divider" aria-hidden="true"></div>
+                <div class="area-input-set__cell">
+                  <label class="area-input-set__label" for="buildingAreaPyeong">건물 면적 (평)</label>
+                  <input type="number" id="buildingAreaPyeong" class="form-control area-input-set__control" placeholder="예: 25" min="0" step="0.1">
+                </div>
+              </div>
+              <div class="form-hint">㎡ 또는 평 중 한 쪽에 입력하면 다른 값이 자동 계산됩니다.</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="buildingCondition">현재 상태 <span class="required-mark">*</span></label>
+              <select id="buildingCondition" class="form-control form-select">
+                <option value="">선택</option>
+                <option value="good">양호 (즉시 활용 가능)</option>
+                <option value="minor">소규모 보수 필요</option>
+                <option value="major">대규모 보수 필요</option>
+                <option value="unknown">잘 모름</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="buildingVacantYears">방치 기간</label>
+              <select id="buildingVacantYears" class="form-control form-select">
+                <option value="">선택</option>
+                <option value="1">1년 미만</option>
+                <option value="3">1~3년</option>
+                <option value="5">3~5년</option>
+                <option value="10">5~10년</option>
+                <option value="over10">10년 이상</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="buildingDesc">추가 설명</label>
+              <textarea id="buildingDesc" class="form-control" rows="4" placeholder="건물 상태, 특이사항 등을 자유롭게 입력해주세요."></textarea>
+            </div>
+          </div>
+          <div class="register-form-panel__actions">
+            <button type="button" class="btn btn--ghost" onclick="goToStep(2)">이전</button>
+            <button type="button" class="btn btn--primary" onclick="goToStep(4)">다음 단계</button>
+          </div>
+        </div>
+
+        <!-- Step 4: 활용 방식 -->
+        <div class="register-form-panel" id="step4Panel" style="display:none;">
+          <div class="register-form-panel__header">
+            <div>
+              <div class="register-form-panel__eyebrow">STEP 4</div>
+              <h3 class="register-form-panel__title">원하는 활용 방식</h3>
+              <p class="register-form-panel__desc">청소·보수 필요 여부와 함께 희망 활용 유형을 선택해 주세요. 향후 매칭과 검토에 활용됩니다.</p>
+            </div>
+          </div>
+          <div class="register-form-section">
+            <div class="form-group">
+              <label class="form-label">희망 활용 유형 <span class="required-mark">*</span></label>
+              <div class="usage-type-options">
+                <label class="usage-type-option">
+                  <input type="checkbox" name="usageType" value="lodging">
+                  <span>🏠 숙박 공간</span>
+                </label>
+                <label class="usage-type-option">
+                  <input type="checkbox" name="usageType" value="longterm">
+                  <span>📅 장기체류 공간</span>
+                </label>
+                <label class="usage-type-option">
+                  <input type="checkbox" name="usageType" value="experience">
+                  <span>🌿 체험 공간</span>
+                </label>
+                <label class="usage-type-option">
+                  <input type="checkbox" name="usageType" value="community">
+                  <span>🤝 커뮤니티 공간</span>
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">청소 필요 여부</label>
+              <div class="register-choice-row">
+                <label class="checkbox-label">
+                  <input type="radio" name="needsCleaning" value="yes"> 필요
+                </label>
+                <label class="checkbox-label">
+                  <input type="radio" name="needsCleaning" value="no"> 불필요
+                </label>
+                <label class="checkbox-label">
+                  <input type="radio" name="needsCleaning" value="unknown"> 모름
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">보수 필요 여부</label>
+              <div class="register-choice-row">
+                <label class="checkbox-label">
+                  <input type="radio" name="needsRepair" value="yes"> 필요
+                </label>
+                <label class="checkbox-label">
+                  <input type="radio" name="needsRepair" value="no"> 불필요
+                </label>
+                <label class="checkbox-label">
+                  <input type="radio" name="needsRepair" value="unknown"> 모름
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">사진 업로드 (데모)</label>
+              <div class="photo-upload-area" id="photoUploadArea" role="button" tabindex="0" aria-controls="housePhotoInput" aria-label="빈집 사진 업로드">
+                <div class="photo-upload-area__icon">📷</div>
+                <p>빈집 사진을 업로드해주세요</p>
+                <p style="font-size:var(--font-size-xs);color:var(--color-text-muted);">JPG, PNG · 최대 10장 · 각 10MB 이하</p>
+                <label class="btn btn--ghost btn--sm" for="housePhotoInput">파일 선택</label>
+                <input type="file" id="housePhotoInput" accept="image/png,image/jpeg,image/webp" multiple hidden>
+              </div>
+              <div class="photo-preview-grid" id="photoPreviewGrid" aria-live="polite"></div>
+            </div>
+          </div>
+          <div class="register-form-panel__actions">
+            <button type="button" class="btn btn--ghost" onclick="goToStep(3)">이전</button>
+            <button type="submit" class="btn btn--primary btn--lg" id="ownerRegistrationSubmitBtn">등록 신청 제출</button>
+          </div>
+        </div>
+
+        <!-- Step 5: 완료 -->
+        <div class="register-form-panel" id="step5Panel" style="display:none;">
+          <div class="register-complete">
+            <div class="register-complete__icon">✅</div>
+            <h3 class="register-complete__title">등록 신청이 완료되었습니다!</h3>
+            <p class="register-complete__desc">
+              영주시 공공기관에서 신청 내용을 검토 후 결과를 안내드립니다.<br>
+              검토 기간은 영업일 기준 5~10일 소요될 수 있습니다.
+            </p>
+            <div class="register-complete__status">
+              <span class="badge badge--submitted">신청 완료</span>
+              <span class="register-complete__flow">→ 검토 중 → 승인/반려</span>
+            </div>
+            <div class="register-complete__actions">
+              <a href="owner-requests.html" class="btn btn--primary">신청 내역 확인</a>
+              <a href="../home/index.html" class="btn btn--ghost">메인으로</a>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <div id="footerPlaceholder"></div>
+
+  <script src="../data/sample-data.js"></script>
+  <script src="../common/common.js"></script>
+  <script src="../common/header.js"></script>
+  <script src="../common/footer.js"></script>
+  <script src="owner-register.js?v=3"></script>
+</body>
+</html>

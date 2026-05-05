@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>빈집 상세 - 영주 빈집 플랫폼</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../common/common.css">
+  <link rel="stylesheet" href="guest-detail.css?v=3">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <style>
+    .booking-map { width: 100%; height: 220px; border-radius: 12px; overflow: hidden; border: 1.5px solid rgba(168,141,82,0.2); }
+  </style>
+</head>
+<body>
+  <div id="headerPlaceholder"></div>
+
+  <main id="houseDetailMain">
+    <!-- JS로 동적 렌더링 -->
+    <div class="flex-center" style="min-height:60vh;">
+      <div class="spinner"></div>
+    </div>
+  </main>
+
+  <!-- 예약 요청 모달 -->
+  <div class="modal-overlay" id="bookingRequestModal">
+    <div class="modal">
+      <div class="modal__header">
+        <h3 class="modal__title">예약 요청 접수</h3>
+        <button class="modal__close" onclick="closeModal('bookingRequestModal')">✕</button>
+      </div>
+      <div class="modal__body">
+        <div class="booking-notice">
+          <span>📋</span>
+          <p>예약 요청은 즉시 확정이 아닙니다.</br> 공공기관 검토 후 확정 여부를 안내드립니다.</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label">체크인 날짜 <span class="required-mark">*</span></label>
+          <input type="date" id="bookingCheckIn" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="form-label">체크아웃 날짜 <span class="required-mark">*</span></label>
+          <input type="date" id="bookingCheckOut" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="form-label">이용 인원 <span class="required-mark">*</span></label>
+          <select id="bookingGuests" class="form-control form-select">
+            <option value="1">1명</option>
+            <option value="2">2명</option>
+            <option value="3">3명</option>
+            <option value="4">4명</option>
+            <option value="5">5명</option>
+            <option value="6">6명 이상</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">이용 목적</label>
+          <input type="text" id="bookingPurpose" class="form-control" placeholder="예: 가족여행, 귀농체험 등">
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--ghost" onclick="closeModal('bookingRequestModal')">취소</button>
+        <button class="btn btn--primary" onclick="submitBookingRequest()">예약 요청 접수</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="footerPlaceholder"></div>
+
+  <script src="../data/sample-data.js"></script>
+    <script src="../common/common.js?v=17"></script>
+  <script src="../common/header.js"></script>
+  <script src="../common/footer.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="guest-detail.js?v=2"></script>
+</body>
+</html>

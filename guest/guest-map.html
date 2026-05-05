@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>지도보기 - 영주 빈집 플랫폼</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../common/common.css?v=16">
+  <link rel="stylesheet" href="guest-map.css?v=4">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+</head>
+<body>
+  <div id="headerPlaceholder"></div>
+
+  <main class="map-shell" aria-label="영주시 지도 탐색">
+    <section class="map-layout">
+      <div class="map-stage">
+        <div id="districtMap" class="district-map" aria-label="영주시 지도"></div>
+
+        <div class="map-overlay" id="mapOverlay" role="search" aria-label="지도 검색 및 필터">
+          <div class="map-overlay__topbar">
+            <strong class="map-overlay__title">검색 · 필터</strong>
+            <button id="mapOverlayToggle" class="map-overlay__toggle" type="button" aria-expanded="true">접기</button>
+          </div>
+          <div class="map-overlay__search-row">
+            <label class="map-overlay__search" for="mapSearchInput">
+              <span class="map-overlay__search-icon">🔎</span>
+              <input id="mapSearchInput" type="text" placeholder="지역명, 주소, 태그로 검색" autocomplete="off">
+            </label>
+            <button id="mapResetBtn" class="btn btn--ghost btn--sm" type="button">초기화</button>
+          </div>
+
+          <div class="map-overlay__filters">
+            <label class="map-filter">
+              <span class="map-filter__label">지역</span>
+              <select id="mapDistrictFilter"></select>
+            </label>
+
+            <label class="map-filter">
+              <span class="map-filter__label">유형</span>
+              <select id="mapTypeFilter">
+                <option value="all">전체</option>
+                <option value="lodging">숙박 가능</option>
+                <option value="longterm">장기체류형</option>
+                <option value="experience">체험공간형</option>
+                <option value="review_needed">추가 검토 필요</option>
+              </select>
+            </label>
+
+            <label class="map-filter">
+              <span class="map-filter__label">등급</span>
+              <select id="mapGradeFilter">
+                <option value="all">전체</option>
+                <option value="A">A등급</option>
+                <option value="B">B등급</option>
+                <option value="C">C등급</option>
+                <option value="D">D등급</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="map-overlay__hint" id="mapOverlayHint">
+            영주시 읍면동 원형 마커를 클릭하면 오른쪽 패널에 지역별 빈집 목록이 표시됩니다.
+          </div>
+        </div>
+      </div>
+
+      <aside class="map-list-panel" aria-label="지역 빈집 리스트">
+        <header class="map-list-panel__header">
+          <div class="map-list-panel__title-wrap">
+            <p class="map-list-panel__eyebrow">영주시 공공형 빈집 탐색</p>
+            <h1 class="map-list-panel__title" id="mapListTitle">지역을 선택해 주세요</h1>
+          </div>
+          <div class="map-list-panel__count" id="mapListCount">0건</div>
+        </header>
+
+        <div class="map-list-panel__body" id="mapResultBody">
+          <!-- JS로 동적 렌더링 -->
+        </div>
+      </aside>
+    </div>
+    </section>
+  </main>
+
+  <script src="../data/sample-data.js"></script>
+  <script src="../common/common.js?v=17"></script>
+  <script src="../common/header.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="guest-map.js?v=5"></script>
+</body>
+</html>

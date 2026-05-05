@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>신청 검토 목록 - 영주 빈집 플랫폼</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../common/common.css">
+  <link rel="stylesheet" href="admin.css?v=11">
+  <link rel="stylesheet" href="admin-review-list.css">
+</head>
+<body class="admin-body">
+  <div id="headerPlaceholder"></div>
+
+  <div class="admin-layout">
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="admin-sidebar__header">
+        <div class="admin-sidebar__logo">YJ</div>
+        <div>
+          <div class="admin-sidebar__title">영주시 관리자</div>
+          <div class="admin-sidebar__subtitle">공공기관 운영 콘솔</div>
+        </div>
+      </div>
+      <nav class="admin-nav">
+        <div class="admin-nav__group-label">운영 현황</div>
+        <a href="admin-dashboard.html" class="admin-nav__item">
+          <span class="admin-nav__icon">01</span>
+          <span>대시보드</span>
+        </a>
+        <div class="admin-nav__group-label">빈집 관리</div>
+        <a href="admin-review-list.html" class="admin-nav__item is-active">
+          <span class="admin-nav__icon">02</span>
+          <span>신청 검토 목록</span>
+          <span class="admin-nav__badge" id="pendingCountBadge" hidden>0</span>
+        </a>
+        <a href="admin-district.html" class="admin-nav__item">
+          <span class="admin-nav__icon">03</span>
+          <span>지역별 현황</span>
+        </a>
+        <a href="admin-analytics.html" class="admin-nav__item">
+          <span class="admin-nav__icon">04</span>
+          <span>빈집 분석</span>
+        </a>
+        <div class="admin-nav__group-label">연계 관리</div>
+        <a href="../vendor/vendor-list.html" class="admin-nav__item">
+          <span class="admin-nav__icon">05</span>
+          <span>협력업체 관리</span>
+        </a>
+      </nav>
+    </aside>
+
+    <main class="admin-main">
+      <div class="admin-main__header">
+        <h1 class="admin-main__title">신청 검토 목록</h1>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn--ghost btn--sm" onclick="exportToExcel()">엑셀 내보내기</button>
+        </div>
+      </div>
+
+      <div class="admin-panel" style="margin-bottom:var(--spacing-xl);">
+        <div class="admin-panel__header">
+          <h3 class="admin-panel__title">검토 필터</h3>
+          <button class="btn btn--ghost btn--sm" id="filterResetBtn">초기화</button>
+        </div>
+        <div class="review-filter-body">
+          <div class="form-group">
+            <label class="form-label">검색어</label>
+            <input type="text" id="filterKeyword" class="form-control" placeholder="소유자명, 주소 검색">
+          </div>
+          <div class="form-group">
+            <label class="form-label">영주시 지역</label>
+            <select id="filterDistrict" class="form-control form-select">
+              <option value="">전체 지역</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">신청 상태</label>
+            <select id="filterStatus" class="form-control form-select">
+              <option value="">전체 상태</option>
+              <option value="submitted">신청 완료</option>
+              <option value="under_review">검토 중</option>
+              <option value="site_visit">현장 방문</option>
+              <option value="approval_pending">승인 대기</option>
+              <option value="rejected">반려</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">건물 유형</label>
+            <select id="filterBuildingType" class="form-control form-select">
+              <option value="">전체 유형</option>
+              <option value="hanok">한옥</option>
+              <option value="farmhouse">농가주택</option>
+              <option value="modern">근현대 주택</option>
+            </select>
+          </div>
+          <div class="form-group" style="align-self:flex-end;">
+            <button class="btn btn--primary btn--full" id="filterApplyBtn">필터 적용</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="admin-panel">
+        <div class="admin-panel__header">
+          <h3 class="admin-panel__title">
+            신청 목록
+            <span id="reviewListCount" style="font-weight:400;color:var(--color-text-muted);margin-left:8px;"></span>
+          </h3>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <select id="reviewSortSelect" class="form-control form-select" style="width:auto;font-size:var(--font-size-xs);">
+              <option value="latest">최신 순</option>
+              <option value="oldest">오래된 순</option>
+              <option value="district">지역 순</option>
+            </select>
+          </div>
+        </div>
+        <div id="reviewListTable"></div>
+      </div>
+
+      <div class="admin-panel" style="margin-top:var(--spacing-xl);">
+        <div class="admin-panel__header">
+          <h3 class="admin-panel__title">
+            반려 처리 항목
+            <span id="rejectedListCount" style="font-weight:400;color:var(--color-text-muted);margin-left:8px;"></span>
+          </h3>
+        </div>
+        <div id="rejectedListTable"></div>
+      </div>
+    </main>
+  </div>
+
+  <div id="footerPlaceholder"></div>
+
+  <script src="../data/sample-data.js"></script>
+  <script src="../common/common.js?v=13"></script>
+  <script src="../common/header.js"></script>
+  <script src="../common/footer.js"></script>
+  <script src="admin-review-list.js?v=5"></script>
+</body>
+</html>

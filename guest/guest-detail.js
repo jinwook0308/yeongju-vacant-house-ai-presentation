@@ -1,0 +1,746 @@
+const API_BASE_URL = typeof getApiBaseUrl === 'function' ? getApiBaseUrl() : 'http://localhost:8000';
+const HOUSE_REVIEW_STORAGE_KEY = 'yeongjuHouseReviews';
+let currentHouse = null;
+let currentSimilarHouses = [];
+
+const DETAIL_DISTRICT_COORDS = {
+  '풍기읍': [36.9830, 128.5440],
+  '순흥면': [36.9420, 128.5910],
+  '봉현면': [36.9100, 128.5200],
+  '부석면': [36.9960, 128.6700],
+  '이산면': [36.8530, 128.4980],
+  '문수면': [36.8000, 128.5300],
+  '장수면': [36.8680, 128.6780],
+  '평은면': [36.8340, 128.6360],
+  '안정면': [36.9100, 128.6800],
+  '단산면': [36.8690, 128.5340],
+  '영주동': [36.8050, 128.6240],
+  '상망동': [36.8150, 128.6380],
+  '가흥동': [36.8240, 128.6520],
+  '하망동': [36.8320, 128.6630],
+  '휴천동': [36.8100, 128.5950],
+};
+
+const DETAIL_OPERATION_LABELS = {
+  lodging: '숙박 가능형',
+  longterm: '장기체류형',
+  experience: '체험공간형',
+  review_needed: '추가 검토 필요',
+};
+
+const DETAIL_OPERATION_EMOJIS = {
+  lodging: '🏠',
+  longterm: '📅',
+  experience: '🌿',
+  review_needed: '🔍',
+};
+
+window.addEventListener('load', initHouseDetailPage);
+window.addEventListener('yeongju:auth-changed', syncDetailWishlistButton);
+window.addEventListener('yeongju:wishlist-changed', syncDetailWishlistButton);
+
+function renderDetailMap(house) {
+  const element = document.getElementById('bookingLocationMap');
+  if (!element || typeof L === 'undefined') return;
+
+  if (element._leaflet_id) {
+    element._leaflet_id = null;
+    element.innerHTML = '';
+  }
+
+  const lat = Number(house.lat);
+  const lon = Number(house.lon);
+  const coords = Number.isFinite(lat) && Number.isFinite(lon)
+    ? [lat, lon]
+    : (DETAIL_DISTRICT_COORDS[house.districtName] || [36.872, 128.60]);
+
+  const map = L.map(element, { scrollWheelZoom: false, zoomControl: true }).setView(coords, 13);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: 'OpenStreetMap contributors',
+    maxZoom: 19,
+  }).addTo(map);
+
+  L.marker(coords)
+    .addTo(map)
+    .bindPopup(`${house.name || '승인 빈집'}<br>${house.address || `영주시 ${house.districtName || ''}`}`)
+    .openPopup();
+}
+
+async function initHouseDetailPage() {
+  renderHeader('house-list');
+  renderFooter();
+  document.body.classList.add('user-platform-page');
+
+  const params = getUrlParams();
+  const houseId = params.id;
+
+  if (!houseId) {
+    showNotFound();
+    return;
+  }
+
+  try {
+    const houseResponse = await fetch(`${API_BASE_URL}/houses/${houseId}`);
+    if (!houseResponse.ok) {
+      throw new Error(`HTTP ${houseResponse.status}`);
+    }
+
+    const house = await houseResponse.json();
+    if (!house || !house.isApproved) {
+      showNotFound();
+      return;
+    }
+
+    let similarHouses = [];
+    try {
+      const listResponse = await fetch(`${API_BASE_URL}/houses`);
+      if (listResponse.ok) {
+        const allHouses = await listResponse.json();
+        similarHouses = allHouses
+          .filter((item) =>
+            item.id !== house.id &&
+            item.isApproved &&
+            (item.districtId === house.districtId || item.operationType === house.operationType)
+          )
+          .slice(0, 3);
+      }
+    } catch (error) {
+      console.warn('비슷한 빈집 목록은 생략합니다.', error);
+    }
+
+    currentHouse = house;
+    currentSimilarHouses = similarHouses;
+    renderHouseDetail(house, similarHouses);
+    renderDetailMap(house);
+    setupModalClose('bookingRequestModal');
+  } catch (error) {
+    console.warn('상세 API 호출에 실패해 대체 로직을 확인합니다.', error);
+    const fallbackHouse = getFallbackHouseById(houseId);
+    if (!fallbackHouse) {
+      showNotFound();
+      return;
+    }
+
+    currentHouse = fallbackHouse;
+    const similarHouses = getFallbackApprovedHouses()
+      .filter((item) =>
+        item.id !== fallbackHouse.id &&
+        item.isApproved &&
+        (item.districtId === fallbackHouse.districtId || item.operationType === fallbackHouse.operationType)
+      )
+      .slice(0, 3);
+
+    currentSimilarHouses = similarHouses;
+    renderHouseDetail(fallbackHouse, similarHouses);
+    renderDetailMap(fallbackHouse);
+    setupModalClose('bookingRequestModal');
+  }
+}
+
+function getFallbackApprovedHouses() {
+  if (typeof getAllVacantHouses === 'function') {
+    return getAllVacantHouses().filter((house) => house.isApproved);
+  }
+  if (typeof VACANT_HOUSE_LIST !== 'undefined' && Array.isArray(VACANT_HOUSE_LIST)) {
+    return VACANT_HOUSE_LIST.filter((house) => house.isApproved);
+  }
+  return [];
+}
+
+function getFallbackHouseById(houseId) {
+  return getFallbackApprovedHouses().find((house) => String(house.id) === String(houseId)) || null;
+}
+
+function renderHouseDetail(house, similarHouses = []) {
+  const main = document.getElementById('houseDetailMain');
+  if (!main) return;
+
+  const defaultDetailPhoto = '../assets/images/hero-yeongju.jpg';
+  const primaryPhoto = (typeof getHousePhotoUrl === 'function' ? getHousePhotoUrl(house) : '') || defaultDetailPhoto;
+  const housePhotos = typeof getHousePhotos === 'function' ? getHousePhotos(house) : [];
+  const isWishlisted = getWishlist().includes(house.id);
+  const availablePeriod = house.availablePeriod || '일정 협의';
+  const usagePurpose = Array.isArray(house.usagePurpose) && house.usagePurpose.length
+    ? house.usagePurpose
+    : [DETAIL_OPERATION_LABELS[house.operationType] || '공공 숙박 공간'];
+  const facilities = Array.isArray(house.facilities) && house.facilities.length
+    ? house.facilities
+    : ['기본 설비 점검 완료', '주방 상태 양호', '공공 사용 가능'];
+  const tags = Array.isArray(house.tags) && house.tags.length
+    ? house.tags
+    : [house.districtName, DETAIL_OPERATION_LABELS[house.operationType]].filter(Boolean);
+  const reviewSummary = house.reviewSummary || '공공기관 검토를 거쳐 공개 가능한 빈집으로 등록했습니다. 실제 이용 전 운영 조건과 현장 상태를 다시 확인해 주세요.';
+  const houseName = escapeHtml(house.name || '승인 빈집');
+  const districtName = escapeHtml(house.districtName || '-');
+  const reviews = getHouseReviewsById(house.id);
+  const reviewStats = getHouseReviewStats(reviews);
+  const address = escapeHtml(house.address || '-');
+  const wishlistLabel = isWishlisted ? '찜 해제' : '찜하기';
+
+  main.innerHTML = `
+    <div class="house-detail-page">
+      <div class="house-gallery">
+        ${primaryPhoto ? `<img class="house-gallery__image" src="${primaryPhoto}" alt="${houseName}">` : ''}
+        ${primaryPhoto ? '' : `<span class="house-gallery__emoji">${DETAIL_OPERATION_EMOJIS[house.operationType] || '🏠'}</span>`}
+        ${housePhotos.length > 1 ? `
+          <div class="house-gallery__thumbs">
+            ${housePhotos.slice(0, 5).map((photo) => `
+              <img src="${photo.dataUrl || photo.url || photo.src}" alt="${escapeHtml(photo.name || house.name || '첨부 사진')}">
+            `).join('')}
+          </div>
+        ` : ''}
+        <div class="house-gallery__badge-area">
+          <span class="badge badge--public">공개 확인</span>
+          ${safeBadge(getConditionGradeBadge, house.conditionGrade)}
+          ${safeBadge(getOperationTypeBadge, house.operationType)}
+        </div>
+        <div class="house-gallery__divider"></div>
+      </div>
+
+      <div class="house-detail-layout">
+        <div class="house-detail-info">
+          <div class="house-detail-overview">
+          <nav class="house-breadcrumb" aria-label="경로">
+            <a href="../home/index.html">홈</a>
+            <span class="house-breadcrumb__sep">›</span>
+            <a href="guest-list.html">빈집 목록</a>
+            <span class="house-breadcrumb__sep">›</span>
+            <span class="house-breadcrumb__current">${houseName}</span>
+          </nav>
+
+          <h1 class="house-detail-info__title">${houseName}</h1>
+          <div class="house-detail-info__location">📍 경상북도 영주시 ${districtName} · ${address}</div>
+          <div class="house-detail-info__badges">
+            ${safeBadge(getReviewStatusBadge, house.reviewStatus)}
+            ${safeBadge(getConditionGradeBadge, house.conditionGrade)}
+            ${safeBadge(getOperationTypeBadge, house.operationType)}
+            ${house.isVerified ? '<span class="badge badge--public">검증 완료</span>' : ''}
+          </div>
+          </div>
+
+          <div class="house-detail-section house-detail-section--facts">
+            <h2 class="house-detail-section__title"><span class="section-title-icon">📋</span>기본 정보</h2>
+            <div class="house-info-grid">
+              <div class="house-info-item">
+                <div class="house-info-item__label">위치</div>
+                <div class="house-info-item__value">영주시 ${districtName}</div>
+              </div>
+              <div class="house-info-item">
+                <div class="house-info-item__label">최대 수용 인원</div>
+                <div class="house-info-item__value">${Number(house.maxCapacity || 0)}명</div>
+              </div>
+              <div class="house-info-item">
+                <div class="house-info-item__label">이용 가능 기간</div>
+                <div class="house-info-item__value">${escapeHtml(availablePeriod)}</div>
+              </div>
+              <div class="house-info-item">
+                <div class="house-info-item__label">이용 목적</div>
+                <div class="house-info-item__value">${escapeHtml(usagePurpose.join(', '))}</div>
+              </div>
+              <div class="house-info-item">
+                <div class="house-info-item__label">확인일</div>
+                <div class="house-info-item__value">${formatDateKo(house.approvedAt || house.registeredAt)}</div>
+              </div>
+              <div class="house-info-item">
+                <div class="house-info-item__label">청소 완료</div>
+                <div class="house-info-item__value">${house.isCleaningDone ? '완료' : '사전 확인 필요'}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="house-detail-section house-detail-section--story">
+            <h2 class="house-detail-section__title"><span class="section-title-icon">🏡</span>공간 소개</h2>
+            <p class="house-description-text">${escapeHtml(house.description || '등록된 상세 설명이 없습니다.')}</p>
+          </div>
+
+          <div class="house-detail-section house-detail-section--facilities">
+            <h2 class="house-detail-section__title"><span class="section-title-icon">✨</span>주요 시설</h2>
+            <div class="house-facilities-list">
+              ${facilities.map((facility) => `<span class="house-facility-tag">• ${escapeHtml(facility)}</span>`).join('')}
+            </div>
+          </div>
+
+          <div class="house-detail-section house-detail-section--review">
+            <h2 class="house-detail-section__title"><span class="section-title-icon">🛡️</span>공공기관 검토 결과</h2>
+            <div class="review-panel review-panel--approved">
+              <div class="review-panel__headline">
+                <span class="review-panel__tag">검토 완료</span>
+                <span class="review-panel__title">영주시 공공기관 검토 확인</span>
+              </div>
+              <p class="review-panel__body">${escapeHtml(reviewSummary)}</p>
+            </div>
+
+            <div class="info-panel info-panel--neutral">
+              <div class="info-panel__header">
+                <span class="info-panel__header-icon">📌</span>
+                <span class="info-panel__header-title">상태 등급 안내</span>
+              </div>
+              <div class="info-panel__body">
+                <p class="info-panel__summary">${escapeHtml(getSafeConditionText(house.conditionGrade))}</p>
+                <p class="info-panel__detail">운영 전 최종 점검과 현장 확인 결과에 따라 실제 이용 조건은 조정될 수 있습니다.</p>
+              </div>
+            </div>
+
+            <div class="info-panel info-panel--caution">
+              <div class="info-panel__header">
+                <span class="info-panel__header-icon">⚠️</span>
+                <span class="info-panel__header-title">이용 전 주의사항</span>
+              </div>
+              <div class="info-panel__body">
+                <p class="info-panel__detail">${escapeHtml(getSafeGradeCautionText(house.conditionGrade))}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="house-detail-section house-detail-section--tags">
+            <h2 class="house-detail-section__title"><span class="section-title-icon">#</span>태그</h2>
+            <div class="house-tags-list">
+              ${tags.map((tag) => `<span class="house-tag-item">${escapeHtml(tag)}</span>`).join('')}
+            </div>
+          </div>
+
+          ${renderHouseReviewSection(house, reviews, reviewStats)}
+        </div>
+
+        <div class="booking-sidebar">
+          <div class="booking-card">
+            <div class="booking-card__header">
+              <div class="booking-card__price">${escapeHtml(house.priceRange || '일정 협의')}</div>
+              <div class="booking-card__price-label">영주시 공공기관 확인 빈집</div>
+            </div>
+            <div class="booking-card__body">
+              <div class="booking-card__info-row">
+                <span class="booking-card__info-label">공공데이터 상태</span>
+                <span class="booking-card__info-value">${escapeHtml(getSafeConditionText(house.conditionGrade))}</span>
+              </div>
+              <div class="booking-card__info-row">
+                <span class="booking-card__info-label">운영 유형</span>
+                <span class="booking-card__info-value">${escapeHtml(DETAIL_OPERATION_LABELS[house.operationType] || '정보 없음')}</span>
+              </div>
+              <div class="booking-card__info-row">
+                <span class="booking-card__info-label">최대 인원</span>
+                <span class="booking-card__info-value">${Number(house.maxCapacity || 0)}명</span>
+              </div>
+              <div class="booking-card__info-row">
+                <span class="booking-card__info-label">이용 기간</span>
+                <span class="booking-card__info-value">${escapeHtml(availablePeriod)}</span>
+              </div>
+
+              <button class="btn btn--primary btn--full btn--lg" onclick="openBookingModal()">예약 요청 접수</button>
+              <button class="btn btn--ghost btn--full" id="detailWishlistBtn" onclick="handleDetailWishlist('${escapeAttr(house.id)}')">${wishlistLabel}</button>
+
+              <div class="booking-notice">
+                <span>안내</span>
+                <p>예약 요청은 즉시 확정되지 않습니다.<br>관리자 검토 후 확인 여부를 안내드립니다.</p>
+              </div>
+
+              <div class="booking-location-label">선택한 빈집 위치</div>
+              <div class="booking-location-addr">경상북도 영주시 ${districtName}</div>
+              <div class="booking-map" id="bookingLocationMap"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      ${similarHouses.length > 0 ? `
+        <div class="similar-houses-section">
+          <div class="similar-houses-section__header">
+            <h2 class="similar-houses-section__title">비슷한 영주 빈집</h2>
+          </div>
+          <div class="grid grid--3">
+            ${similarHouses.map((item) => `
+              <a href="guest-detail.html?id=${encodeURIComponent(item.id)}" style="text-decoration:none;color:inherit;">
+                <div class="card">
+                  <div class="card__image-placeholder">${DETAIL_OPERATION_EMOJIS[item.operationType] || '🏠'}</div>
+                  <div class="card__body">
+                    <div style="font-size:var(--font-size-xs);color:var(--color-text-muted);margin-bottom:4px;">📍 영주시 ${escapeHtml(item.districtName || '-')}</div>
+                    <h3 class="card__title">${escapeHtml(item.name || '승인 빈집')}</h3>
+                    <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:8px;">
+                      ${safeBadge(getConditionGradeBadge, item.conditionGrade)}
+                      ${safeBadge(getOperationTypeBadge, item.operationType)}
+                    </div>
+                  </div>
+                </div>
+              </a>
+            `).join('')}
+          </div>
+        </div>
+      ` : ''}
+    </div>
+  `;
+
+  syncDetailWishlistButton();
+  bindHouseReviewEvents(house);
+}
+
+function renderHouseReviewSection(house, reviews, stats) {
+  const currentUser = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
+  const defaultAuthor = currentUser?.name || currentUser?.email || '방문자';
+  const reviewItems = reviews.length
+    ? reviews.map((review) => `
+        <article class="house-review-card">
+          <div class="house-review-card__meta">
+            <div>
+              <div class="house-review-card__author">${escapeHtml(review.author || '방문자')}</div>
+              <div class="house-review-card__date">${escapeHtml(formatDateKo(review.createdAt))}</div>
+            </div>
+            <div class="house-review-card__score-wrap">
+              <span class="house-review-card__score">${renderReviewStars(review.rating)}</span>
+              <span class="house-review-card__rating">${Number(review.rating || 0).toFixed(1)}</span>
+              <span class="house-review-card__recommend ${review.recommended ? 'is-positive' : 'is-neutral'}">
+                ${review.recommended ? '추천해요' : '보통이에요'}
+              </span>
+            </div>
+          </div>
+          <p class="house-review-card__content">${escapeHtml(review.content || '')}</p>
+        </article>
+      `).join('')
+    : `
+        <div class="house-review-empty">
+          아직 등록된 이용 후기가 없습니다. 첫 후기를 남겨 보세요.
+        </div>
+      `;
+
+  return `
+    <section class="house-detail-section house-detail-section--reviews">
+      <div class="house-review-section__header">
+        <div>
+          <h2 class="house-detail-section__title"><span class="section-title-icon">★</span>이용 후기</h2>
+          <p class="house-review-section__subtitle">영주시 승인 빈집을 이용한 뒤 느낀 점과 추천 여부를 자유롭게 남길 수 있습니다.</p>
+        </div>
+        <div class="house-review-summary">
+          <div class="house-review-summary__item">
+            <span class="house-review-summary__label">평균 별점</span>
+            <strong class="house-review-summary__value">${stats.averageLabel}</strong>
+          </div>
+          <div class="house-review-summary__item">
+            <span class="house-review-summary__label">리뷰 수</span>
+            <strong class="house-review-summary__value">${stats.total}건</strong>
+          </div>
+          <div class="house-review-summary__item">
+            <span class="house-review-summary__label">추천</span>
+            <strong class="house-review-summary__value">${stats.recommended}명</strong>
+          </div>
+        </div>
+      </div>
+
+      <form class="house-review-form" id="houseReviewForm">
+        <div class="house-review-form__grid">
+          <label class="house-review-form__field">
+            <span class="house-review-form__label">작성자</span>
+            <input type="text" class="form-control" id="houseReviewAuthor" value="${escapeAttr(defaultAuthor)}" placeholder="이름 또는 닉네임">
+          </label>
+          <label class="house-review-form__field">
+            <span class="house-review-form__label">별점</span>
+            <select class="form-select" id="houseReviewRating">
+              <option value="5">5점</option>
+              <option value="4">4점</option>
+              <option value="3">3점</option>
+              <option value="2">2점</option>
+              <option value="1">1점</option>
+            </select>
+          </label>
+          <label class="house-review-form__field">
+            <span class="house-review-form__label">추천 여부</span>
+            <select class="form-select" id="houseReviewRecommend">
+              <option value="yes">추천해요</option>
+              <option value="no">보통이에요</option>
+            </select>
+          </label>
+        </div>
+        <label class="house-review-form__field house-review-form__field--full">
+          <span class="house-review-form__label">리뷰 내용</span>
+          <textarea class="form-control" id="houseReviewContent" rows="4" placeholder="실제로 느낀 장점, 아쉬운 점, 추천 이유를 자유롭게 적어 주세요."></textarea>
+        </label>
+        <div class="house-review-form__actions">
+          <button type="submit" class="btn btn--primary">리뷰 등록</button>
+        </div>
+      </form>
+
+      <div class="house-review-list">
+        ${reviewItems}
+      </div>
+    </section>
+  `;
+}
+
+function getStoredHouseReviews() {
+  try {
+    const raw = localStorage.getItem(HOUSE_REVIEW_STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    console.warn('리뷰 저장 데이터를 불러오지 못했습니다.', error);
+    return [];
+  }
+}
+
+function getHouseReviewsById(houseId) {
+  return getStoredHouseReviews()
+    .filter((review) => String(review.houseId) === String(houseId))
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+}
+
+function getHouseReviewStats(reviews) {
+  const total = reviews.length;
+  const average = total
+    ? reviews.reduce((sum, review) => sum + Number(review.rating || 0), 0) / total
+    : 0;
+  const recommended = reviews.filter((review) => review.recommended).length;
+
+  return {
+    total,
+    average,
+    averageLabel: total ? average.toFixed(1) : '0.0',
+    recommended,
+  };
+}
+
+function saveHouseReview(review) {
+  const reviews = getStoredHouseReviews();
+  reviews.unshift(review);
+  localStorage.setItem(HOUSE_REVIEW_STORAGE_KEY, JSON.stringify(reviews));
+}
+
+function renderReviewStars(rating) {
+  const normalized = Math.max(1, Math.min(5, Math.round(Number(rating) || 0)));
+  return `${'★'.repeat(normalized)}${'☆'.repeat(5 - normalized)}`;
+}
+
+function bindHouseReviewEvents(house) {
+  const form = document.getElementById('houseReviewForm');
+  if (!form) return;
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    const author = document.getElementById('houseReviewAuthor')?.value.trim() || '방문자';
+    const rating = Number(document.getElementById('houseReviewRating')?.value || 5);
+    const recommended = document.getElementById('houseReviewRecommend')?.value !== 'no';
+    const content = document.getElementById('houseReviewContent')?.value.trim() || '';
+
+    if (!content) {
+      showToast?.('리뷰 내용을 입력해 주세요.', 'warning');
+      return;
+    }
+
+    saveHouseReview({
+      id: `review-${Date.now()}`,
+      houseId: house.id,
+      author,
+      rating,
+      recommended,
+      content,
+      createdAt: new Date().toISOString(),
+    });
+
+    renderHouseDetail(currentHouse, currentSimilarHouses);
+    renderDetailMap(currentHouse);
+
+    const reviewSection = document.querySelector('.house-detail-section--reviews');
+    reviewSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    showToast?.('리뷰가 등록되었습니다.', 'success');
+  });
+}
+
+function showNotFound() {
+  const main = document.getElementById('houseDetailMain');
+  if (!main) return;
+
+  main.innerHTML = `
+    <div class="access-denied">
+      <div class="access-denied__icon">🏠</div>
+      <h2 class="access-denied__title">빈집 정보를 찾을 수 없습니다</h2>
+      <p class="access-denied__desc">해당 빈집이 존재하지 않거나 아직 공개 승인되지 않았습니다.</p>
+      <a href="guest-list.html" class="btn btn--primary">목록으로 돌아가기</a>
+    </div>
+  `;
+}
+
+function openBookingModal() {
+  if (!isLoggedIn()) {
+    showToast('로그인 후 예약 요청이 가능합니다.', 'warning');
+    setTimeout(() => { window.location.href = '../auth/login.html'; }, 1000);
+    return;
+  }
+  syncBookingDatesFromUrl();
+  openModal('bookingRequestModal');
+}
+
+function submitBookingRequest() {
+  const checkIn = document.getElementById('bookingCheckIn').value;
+  const checkOut = document.getElementById('bookingCheckOut').value;
+  const guests = document.getElementById('bookingGuests').value;
+  const purpose = document.getElementById('bookingPurpose')?.value.trim() || '';
+  const user = getCurrentUser();
+
+  if (!checkIn || !checkOut) {
+    showToast('체크인과 체크아웃 날짜를 선택해 주세요.', 'warning');
+    return;
+  }
+
+  if (new Date(checkIn) >= new Date(checkOut)) {
+    showToast('체크아웃은 체크인 이후여야 합니다.', 'warning');
+    return;
+  }
+
+  if (!currentHouse || !user) {
+    showToast('예약 요청에 필요한 정보를 찾을 수 없습니다.', 'warning');
+    return;
+  }
+
+  if (!isBookingRangeAvailable(currentHouse.id, checkIn, checkOut)) {
+    showToast('선택한 날짜에는 이미 예약 요청이 있어 다른 빈집을 확인해 주세요.', 'warning');
+    return;
+  }
+
+  const bookingOwner = resolveBookingOwner(currentHouse);
+
+  if (typeof saveBookingRequest === 'function') {
+    saveBookingRequest({
+      houseId: currentHouse.id,
+      houseName: currentHouse.name,
+      districtId: currentHouse.districtId || '',
+      districtName: currentHouse.districtName || '',
+      ownerType: currentHouse.ownerType || 'private',
+      ownerUserId: bookingOwner.ownerUserId || '',
+      ownerEmail: bookingOwner.ownerEmail || '',
+      ownerName: bookingOwner.ownerName || '',
+      checkIn,
+      checkOut,
+      purpose,
+      guestCount: Number(guests || 1),
+      guests: Number(guests || 1),
+      guestUserId: user.id || '',
+      guestEmail: user.email || '',
+      guestName: user.name || 'user',
+    });
+  }
+
+  closeModal('bookingRequestModal');
+  showToast('예약 요청이 접수되었습니다. 검토 후 안내드리겠습니다.', 'success');
+}
+
+function resolveBookingOwner(house) {
+  const directOwner = {
+    ownerUserId: house?.ownerUserId || '',
+    ownerEmail: house?.ownerEmail || '',
+    ownerName: house?.ownerName || '',
+  };
+
+  if (directOwner.ownerUserId || directOwner.ownerEmail || directOwner.ownerName) {
+    return directOwner;
+  }
+
+  const fallbackHouse = typeof getVacantHouseById === 'function' ? getVacantHouseById(house?.id) : null;
+  return {
+    ownerUserId: fallbackHouse?.ownerUserId || '',
+    ownerEmail: fallbackHouse?.ownerEmail || '',
+    ownerName: fallbackHouse?.ownerName || '',
+  };
+}
+
+function syncBookingDatesFromUrl() {
+  const params = getUrlParams();
+  const checkInField = document.getElementById('bookingCheckIn');
+  const checkOutField = document.getElementById('bookingCheckOut');
+
+  if (checkInField && params.checkIn && !checkInField.value) {
+    checkInField.value = params.checkIn;
+  }
+
+  if (checkOutField && params.checkOut && !checkOutField.value) {
+    checkOutField.value = params.checkOut;
+  }
+}
+
+function isBookingRangeAvailable(houseId, checkIn, checkOut) {
+  if (typeof getAllBookingRequests !== 'function') {
+    return true;
+  }
+
+  const requestedStart = new Date(checkIn);
+  const requestedEnd = new Date(checkOut);
+  const nonBlockingStatuses = new Set(['rejected', 'cancelled', 'withdrawn']);
+
+  return !getAllBookingRequests().some((booking) => {
+    if (!booking) return false;
+    if (String(booking.houseId || '') !== String(houseId)) return false;
+
+    const status = String(booking.status || '').trim().toLowerCase();
+    if (nonBlockingStatuses.has(status)) return false;
+
+    const bookingStart = new Date(booking.checkIn);
+    const bookingEnd = new Date(booking.checkOut);
+    if (Number.isNaN(bookingStart.getTime()) || Number.isNaN(bookingEnd.getTime())) return false;
+
+    return bookingStart < requestedEnd && bookingEnd > requestedStart;
+  });
+}
+
+function handleDetailWishlist(houseId) {
+  if (!isLoggedIn()) {
+    showToast('로그인 후 찜 기능을 이용할 수 있습니다.', 'warning');
+    setTimeout(() => { window.location.href = '../auth/login.html'; }, 300);
+    return;
+  }
+
+  const added = toggleWishlist(houseId);
+  if (added === null) return;
+
+  const button = document.getElementById('detailWishlistBtn');
+  if (button) {
+    button.textContent = added ? '찜 해제' : '찜하기';
+  }
+}
+
+function syncDetailWishlistButton() {
+  if (!currentHouse) return;
+
+  const button = document.getElementById('detailWishlistBtn');
+  if (!button) return;
+
+  const isWishlisted = getWishlist().includes(currentHouse.id);
+  button.textContent = isWishlisted ? '찜 해제' : '찜하기';
+}
+
+function safeBadge(badgeFn, value) {
+  if (typeof badgeFn === 'function') {
+    return badgeFn(value);
+  }
+  return '';
+}
+
+function getSafeConditionText(grade) {
+  if (typeof getConditionGradeText === 'function') {
+    return getConditionGradeText(grade);
+  }
+  return grade || '확인 필요';
+}
+
+function getSafeGradeCautionText(grade) {
+  if (typeof getGradeCautionText === 'function') {
+    return getGradeCautionText(grade);
+  }
+  return '실제 이용 전 현장 상태와 운영 조건을 다시 확인해 주세요.';
+}
+
+function formatDateKo(dateValue) {
+  if (!dateValue) return '-';
+  const date = new Date(dateValue);
+  if (Number.isNaN(date.getTime())) return String(dateValue);
+  return date.toLocaleDateString('ko-KR');
+}
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function escapeAttr(value) {
+  return escapeHtml(value);
+}

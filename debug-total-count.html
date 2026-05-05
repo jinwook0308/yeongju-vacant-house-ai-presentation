@@ -1,0 +1,12 @@
+
+<!doctype html><meta charset="utf-8"><body>
+<script src="./data/sample-data.js"></script>
+<script src="./common/common.js"></script>
+<script>
+const houses = (typeof getAllVacantHouses==='function'?getAllVacantHouses():[]);
+const approved = houses.filter(h => h && h.isApproved && String(h.reviewStatus||'').toLowerCase()==='approved').length;
+const requests = (typeof getAllRegistrationRequests==='function'?getAllRegistrationRequests():[]);
+const approvedReq = requests.filter(r => String(r.reviewStatus||'').toLowerCase()==='approved').length;
+const result = {houses: houses.length, approved, requests: requests.length, approvedRequests: approvedReq};
+document.body.textContent = JSON.stringify(result);
+</script></body>

@@ -1,0 +1,1945 @@
+/**
+ * home.css
+ * 영주시 공공형 빈집 활용 플랫폼 - 메인 페이지 전용 스타일
+ * 한국관광공사 스타일의 프리미엄 랜딩 페이지
+ */
+
+/* ============================================================
+   히어로 배너
+   ============================================================ */
+.hero-banner {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background-image:
+    linear-gradient(160deg, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.18)),
+    url('../assets/images/hero-yeongju.jpg');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  padding-top: calc(var(--header-height) + 24px);
+}
+
+.hero-banner__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: rgba(0, 0, 0, 0);
+}
+
+.hero-banner__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0);
+  z-index: 1;
+}
+
+.hero-banner__bg-pattern {
+  position: absolute;
+  inset: 0;
+  background-image: none;
+  z-index: 1;
+}
+
+.hero-banner__content {
+  position: relative;
+  z-index: 2;
+  width: min(100%, 960px);
+  margin: 0 auto;
+  padding:
+    clamp(120px, 14vw, 170px)
+    clamp(16px, 4vw, 32px)
+    clamp(72px, 9vw, 96px);
+  text-align: center;
+  transform: none;
+}
+
+.hero-banner__badge {
+  background-color: rgba(139, 105, 20, 0.3);
+  border: 1px solid rgba(139, 105, 20, 0.6);
+  color: #faf8f3;
+}
+
+.hero-banner__title {
+  font-size: clamp(2.2rem, 5vw, 4.6rem);
+  line-height: 1.12;
+  margin-bottom: clamp(16px, 2vw, 24px);
+}
+
+.hero-banner__title-accent {
+  color: #c9a84c;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.hero-banner__desc {
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  line-height: 1.8;
+  margin-bottom: clamp(20px, 3vw, 32px);
+}
+
+
+.hero-banner__actions .btn {
+  min-width: 210px;
+  border-radius: 12px;
+}
+
+.hero-banner__actions .btn.btn--primary {
+  background-color: #8b6914;
+  color: #fff;
+  border-color: #8b6914;
+  box-shadow: 0 12px 24px rgba(139, 105, 20, 0.3);
+}
+
+.hero-banner__actions .btn.btn--primary:hover {
+  background-color: #5a4209;
+  border-color: #5a4209;
+}
+
+.hero-banner__actions .btn.btn--secondary {
+  background-color: transparent;
+  color: #fff;
+  border-color: rgba(255,255,255,0.5);
+}
+
+.hero-banner__actions .btn.btn--secondary:hover {
+  background-color: rgba(255,255,255,0.15);
+  border-color: #fff;
+}
+
+.hero-banner__stat-value {
+  color: #ffffff;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+  font-weight: 800;
+}
+
+.hero-banner__stat-label {
+  color: #ffffff;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+}
+
+
+.hero-banner__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-md);
+  background-color: rgba(201, 168, 76, 0.2);
+  border: 1px solid rgba(201, 168, 76, 0.4);
+  border-radius: 20px;
+  color: var(--color-primary-light);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--spacing-lg);
+}
+
+.hero-banner__title {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1.2;
+  margin-bottom: var(--spacing-lg);
+  letter-spacing: -0.02em;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.45);
+}
+
+.hero-banner__title-accent {
+  color: #f4e28d;
+  position: relative;
+  text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.45);
+}
+
+.hero-banner__desc {
+  font-size: var(--font-size-md);
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1.8;
+  margin-bottom: var(--spacing-xl);
+  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
+}
+
+.hero-banner__actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+  margin-bottom: var(--spacing-2xl);
+}
+
+.hero-banner__stats {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-xl);
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.hero-banner__ai-btn {
+  background-color: rgba(250, 248, 243, 0.1);
+  border-color: rgba(250, 248, 243, 0.3);
+  color: #faf8f3;
+}
+
+.hero-banner__ai-btn:hover {
+  background-color: rgba(250, 248, 243, 0.2);
+  color: #faf8f3;
+}
+
+.hero-banner__stats {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xl);
+  flex-wrap: wrap;
+}
+
+.hero-banner__stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.15);
+  padding: 12px 20px;
+  border-radius: 8px;
+}
+
+.hero-banner__stat-value {
+  font-size: var(--font-size-2xl);
+  font-weight: 800;
+  color: var(--color-primary-light);
+  line-height: 1;
+}
+
+.hero-banner__stat-label {
+  font-size: var(--font-size-xs);
+  color: rgba(255, 255, 255, 0.95);
+  margin-top: 4px;
+  opacity: 1;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.55);
+}
+
+.hero-banner__stat-divider {
+  width: 1px;
+  height: 40px;
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.hero-banner__scroll-hint {
+  position: absolute;
+  bottom: var(--spacing-xl);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  color: rgba(250, 248, 243, 0.7);
+  font-size: var(--font-size-xs);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.hero-banner__scroll-arrow {
+  width: 20px;
+  height: 20px;
+  border-right: 2px solid rgba(250, 248, 243, 0.7);
+  border-bottom: 2px solid rgba(250, 248, 243, 0.7);
+  transform: rotate(45deg);
+  animation: scrollBounce 1.5s ease-in-out infinite;
+}
+
+@keyframes scrollBounce {
+  0%, 100% { transform: rotate(45deg) translateY(0); }
+  50%       { transform: rotate(45deg) translateY(6px); }
+}
+
+/* ============================================================
+   서비스 흐름 섹션
+   ============================================================ */
+.home-page .section:not(.hero-banner) {
+  position: relative;
+  overflow: hidden;
+}
+
+.home-page .section--layered {
+  border-top: 1px solid rgba(154, 130, 80, 0.12);
+  border-bottom: 1px solid rgba(154, 130, 80, 0.08);
+}
+
+.home-page .section--layered::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: min(1180px, calc(100% - 40px));
+  height: 1px;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, transparent, rgba(180, 146, 63, 0.45), transparent);
+}
+
+.home-page .section__header {
+  text-align: left;
+  width: min(100%, 940px);
+}
+
+.home-page .section__title {
+  text-wrap: balance;
+}
+
+.home-page .section__description {
+  max-width: 760px;
+}
+
+.service-flow__steps {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--spacing-lg);
+  flex-wrap: wrap;
+}
+
+.service-flow__step {
+  flex: 1;
+  min-width: 180px;
+  max-width: 220px;
+  text-align: center;
+  padding: var(--spacing-xl) var(--spacing-lg);
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-card);
+  transition: all var(--transition-base);
+  isolation: isolate;
+}
+
+.service-flow__step[data-link-href],
+.value-card[data-link-href] {
+  cursor: pointer;
+}
+
+.service-flow__step[data-link-href]:focus-visible,
+.value-card[data-link-href]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(201, 168, 76, 0.18), var(--shadow-md);
+}
+
+.service-flow__step::after,
+.approved-house-card::after,
+.role-card::after,
+.value-card::after {
+  content: '자세히 보기';
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  margin-top: 14px;
+  padding: 0 12px;
+  border-radius: 999px;
+  color: #765817;
+  background: rgba(201, 168, 76, 0.12);
+  border: 1px solid rgba(201, 168, 76, 0.22);
+  font-size: 0.75rem;
+  font-weight: 800;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+.service-flow__step:hover::after,
+.approved-house-card:hover::after,
+.role-card:hover::after,
+.value-card:hover::after {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.service-flow__step:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-primary-light);
+}
+
+.service-flow__step-icon {
+  font-size: 2.5rem;
+  margin-bottom: var(--spacing-sm);
+}
+
+.service-flow__step-num {
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  color: var(--color-primary);
+  letter-spacing: 0.1em;
+  margin-bottom: var(--spacing-sm);
+}
+
+.service-flow__step-title {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.service-flow__step-desc {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.service-flow__arrow {
+  font-size: 1.5rem;
+  color: var(--color-primary-light);
+  align-self: center;
+  flex-shrink: 0;
+  margin-top: -20px;
+}
+
+/* ============================================================
+   승인 빈집 미리보기 카드
+   ============================================================ */
+.approved-house-card {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  transition: all var(--transition-base);
+  text-decoration: none;
+  display: block;
+  color: inherit;
+}
+
+.approved-house-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  color: inherit;
+}
+
+.approved-house-card__image-wrap {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+}
+
+.approved-house-card__image-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--color-bg-section) 0%, #e8e0d0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3.5rem;
+}
+
+.approved-house-card__badges {
+  position: absolute;
+  top: var(--spacing-sm);
+  left: var(--spacing-sm);
+  display: flex;
+  gap: var(--spacing-xs);
+  flex-wrap: wrap;
+}
+
+.approved-house-card__body {
+  padding: var(--spacing-lg);
+}
+
+.approved-house-card__location {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-xs);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.approved-house-card__name {
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.approved-house-card__desc {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: var(--spacing-md);
+}
+
+.approved-house-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.approved-house-card__capacity {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.approved-house-card__price {
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+/* ============================================================
+   AI 추천 배너
+   ============================================================ */
+.ai-recommendation-banner {
+  background: linear-gradient(135deg, #1a1208 0%, #2c1e0a 100%);
+  color: white;
+}
+
+.ai-recommendation-banner .section__eyebrow {
+  background-color: rgba(201, 168, 76, 0.2);
+  border-color: rgba(201, 168, 76, 0.3);
+  color: var(--color-primary-light);
+}
+
+.ai-recommendation-banner__inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-3xl);
+  align-items: center;
+}
+
+.ai-recommendation-banner__title {
+  font-size: var(--font-size-2xl);
+  font-weight: 800;
+  color: #faf8f3;
+  line-height: 1.3;
+  margin-bottom: var(--spacing-lg);
+}
+
+.ai-recommendation-banner__title-accent {
+  color: var(--color-primary-light);
+}
+
+.ai-recommendation-banner__desc {
+  font-size: var(--font-size-base);
+  color: rgba(250, 248, 243, 0.7);
+  line-height: 1.7;
+  margin-bottom: var(--spacing-xl);
+}
+
+.ai-chat-preview {
+  background-color: rgba(250, 248, 243, 0.05);
+  border: 1px solid rgba(250, 248, 243, 0.1);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.ai-chat-preview__bubble {
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+  max-width: 85%;
+}
+
+.ai-chat-preview__bubble--bot {
+  background-color: rgba(201, 168, 76, 0.15);
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  color: rgba(250, 248, 243, 0.9);
+  align-self: flex-start;
+}
+
+.ai-chat-preview__bubble--user {
+  background-color: rgba(250, 248, 243, 0.1);
+  border: 1px solid rgba(250, 248, 243, 0.15);
+  color: rgba(250, 248, 243, 0.8);
+  align-self: flex-end;
+}
+
+/* ============================================================
+   역할별 카드
+   ============================================================ */
+.role-card {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-card);
+  transition: all var(--transition-base);
+  position: relative;
+}
+
+.role-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.role-card--featured {
+  background: linear-gradient(160deg, var(--color-bg-card) 0%, rgba(201, 168, 76, 0.05) 100%);
+  border-color: var(--color-primary-light);
+  box-shadow: 0 4px 20px rgba(139, 105, 20, 0.15);
+}
+
+.role-card__badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+  color: white;
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  padding: 4px 16px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.role-card__icon {
+  font-size: 2.5rem;
+  margin-bottom: var(--spacing-md);
+}
+
+.role-card__title {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+.role-card__desc {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+  margin-bottom: var(--spacing-lg);
+}
+
+.role-card__features {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-xl);
+}
+
+.role-card__features li {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* ============================================================
+   지역 그리드
+   ============================================================ */
+.district-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--spacing-md);
+}
+
+.district-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-md);
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  text-decoration: none;
+  color: inherit;
+}
+
+.district-chip:hover {
+  border-color: var(--color-primary-light);
+  background-color: rgba(201, 168, 76, 0.05);
+  transform: translateY(-2px);
+  color: var(--color-primary);
+}
+
+.district-chip__name {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.district-chip__count {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* ============================================================
+   협력업체 배너
+   ============================================================ */
+.vendor-banner__inner {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--spacing-2xl);
+  align-items: center;
+}
+
+.vendor-banner__title {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+.vendor-banner__desc {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+  margin-bottom: var(--spacing-lg);
+}
+
+.vendor-banner__types {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+  margin-bottom: var(--spacing-xl);
+}
+
+.vendor-type-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: var(--spacing-xs) var(--spacing-md);
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.vendor-banner__stats {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  min-width: 160px;
+}
+
+.vendor-stat {
+  text-align: center;
+  padding: var(--spacing-lg);
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-card);
+}
+
+.vendor-stat__value {
+  font-size: var(--font-size-2xl);
+  font-weight: 800;
+  color: var(--color-primary);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.vendor-stat__label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* ============================================================
+   공공적 가치 카드
+   ============================================================ */
+.value-card {
+  text-align: center;
+  padding: var(--spacing-xl);
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-card);
+  transition: all var(--transition-base);
+}
+
+.value-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-primary-light);
+}
+
+.value-card__icon {
+  font-size: 2.5rem;
+  margin-bottom: var(--spacing-md);
+}
+
+.value-card__title {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.value-card__desc {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+/* ============================================================
+   스크롤 애니메이션
+   ============================================================ */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.animate-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================================
+   반응형
+   ============================================================ */
+@media (max-width: 1024px) {
+  .ai-recommendation-banner__inner {
+    grid-template-columns: 1fr;
+  }
+
+  .district-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .vendor-banner__inner {
+    grid-template-columns: 1fr;
+  }
+
+  .vendor-banner__stats {
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-banner {
+    min-height: 100vh;
+  }
+
+  .hero-banner__content {
+    padding: 100px var(--spacing-md) 60px;
+  }
+
+  .hero-banner__stats {
+    gap: var(--spacing-lg);
+  }
+
+  .service-flow__steps {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .service-flow__arrow {
+    transform: rotate(90deg);
+    margin: 0;
+  }
+
+  .service-flow__step {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .district-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .district-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+.hero-banner__actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(10px, 2vw, 16px);
+  flex-wrap: wrap;
+  margin-bottom: clamp(24px, 4vw, 40px);
+}
+
+
+.hero-banner__actions .btn {
+  min-width: clamp(160px, 22vw, 210px);
+}
+
+}
+
+/* ============================================================
+   Home Premium Upgrade Overrides
+   ============================================================ */
+.home-page {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(205, 168, 84, 0.08) 0, rgba(205, 168, 84, 0) 38%),
+    radial-gradient(circle at 100% 100%, rgba(36, 43, 64, 0.08) 0, rgba(36, 43, 64, 0) 40%),
+    var(--color-bg-base);
+}
+
+.home-page .section {
+  position: relative;
+  padding: clamp(70px, 8vw, 106px) 0;
+}
+
+.home-page .section--layered::before {
+  content: none;
+  position: absolute;
+  inset: 24px clamp(18px, 4vw, 42px);
+  border: none;
+  border-radius: 26px;
+  box-shadow: none;
+  pointer-events: none;
+}
+
+.home-page .section--bg {
+  background: #ffffff;
+}
+
+.home-page .section + .section {
+  border-top: 1.5px solid #d8c8ad;
+  box-shadow:
+    0 4px 12px rgba(92, 74, 43, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 14px 18px -18px rgba(92, 74, 43, 0.35);
+}
+
+.home-page .section + .section::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: linear-gradient(180deg, rgba(124, 101, 59, 0.12), rgba(124, 101, 59, 0));
+  pointer-events: none;
+}
+
+.home-page #serviceFlow {
+  background: linear-gradient(180deg, #fdfaf3 0%, #f4ede1 100%);
+}
+
+.home-page #approvedHousesPreview {
+  background: #ffffff;
+}
+
+.home-page #dataBasisNotice {
+  background: linear-gradient(180deg, #f8f3e8 0%, #ebe2d2 100%);
+}
+
+.home-page #roleServices {
+  background: #ffffff;
+}
+
+.home-page #districtIntro {
+  background: linear-gradient(180deg, #f7f2e8 0%, #ebe1d1 100%);
+}
+
+.home-page #vendorBanner {
+  background: #ffffff;
+}
+
+.home-page #publicValue {
+  background: linear-gradient(180deg, #f8f3e9 0%, #ece2d3 100%);
+}
+
+.home-page .section__header {
+  margin-bottom: clamp(34px, 5vw, 56px);
+}
+
+.home-page .section__eyebrow {
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: linear-gradient(145deg, rgba(139, 105, 20, 0.15), rgba(139, 105, 20, 0.05));
+  border-color: rgba(139, 105, 20, 0.3);
+  color: #6f5414;
+}
+
+.home-page .section__title {
+  max-width: 780px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.26;
+  letter-spacing: -0.024em;
+}
+
+.home-page .section__description {
+  max-width: 740px;
+  line-height: 1.86;
+  font-size: clamp(0.98rem, 1.6vw, 1.07rem);
+}
+
+.home-page .section__description-line {
+  display: block;
+}
+
+.hero-banner {
+  min-height: 100vh;
+  align-items: flex-start;
+  padding-top: calc(var(--header-height) + 6px);
+  background-image:
+    radial-gradient(circle at 16% 20%, rgba(215, 180, 90, 0.22) 0%, rgba(215, 180, 90, 0) 40%),
+    linear-gradient(120deg, rgba(9, 14, 26, 0.74) 0%, rgba(11, 15, 26, 0.4) 50%, rgba(12, 15, 22, 0.72) 100%),
+    url('../assets/images/hero-yeongju.jpg');
+}
+.hero-banner__overlay {
+  background:
+    linear-gradient(180deg, rgba(5, 7, 12, 0.12) 0%, rgba(5, 7, 12, 0.44) 100%);
+}
+
+.hero-banner__bg-pattern {
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.03) 0,
+      rgba(255, 255, 255, 0.03) 1px,
+      rgba(255, 255, 255, 0) 1px,
+      rgba(255, 255, 255, 0) 88px
+    );
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0) 100%);
+}
+
+.hero-banner__content {
+  max-width: 1060px;
+  padding: clamp(72px, 9vh, 108px) 30px 48px;
+}
+
+.hero-banner__badge {
+  margin-bottom: 22px;
+  color: #f8efcf;
+  background: rgba(104, 81, 28, 0.4);
+  border-color: rgba(228, 195, 114, 0.56);
+  backdrop-filter: blur(8px);
+}
+
+.hero-banner__title {
+  max-width: 860px;
+  margin: 0 auto 22px;
+  font-size: clamp(2.7rem, 5.8vw, 5rem);
+  line-height: 1.06;
+  letter-spacing: -0.028em;
+  text-wrap: balance;
+}
+
+.hero-banner__title-line {
+  display: block;
+  margin-top: 8px;
+  color: #fffaf0;
+}
+
+.hero-banner__title-accent {
+  color: #d7b45a;
+}
+
+.hero-banner__desc {
+  max-width: 760px;
+  margin: 0 auto 20px;
+  font-size: clamp(1.03rem, 1.85vw, 1.2rem);
+  line-height: 1.8;
+  color: rgba(250, 247, 239, 0.96);
+}
+
+.hero-banner__desc-line {
+  display: block;
+}
+
+.hero-banner__trustline {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.hero-banner__trust-item {
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+  color: #f0e5c5;
+  background: rgba(20, 26, 40, 0.52);
+  border: 1px solid rgba(231, 196, 114, 0.38);
+}
+
+.hero-banner__actions {
+  margin-bottom: 30px;
+}
+
+.hero-banner__actions .btn {
+  min-width: 224px;
+  padding: 0.93rem 1.95rem;
+  border-radius: 14px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.hero-banner__actions .btn.btn--primary {
+  background: linear-gradient(135deg, #8f6b1e 0%, #cda854 100%);
+  border-color: rgba(245, 221, 154, 0.4);
+  box-shadow:
+    0 15px 28px rgba(58, 42, 11, 0.38),
+    inset 0 1px 0 rgba(255, 246, 218, 0.35);
+}
+
+.hero-banner__actions .btn.btn--secondary {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.06));
+  border-color: rgba(246, 241, 224, 0.62);
+  color: #fffdf7;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.hero-banner__stats-panel {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 18px 22px;
+  border-radius: 18px;
+  background: linear-gradient(145deg, rgba(11, 15, 24, 0.7), rgba(15, 19, 30, 0.44));
+  border: 1px solid rgba(236, 209, 141, 0.3);
+  box-shadow: 0 20px 42px rgba(5, 7, 12, 0.38);
+  backdrop-filter: blur(9px);
+}
+
+.hero-banner__stats-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  color: #f0e5c1;
+  font-size: 0.86rem;
+}
+
+.hero-banner__stats-head small {
+  color: rgba(235, 225, 200, 0.72);
+  font-size: 0.73rem;
+}
+
+.hero-banner__stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  align-items: stretch;
+}
+
+
+.hero-banner__stat {
+  min-width: 0;
+  width: 100%;
+  padding: 14px 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  text-align: center;
+}
+
+.hero-banner__stat-value {
+  font-size: clamp(1.6rem, 2.6vw, 2rem);
+  color: #f9e8b1;
+  letter-spacing: -0.02em;
+}
+
+.hero-banner__stat-label {
+  margin-top: 7px;
+  color: rgba(253, 249, 239, 0.94);
+  font-size: 0.78rem;
+}
+
+.hero-banner__stat-divider {
+  display: none;
+}
+
+.hero-banner__scroll-hint {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(18px, 3vw, 28px);
+  transform: translateX(-50%);
+}
+
+.hero-banner__scroll-arrow {
+  width: 14px;
+  height: 14px;
+  border-right-color: rgba(255, 239, 201, 0.92);
+  border-bottom-color: rgba(255, 239, 201, 0.92);
+}
+
+.service-flow__summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 26px;
+}
+
+.service-flow__summary-item {
+  padding: 17px 18px;
+  background: linear-gradient(180deg, rgba(255, 253, 247, 0.98), rgba(247, 240, 229, 0.95));
+  border: 1px solid rgba(139, 105, 20, 0.18);
+  border-radius: 14px;
+  box-shadow: 0 10px 20px rgba(44, 36, 22, 0.08);
+}
+
+.service-flow__summary-item h3 {
+  font-size: 0.98rem;
+  color: #3a2f1f;
+  margin-bottom: 4px;
+}
+
+.service-flow__summary-item p {
+  font-size: 0.87rem;
+  line-height: 1.62;
+  color: #605444;
+}
+
+.service-flow__step {
+  border-radius: 16px;
+  border-color: rgba(139, 105, 20, 0.14);
+  background: linear-gradient(180deg, #fffdf7 0%, #fcf7ee 100%);
+}
+
+.service-flow__step-title {
+  line-height: 1.4;
+}
+
+.approved-houses-preview__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 26px;
+  padding: 16px 18px;
+  border: 1px solid rgba(130, 110, 69, 0.2);
+  border-radius: 14px;
+  background: linear-gradient(145deg, rgba(255, 254, 250, 0.96), rgba(246, 238, 224, 0.96));
+}
+
+.approved-houses-preview__kpi {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.approved-houses-preview__kpi strong {
+  font-size: clamp(1.4rem, 2.4vw, 2rem);
+  color: #7b5d17;
+  letter-spacing: -0.03em;
+}
+
+.approved-houses-preview__kpi span {
+  font-size: 0.9rem;
+  color: #5f5342;
+}
+
+.approved-houses-preview__meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.approved-houses-preview__meta span {
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(124, 102, 52, 0.1);
+  border: 1px solid rgba(124, 102, 52, 0.2);
+  color: #614f2b;
+  font-size: 0.78rem;
+}
+
+.approved-house-card {
+  border-radius: 16px;
+  border-color: rgba(130, 110, 69, 0.2);
+  box-shadow: 0 14px 26px rgba(41, 33, 20, 0.11);
+}
+
+.approved-house-card__body {
+  padding: 18px;
+}
+
+.approved-house-card__name {
+  line-height: 1.4;
+}
+
+.data-basis-notice__cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.data-basis-notice__card {
+  padding: 18px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #fffdf8 0%, #f8f2e6 100%);
+  border: 1px solid rgba(126, 107, 67, 0.2);
+  box-shadow: 0 8px 18px rgba(44, 36, 22, 0.08);
+}
+
+.data-basis-notice__card h3 {
+  font-size: 1rem;
+  margin-bottom: 5px;
+  color: #3a2e1f;
+}
+
+.data-basis-notice__card p {
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: #5a4f41;
+}
+
+.ai-recommendation-banner {
+  background:
+    radial-gradient(circle at 90% 15%, rgba(204, 168, 85, 0.18), rgba(204, 168, 85, 0) 45%),
+    linear-gradient(128deg, #111a2a 0%, #1f2430 46%, #251a0d 100%);
+}
+
+.ai-recommendation-banner__inner {
+  gap: clamp(28px, 4vw, 48px);
+}
+
+.ai-recommendation-banner__title {
+  max-width: 560px;
+  line-height: 1.34;
+  letter-spacing: -0.018em;
+}
+
+.ai-recommendation-banner__feature-list {
+  display: grid;
+  gap: 7px;
+  margin: 0 0 22px;
+}
+
+.ai-recommendation-banner__feature-list li {
+  position: relative;
+  padding-left: 16px;
+  font-size: 0.9rem;
+  color: rgba(250, 248, 240, 0.9);
+}
+
+.ai-recommendation-banner__feature-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.64em;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #d7b45a;
+}
+
+.ai-chat-preview {
+  border-radius: 18px;
+  box-shadow: 0 18px 38px rgba(8, 11, 18, 0.36);
+}
+
+.role-card {
+  border-radius: 16px;
+  border-color: rgba(130, 110, 69, 0.18);
+  background: linear-gradient(180deg, #fffdf8 0%, #fdf8ef 100%);
+}
+
+.role-card__title {
+  line-height: 1.4;
+}
+
+.district-intro__summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.district-intro__summary > div {
+  text-align: center;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(129, 109, 69, 0.2);
+  background: linear-gradient(180deg, #fffdf7, #f9f3e8);
+}
+
+.district-intro__summary strong {
+  display: block;
+  color: #735613;
+  font-size: 1.5rem;
+  line-height: 1.1;
+}
+
+.district-intro__summary span {
+  display: block;
+  margin-top: 3px;
+  font-size: 0.84rem;
+  color: #5b4f3e;
+}
+
+.district-chip {
+  border-radius: 14px;
+  border-color: rgba(129, 109, 69, 0.18);
+}
+
+.vendor-banner__inner {
+  padding: 26px;
+  border: 1px solid rgba(129, 109, 69, 0.2);
+  border-radius: 18px;
+  background: linear-gradient(140deg, rgba(255, 254, 250, 0.97), rgba(246, 239, 226, 0.9));
+}
+
+.vendor-banner__assurance {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.vendor-banner__assurance li {
+  position: relative;
+  padding-left: 17px;
+  font-size: 0.9rem;
+  color: #534738;
+}
+
+.vendor-banner__assurance li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.63em;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: #8b6914;
+}
+
+.vendor-stat {
+  border-radius: 14px;
+}
+
+.value-card {
+  border-radius: 16px;
+  border-color: rgba(130, 110, 69, 0.18);
+  background: linear-gradient(180deg, #fffdf7, #faf4ea);
+}
+
+.public-value__cta {
+  margin-top: 30px;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  padding: 20px;
+  border-radius: 18px;
+  border: 1px solid rgba(126, 107, 67, 0.24);
+  background: linear-gradient(120deg, #fffdf8 0%, #f7efdf 100%);
+  box-shadow: 0 10px 20px rgba(44, 36, 22, 0.09);
+}
+
+.public-value__cta strong {
+  display: block;
+  font-size: 1.15rem;
+  color: #362b1e;
+  margin-bottom: 4px;
+}
+
+.public-value__cta p {
+  font-size: 0.93rem;
+  color: #5d513f;
+}
+
+.public-value__cta-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 1024px) {
+  .hero-banner__stats {
+    gap: 10px;
+  }
+
+  .hero-banner__stat-divider {
+    display: none;
+  }
+
+  .service-flow__summary,
+  .data-basis-notice__cards,
+  .district-intro__summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .approved-houses-preview__summary,
+  .public-value__cta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .approved-houses-preview__meta {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 768px) {
+  .home-page .section--layered::before {
+    inset: 18px 10px;
+  }
+
+  .hero-banner__content {
+    padding: 118px 18px 74px;
+  }
+
+  .hero-banner__title {
+    font-size: clamp(2.15rem, 11vw, 3.2rem);
+  }
+
+  .hero-banner__desc,
+  .home-page .section__description {
+    line-height: 1.74;
+  }
+
+  .hero-banner__trustline {
+    gap: 7px;
+  }
+
+  .hero-banner__trust-item {
+    font-size: 0.73rem;
+  }
+
+  .hero-banner__stats-panel {
+    padding: 14px;
+  }
+
+  .hero-banner__stats-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+  }
+
+  .hero-banner__stat {
+    min-width: calc(50% - 8px);
+  }
+
+  .service-flow__summary,
+  .data-basis-notice__cards,
+  .district-intro__summary {
+    grid-template-columns: 1fr;
+  }
+
+  .vendor-banner__inner {
+    padding: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-banner__actions .btn {
+    min-width: 100%;
+  }
+
+  .hero-banner__stat {
+    min-width: 100%;
+  }
+
+  .public-value__cta-actions {
+    width: 100%;
+  }
+
+  .public-value__cta-actions .btn {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-banner__scroll-arrow {
+    animation: none;
+  }
+}
+
+
+/* 홈 헤더는 common/header.js의 공통 규칙으로 제어합니다. */
+
+.hero-banner__bg {
+  overflow: hidden;
+}
+
+.hero-banner__slide {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0;
+  transform: scale(1.035);
+  transition: opacity 1.05s ease, transform 5.8s ease;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.hero-banner__slide.is-active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.hero-banner__overlay,
+.hero-banner__bg-pattern {
+  z-index: 1;
+}
+
+.hero-banner__slide--spring {
+  background-image: url('../assets/images/yeongju_spring.jpg');
+}
+
+.hero-banner__slide--summer {
+  background-image: url('../assets/images/yeongju_summer.jpg');
+}
+
+.hero-banner__slide--autumn {
+  background-image: url('../assets/images/yeongju_autumn.jpg');
+}
+
+.hero-banner__slide--winter {
+  background-image: url('../assets/images/yeongju_winter.jpg');
+}
+
+.hero-banner__overlay {
+  background:
+    linear-gradient(180deg, rgba(11, 14, 22, 0.52) 0%, rgba(11, 14, 22, 0.18) 26%, rgba(11, 14, 22, 0.34) 100%),
+    linear-gradient(104deg, rgba(14, 18, 28, 0.5) 0%, rgba(14, 18, 28, 0.14) 42%, rgba(14, 18, 28, 0.46) 100%);
+}
+
+.hero-banner__bg-pattern {
+  background-image:
+    radial-gradient(circle at 18% 22%, rgba(255, 241, 205, 0.09), transparent 0 28%),
+    radial-gradient(circle at 83% 24%, rgba(208, 171, 84, 0.12), transparent 0 24%);
+}
+
+.hero-banner__stats-panel,
+.service-flow__summary-item,
+.service-flow__step,
+.approved-houses-preview__summary,
+.approved-house-card,
+.data-basis-notice__card,
+.role-card,
+.district-intro__summary > div,
+.district-chip,
+.vendor-banner__inner,
+.vendor-stat,
+.value-card,
+.public-value__cta,
+.ai-chat-preview {
+  border-color: rgba(116, 93, 45, 0.42);
+  box-shadow: 0 14px 30px rgba(34, 28, 18, 0.12), inset 0 0 0 1px rgba(255, 252, 244, 0.72);
+}
+
+.approved-house-card:hover,
+.role-card:hover,
+.value-card:hover,
+.district-chip:hover,
+.service-flow__step:hover {
+  border-color: rgba(137, 108, 41, 0.54);
+}
+
+/* ============================================================
+   홈 텍스트 배열 보정
+   ============================================================ */
+.service-flow__step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.service-flow__step-title {
+  max-width: 11ch;
+  min-height: 2.8em;
+  margin-left: auto;
+  margin-right: auto;
+  text-wrap: balance;
+  word-break: keep-all;
+  letter-spacing: -0.02em;
+}
+
+.service-flow__step-desc {
+  max-width: 18ch;
+  margin-left: auto;
+  margin-right: auto;
+  text-wrap: pretty;
+  word-break: keep-all;
+}
+
+.service-flow__step-desc-line,
+.data-basis-notice__line,
+.ai-recommendation-banner__title-line,
+.ai-recommendation-banner__desc-line,
+.role-card__desc-line,
+.value-card__desc-line {
+  display: block;
+}
+
+.approved-house-card__name {
+  max-width: 10ch;
+  min-height: 2.8em;
+  text-wrap: balance;
+  word-break: keep-all;
+  letter-spacing: -0.02em;
+}
+
+.approved-house-card__desc {
+  max-width: 28ch;
+  min-height: 3.2em;
+  text-wrap: pretty;
+  word-break: keep-all;
+}
+
+.data-basis-notice__card h3 {
+  white-space: nowrap;
+  line-height: 1.34;
+  letter-spacing: -0.02em;
+}
+
+.data-basis-notice__card p {
+  max-width: 31ch;
+  text-wrap: pretty;
+  word-break: keep-all;
+}
+
+.ai-recommendation-banner__title {
+  max-width: 640px;
+  text-wrap: balance;
+}
+
+.ai-recommendation-banner__title-line--accent-wrap {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.28rem;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+
+.ai-recommendation-banner__title-accent,
+.ai-recommendation-banner__title-tail {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.ai-recommendation-banner__desc {
+  max-width: 34ch;
+  text-wrap: pretty;
+  word-break: keep-all;
+}
+
+.ai-chat-preview__bubble {
+  text-wrap: pretty;
+  word-break: keep-all;
+  line-height: 1.7;
+}
+
+.role-card__icon {
+  width: 100%;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.role-card__title {
+  min-height: 2.8em;
+  max-width: 10ch;
+  margin-left: auto;
+  margin-right: auto;
+  text-wrap: balance;
+  word-break: keep-all;
+  letter-spacing: -0.02em;
+  text-align: center;
+}
+
+.role-card__title--admin {
+  min-height: auto;
+  max-width: none;
+  white-space: nowrap;
+  text-wrap: nowrap;
+}
+
+.role-card__desc {
+  max-width: 31ch;
+  min-height: auto;
+  margin-left: auto;
+  margin-right: auto;
+  text-wrap: pretty;
+  word-break: keep-all;
+  line-height: 1.72;
+}
+
+.role-card__desc-line {
+  display: inline;
+}
+
+.role-card__features li {
+  word-break: keep-all;
+}
+
+.value-card__title {
+  min-height: auto;
+  max-width: 100%;
+  white-space: nowrap;
+  text-wrap: nowrap;
+  word-break: keep-all;
+  letter-spacing: -0.02em;
+}
+
+.value-card__desc {
+  margin-left: auto;
+  margin-right: auto;
+  word-break: keep-all;
+}
+
+
+@media (max-width: 1024px) {
+  .ai-recommendation-banner__title-line--accent-wrap {
+    display: block;
+    white-space: normal;
+  }
+
+  .ai-recommendation-banner__title-accent,
+  .ai-recommendation-banner__title-tail {
+    white-space: normal;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-banner__slide {
+    transition: none;
+    transform: none;
+  }
+  .animate-on-scroll {
+    transition: none;
+  }
+}
+
+
+@media (max-width: 1180px) {
+  .hero-banner__content {
+    width: min(100%, 880px);
+    padding-top: clamp(120px, 16vw, 150px);
+  }
+
+  .hero-banner__stat-divider {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-banner {
+    min-height: 100svh;
+    padding-top: calc(var(--header-height) + 12px);
+  }
+
+  .hero-banner__content {
+    width: 100%;
+    padding: 118px 18px 72px;
+  }
+
+  .hero-banner__title {
+    font-size: clamp(2rem, 10vw, 3.2rem);
+  }
+
+  .hero-banner__desc {
+    font-size: 0.98rem;
+    line-height: 1.72;
+  }
+
+  .hero-banner__actions {
+    gap: 12px;
+  }
+
+  .hero-banner__actions .btn {
+    width: 100%;
+    min-width: 100%;
+    justify-content: center;
+  }
+
+  .hero-banner__stat {
+    min-width: calc(50% - 8px);
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-banner__content {
+    padding: 112px 14px 64px;
+  }
+
+  .hero-banner__stat {
+    min-width: 100%;
+  }
+}
+
+
+
+/* ============================================================
+   히어로 배너 중앙 정렬 고정 (듀얼모니터/해상도 대응)
+   맨 아래에 추가
+   ============================================================ */
+.hero-banner {
+  min-height: 100svh;
+  display: flex;
+  align-items: stretch;
+  padding-top: 0;
+}
+
+.hero-banner__content {
+  box-sizing: border-box;
+  width: min(100%, 1060px);
+  min-height: calc(100svh - var(--header-height));
+  margin: 0 auto;
+  padding:
+    calc(var(--header-height) + clamp(14px, 2vw, 24px))
+    clamp(20px, 3vw, 30px)
+    clamp(56px, 7vh, 80px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.hero-banner__stats-panel {
+  width: min(100%, 860px);
+  margin: 0 auto;
+}
+
+@media (max-width: 1180px) {
+  .hero-banner__content {
+    width: min(100%, 940px);
+    min-height: calc(100svh - var(--header-height));
+    padding:
+      calc(var(--header-height) + clamp(12px, 1.8vw, 20px))
+      24px
+      clamp(52px, 6vh, 72px);
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-banner {
+    min-height: 100svh;
+  }
+
+  .hero-banner__content {
+    width: 100%;
+    min-height: calc(100svh - var(--header-height));
+    padding:
+      calc(var(--header-height) + 12px)
+      18px
+      56px;
+  }
+
+  .hero-banner__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-banner__content {
+    padding:
+      calc(var(--header-height) + 10px)
+      14px
+      48px;
+  }
+
+  .hero-banner__stats {
+    grid-template-columns: 1fr;
+  }
+}

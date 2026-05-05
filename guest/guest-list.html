@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>영주시 승인 빈집 목록 - 영주 빈집 활용</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../common/common.css">
+  <link rel="stylesheet" href="guest-list.css?v=3">
+</head>
+<body class="guest-list-page">
+  <div id="headerPlaceholder"></div>
+
+  <div class="page-header">
+    <div class="page-header__inner">
+      <h1 class="page-header__title">영주시 승인 빈집 목록</h1>
+    </div>
+  </div>
+
+  <main class="guest-list-main">
+    <div class="container">
+      <section class="house-filter-panel" id="houseFilterPanel">
+        <div class="house-filter-panel__header">
+          <div class="house-filter-panel__title-wrap">
+            <p class="house-filter-panel__eyebrow">Yeongju Vacant House Search</p>
+            <h2 class="house-filter-panel__title">영주시 승인 빈집을 조건별로 탐색해보세요</h2>
+            <p class="house-filter-panel__subtitle">영주시 공공기관 검토를 마친 빈집만 모아, 지역·유형·등급·수용 인원 기준으로 빠르게 비교할 수 있습니다.</p>
+          </div>
+          <button class="btn btn--ghost btn--sm" id="filterResetBtn" type="button">초기화</button>
+        </div>
+
+        <div class="house-filter-panel__grid">
+          <div class="filter-group filter-group--keyword">
+            <label class="filter-label" for="filterKeyword">검색어</label>
+            <input type="text" id="filterKeyword" class="form-control" placeholder="빈집명, 지역명 검색">
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="filterDistrict">영주시 지역</label>
+            <select id="filterDistrict" class="form-control form-select">
+              <option value="">전체 지역</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="filterCheckIn">체크인</label>
+            <input type="date" id="filterCheckIn" class="form-control">
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="filterCheckOut">체크아웃</label>
+            <input type="date" id="filterCheckOut" class="form-control">
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="filterOperationType">이용 유형</label>
+            <select id="filterOperationType" class="form-control form-select">
+              <option value="">전체 유형</option>
+              <option value="lodging">숙박 가능</option>
+              <option value="longterm">장기 체류형</option>
+              <option value="experience">체험 공간형</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="filterGrade">상태 등급</label>
+            <select id="filterGrade" class="form-control form-select">
+              <option value="">전체 등급</option>
+              <option value="1">1등급</option>
+              <option value="2">2등급</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label" for="filterCapacity">최소 수용 인원</label>
+            <select id="filterCapacity" class="form-control form-select">
+              <option value="">제한 없음</option>
+              <option value="2">2명 이상</option>
+              <option value="4">4명 이상</option>
+              <option value="6">6명 이상</option>
+            </select>
+          </div>
+
+          <div class="house-filter-panel__actions">
+            <button class="btn btn--primary" id="filterApplyBtn" type="button">필터 적용</button>
+          </div>
+        </div>
+      </section>
+
+      <div class="house-list-area">
+        <div class="house-list-summary" id="houseListSummary">
+          <div class="house-list-summary__count" id="houseListCount">0건의 빈집</div>
+          <div class="house-list-sort">
+            <label class="house-list-sort__label" for="houseSortSelect">정렬</label>
+            <select id="houseSortSelect" class="form-control form-select house-list-sort__select">
+              <option value="latest">최신 순</option>
+              <option value="recommended">추천 순</option>
+              <option value="priceLow">가격 낮은 순</option>
+              <option value="priceHigh">가격 높은 순</option>
+              <option value="capacity">수용 인원 순</option>
+              <option value="grade">등급 순</option>
+            </select>
+          </div>
+        </div>
+
+        <section class="new-house-section" id="newHouseSection" aria-labelledby="newHouseToggleTitle">
+          <button type="button" class="new-house-section__toggle" id="newHouseToggle" aria-expanded="false" aria-controls="newHousePanel">
+            <span class="new-house-section__toggle-line" aria-hidden="true"></span>
+            <strong class="new-house-section__toggle-title" id="newHouseToggleTitle">신규 빈집 보기</strong>
+            <span class="new-house-section__toggle-line" aria-hidden="true"></span>
+            <span class="new-house-section__toggle-icon" aria-hidden="true"></span>
+          </button>
+
+          <div class="new-house-section__panel" id="newHousePanel">
+            <div class="new-house-section__panel-inner">
+              <div class="new-house-section__viewport-wrap" id="newHouseViewportWrap">
+                <button type="button" class="new-house-section__nav new-house-section__nav--prev" id="newHousePrevBtn" aria-label="이전 신규 빈집 보기">
+                  <span aria-hidden="true">‹</span>
+                </button>
+                <div class="new-house-section__viewport">
+                  <div class="new-house-section__track" id="newHouseGrid"></div>
+                </div>
+                <button type="button" class="new-house-section__nav new-house-section__nav--next" id="newHouseNextBtn" aria-label="다음 신규 빈집 보기">
+                  <span aria-hidden="true">›</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="house-result-list" id="houseCardGrid"></div>
+
+        <div class="empty-result" id="emptyResult" style="display:none;">
+          <div class="empty-result__icon">검색 결과 없음</div>
+          <h3 class="empty-result__title">조건에 맞는 승인 빈집이 없습니다</h3>
+          <p class="empty-result__desc">검색 조건을 조금 넓히거나 초기화해서 다시 찾아보세요.</p>
+          <button class="btn btn--primary" id="emptyResetBtn" type="button">필터 초기화</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="footerPlaceholder"></div>
+
+  <script src="../data/sample-data.js"></script>
+  <script src="../common/common.js?v=17"></script>
+  <script src="../common/header.js"></script>
+  <script src="../common/footer.js"></script>
+<script src="guest-list.js?v=11"></script>
+</body>
+</html>

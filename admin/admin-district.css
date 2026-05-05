@@ -1,0 +1,203 @@
+/**
+ * admin-district.css
+ * 영주시 공공형 빈집 활용 플랫폼 - 관리자 지역별 현황 (drill-down) 스타일
+ */
+
+/* 지역 개요 섹션 */
+.district-overview-section {
+  margin-bottom: var(--spacing-2xl);
+}
+
+.district-overview-section__title {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.district-overview-section__desc {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-xl);
+}
+
+/* 지역 그리드 */
+.district-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-md);
+}
+
+/* 지역 카드 (클릭 가능) */
+.district-card {
+  background-color: var(--color-bg-card);
+  border: 2px solid var(--color-border-light);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-lg);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
+}
+
+.district-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-light));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--transition-base);
+}
+
+.district-card:hover {
+  border-color: var(--color-primary-light);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.district-card:hover::before {
+  transform: scaleX(1);
+}
+
+.district-card.is-selected {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.15);
+}
+
+.district-card.is-selected::before {
+  transform: scaleX(1);
+}
+
+.district-card__name {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.district-card__stats {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.district-card__stat-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--font-size-xs);
+}
+
+.district-card__stat-label {
+  color: var(--color-text-muted);
+}
+
+.district-card__stat-value {
+  font-weight: 700;
+}
+
+.district-card__stat-value--total    { color: var(--color-text-primary); }
+.district-card__stat-value--approved { color: var(--color-success); }
+.district-card__stat-value--pending  { color: var(--color-warning); }
+
+.district-card__click-hint {
+  font-size: 10px;
+  color: var(--color-primary);
+  margin-top: var(--spacing-sm);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.district-card:hover .district-card__click-hint {
+  opacity: 1;
+}
+
+/* drill-down 섹션 */
+.district-drilldown-section {
+  margin-bottom: var(--spacing-2xl);
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.district-drilldown-header {
+  background: linear-gradient(135deg, #1a1208, #2c1e0a);
+  color: white;
+  border-radius: var(--border-radius-md) var(--border-radius-md) 0 0;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.district-drilldown-header__title {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--color-primary-light);
+}
+
+.district-drilldown-header__subtitle {
+  font-size: var(--font-size-xs);
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 4px;
+}
+
+.district-drilldown-content {
+  background-color: var(--color-bg-section);
+  border: 1px solid var(--color-border-light);
+  border-top: none;
+  border-radius: 0 0 var(--border-radius-md) var(--border-radius-md);
+  padding: var(--spacing-xl);
+}
+
+/* drill-down KPI 행 */
+.district-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+}
+
+.district-kpi-item {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-md);
+  text-align: center;
+}
+
+.district-kpi-item__value {
+  font-size: var(--font-size-2xl);
+  font-weight: 800;
+  color: var(--color-primary);
+}
+
+.district-kpi-item__label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+/* 반응형 */
+@media (max-width: 1280px) {
+  .district-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .district-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .district-kpi-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

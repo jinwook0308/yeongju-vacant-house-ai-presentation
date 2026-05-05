@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>공지사항 상세 | 영주 빈집 플랫폼</title>
+  <link rel="stylesheet" href="/common/common.css">
+  <link rel="stylesheet" href="/community/notice-detail.css?v=5">
+</head>
+<body class="notice-detail-page user-platform-page">
+  <div id="headerPlaceholder"></div>
+
+  <main class="notice-detail-main">
+    <section class="notice-detail-hero">
+      <div class="notice-detail-hero__overlay"></div>
+      <div class="container notice-detail-hero__inner">
+        <span class="notice-detail-hero__eyebrow">COMMUNITY NOTICE</span>
+        <h1 class="notice-detail-hero__title">알림마당</h1>
+        <p class="notice-detail-hero__desc">영주시 빈집 활용 플랫폼의 공지사항과 공공 안내를 한눈에 확인할 수 있습니다.</p>
+      </div>
+    </section>
+
+    <div class="container notice-detail-shell">
+      <nav class="notice-detail-breadcrumb" aria-label="경로">
+        <a href="../home/index.html">홈</a>
+        <span>/</span>
+        <a href="community.html">커뮤니티</a>
+        <span>/</span>
+        <span>공지사항 상세</span>
+      </nav>
+
+      <article class="notice-article" id="noticeDetailCard">
+        <header class="notice-article__header">
+          <div class="notice-article__title-wrap">
+            <span class="notice-article__category" id="noticeAuthor">운영 안내</span>
+            <h2 class="notice-article__title" id="noticeTitle">공지사항을 불러오는 중입니다.</h2>
+          </div>
+          <dl class="notice-article__meta">
+            <div class="notice-article__meta-item">
+              <dt>등록일</dt>
+              <dd id="noticeDate">-</dd>
+            </div>
+            <div class="notice-article__meta-item">
+              <dt>조회</dt>
+              <dd id="noticeViews">0</dd>
+            </div>
+          </dl>
+        </header>
+
+        <section class="notice-article__file-row">
+          <div class="notice-article__row-label">첨부파일</div>
+          <div class="notice-article__file-list" id="noticeAttachments"></div>
+        </section>
+
+        <section class="notice-article__body" id="noticeContent"></section>
+
+        <nav class="notice-article__pager" aria-label="이전 다음 공지">
+          <a class="notice-article__pager-link notice-article__pager-link--prev" id="noticePrevLink" href="community.html">이전 글이 없습니다.</a>
+          <a class="notice-article__pager-link notice-article__pager-link--next" id="noticeNextLink" href="community.html">다음 글이 없습니다.</a>
+        </nav>
+
+        <div class="notice-detail-actions">
+          <a class="btn btn--ghost" href="community.html">목록</a>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <div id="footerPlaceholder"></div>
+
+  <script src="/common/common.js"></script>
+  <script src="/common/header.js"></script>
+  <script src="/common/footer.js"></script>
+  <script src="/data/community-sample-data.js"></script>
+  <script src="/community/notice-detail.js?v=3"></script>
+</body>
+</html>

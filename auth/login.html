@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>로그인 - 영주 빈집 플랫폼</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../common/common.css">
+  <link rel="stylesheet" href="login.css">
+</head>
+<body class="auth-page">
+  <div id="headerPlaceholder"></div>
+
+  <main class="auth-main">
+    <div class="auth-container">
+      <!-- 로고 영역 -->
+      <div class="auth-logo">
+        <div class="auth-logo__text">
+          <div class="auth-logo__title">영주 빈집 플랫폼</div>
+          <div class="auth-logo__subtitle">영주시 공공형 빈집 활용 서비스</div>
+        </div>
+      </div>
+
+      <!-- 역할별 빠른 로그인 (선택 후 로그인) -->
+      <div class="quick-login-section">
+        <h3 class="quick-login-section__title">회원 유형 선택</h3>
+        <p class="quick-login-section__desc">아래 버튼을 누른 뒤 로그인 버튼을 눌러 이동하세요.</p>
+        <div class="quick-login-buttons">
+          <button type="button" class="quick-login-btn quick-login-btn--guest" onclick="quickLogin('guest')">
+            <span class="quick-login-btn__icon">🏨</span>
+            <div>
+              <div class="quick-login-btn__role">투숙 희망자</div>
+              <div class="quick-login-btn__desc">빈집 목록 · AI 추천</div>
+            </div>
+          </button>
+          <button class="quick-login-btn quick-login-btn--owner" onclick="quickLogin('owner')">
+            <span class="quick-login-btn__icon">🏠</span>
+            <div>
+              <div class="quick-login-btn__role">빈집 소유자</div>
+              <div class="quick-login-btn__desc">등록 신청 · 상태 확인</div>
+            </div>
+          </button>
+          <button class="quick-login-btn quick-login-btn--admin" onclick="quickLogin('admin')">
+            <span class="quick-login-btn__icon">🏛️</span>
+            <div>
+              <div class="quick-login-btn__role">공공기관 관리자</div>
+              <div class="quick-login-btn__desc">대시보드 · 검토 관리</div>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- 구분선 -->
+      <div class="auth-divider">
+        <span>로그인</span>
+      </div>
+
+      <!-- 로그인 폼 -->
+      <form class="auth-form" id="loginForm" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="loginId">아이디 (이메일)</label>
+          <input type="email" id="loginId" class="form-control" placeholder="이메일 주소를 입력하세요" autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="loginPassword">비밀번호</label>
+          <div class="password-input-wrap">
+            <input type="password" id="loginPassword" class="form-control" placeholder="비밀번호를 입력하세요" autocomplete="current-password">
+            <button type="button" class="password-toggle" id="passwordToggle" aria-label="비밀번호 보기">👁</button>
+          </div>
+        </div>
+        <div class="auth-form__options">
+          <label class="checkbox-label">
+            <input type="checkbox" id="rememberMe">
+            <span>로그인 유지</span>
+          </label>
+          <a href="#" class="auth-form__forgot" onclick="showForgotPassword()">비밀번호 찾기</a>
+        </div>
+        <button type="submit" class="btn btn--primary btn--full btn--lg">로그인</button>
+      </form>
+
+      <!-- SNS 간편 로그인 -->
+      <div class="sns-login-section">
+        <div class="sns-login-divider">
+          <span>SNS 간편 로그인</span>
+        </div>
+        <div class="sns-login-buttons">
+          <button type="button" class="sns-btn sns-btn--kakao" onclick="handleSnsLogin('kakao')" aria-label="카카오 로그인">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M12 4C7.03 4 3 7.13 3 10.98c0 2.49 1.69 4.67 4.23 5.91l-.88 3.11a.43.43 0 00.66.47l3.71-2.51c.42.05.85.07 1.28.07 4.97 0 9-3.13 9-6.98S16.97 4 12 4z" fill="#191600"/>
+            </svg>
+          </button>
+          <button type="button" class="sns-btn sns-btn--google" onclick="handleSnsLogin('google')" aria-label="구글 로그인">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M21.8 12.2c0-.7-.06-1.36-.17-2H12v3.79h5.5a4.7 4.7 0 01-2.04 3.08v2.56h3.3c1.93-1.78 3.04-4.4 3.04-7.43z" fill="#4285F4"/>
+              <path d="M12 22c2.76 0 5.08-.91 6.77-2.47l-3.3-2.56c-.91.61-2.08.97-3.47.97-2.67 0-4.93-1.8-5.73-4.22H2.86v2.64A10 10 0 0012 22z" fill="#34A853"/>
+              <path d="M6.27 13.72A5.99 5.99 0 016 12c0-.6.1-1.18.27-1.72V7.64H2.86A10 10 0 002 12c0 1.61.38 3.13 1.06 4.48l3.21-2.76z" fill="#FBBC05"/>
+              <path d="M12 6.06c1.5 0 2.85.52 3.91 1.54l2.93-2.93C17.07 3.01 14.75 2 12 2 8.13 2 4.78 4.2 2.86 7.44l3.41 2.64C7.07 7.86 9.33 6.06 12 6.06z" fill="#EA4335"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="auth-footer-links">
+        <span>아직 회원이 아니신가요?</span>
+        <a href="signup.html">회원가입</a>
+      </div>
+    </div>
+  </main>
+
+  <div id="footerPlaceholder"></div>
+
+  <!-- 비밀번호 찾기 모달 -->
+  <div class="modal-overlay" id="forgotPasswordModal">
+    <div class="modal">
+      <div class="modal__header">
+        <h3 class="modal__title">비밀번호 찾기</h3>
+        <button class="modal__close" onclick="closeModal('forgotPasswordModal')">✕</button>
+      </div>
+      <div class="modal__body">
+        <p style="color:var(--color-text-secondary);margin-bottom:16px;">
+          가입 시 등록한 이메일 주소를 입력하시면 비밀번호 재설정 링크를 보내드립니다.
+        </p>
+        <div class="form-group">
+          <label class="form-label" for="forgotEmail">이메일 주소</label>
+          <input type="email" id="forgotEmail" class="form-control" placeholder="이메일을 입력하세요">
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--ghost" onclick="closeModal('forgotPasswordModal')">취소</button>
+        <button class="btn btn--primary" onclick="submitForgotPassword()">재설정 링크 발송</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../data/sample-data.js"></script>
+  <script src="../common/common.js?v=6"></script>
+  <script src="../common/header.js"></script>
+  <script src="../common/footer.js"></script>
+  <script src="login.js"></script>
+</body>
+</html>

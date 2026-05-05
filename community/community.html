@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>커뮤니티 | 영주 빈집 플랫폼</title>
+
+  <link rel="stylesheet" href="/common/common.css?v=16" />
+  <link rel="stylesheet" href="/common/floating-actions.css" />
+  <link rel="stylesheet" href="/community/community.css?v=7" />
+</head>
+<body class="community-page">
+  <div id="headerPlaceholder"></div>
+
+  <main class="community-main">
+    <!-- 히어로 -->
+    <section class="community-hero">
+      <div class="community-hero__bg"></div>
+      <div class="community-hero__overlay"></div>
+
+      <div class="community-hero__inner">
+        <h1 class="community-hero__title">커뮤니티</h1>
+      </div>
+
+      <div class="community-hero__bottom-tabs">
+        <button class="community-switch-tab is-active" data-board="notice" type="button">공지사항</button>
+        <button class="community-switch-tab" data-board="qna" type="button">Q&amp;A</button>
+      </div>
+    </section>
+
+    <!-- 게시판 본문 -->
+    <section class="community-board-section">
+      <div class="container community-board-shell">
+        <div class="community-board-header">
+          <div>
+            <p class="community-board-header__eyebrow">COMMUNITY BOARD</p>
+            <h2 id="boardTitle" class="community-board-header__title">공지사항</h2>
+            <p id="boardDescription" class="community-board-header__desc">
+              플랫폼 운영 소식과 안내사항을 확인할 수 있습니다.
+            </p>
+          </div>
+
+          <div class="community-board-actions">
+            <div class="community-search">
+              <input
+                type="text"
+                id="communitySearchInput"
+                placeholder="제목 또는 내용을 검색하세요"
+              />
+              <button id="communitySearchBtn" type="button">검색</button>
+            </div>
+            <button id="noticeWriteToggle" class="community-write-btn community-write-btn--notice" type="button">공지 작성</button>
+            <button id="qnaWriteToggle" class="community-write-btn" type="button">Q&A 작성</button>
+          </div>
+        </div>
+
+        <div class="community-board-summary">
+          <div class="community-summary-card">
+            <span class="community-summary-card__label">현재 게시판</span>
+            <strong id="summaryBoardName">공지사항</strong>
+          </div>
+          <div class="community-summary-card">
+            <span class="community-summary-card__label">전체 게시글</span>
+            <strong id="summaryTotalCount">0</strong>
+          </div>
+          <div class="community-summary-card">
+            <span class="community-summary-card__label">검색 결과</span>
+            <strong id="summaryFilteredCount">0</strong>
+          </div>
+        </div>
+
+        <div id="noticeWritePanel" class="community-write-panel">
+          <div class="community-write-panel__head">
+            <strong>공지사항 작성</strong>
+            <span>공공기관 관리자만 등록할 수 있습니다.</span>
+          </div>
+          <div class="community-form-grid">
+            <input id="noticeTitleInput" class="community-form-control" type="text" placeholder="공지 제목">
+            <label class="community-check">
+              <input id="noticePinnedInput" type="checkbox">
+              중요 공지로 표시
+            </label>
+          </div>
+          <textarea id="noticeContentInput" class="community-form-control community-form-textarea" rows="4" placeholder="공지 내용을 입력하세요"></textarea>
+          <div class="community-write-panel__actions">
+            <button id="noticeSubmitBtn" class="community-write-submit" type="button">공지 등록</button>
+          </div>
+        </div>
+
+        <div id="qnaWritePanel" class="community-write-panel">
+          <div class="community-write-panel__head">
+            <strong>Q&A 작성</strong>
+            <span>공개 또는 비공개 문의를 선택할 수 있습니다.</span>
+          </div>
+          <div class="community-form-grid">
+            <input id="qnaQuestionInput" class="community-form-control" type="text" placeholder="질문 제목">
+            <select id="qnaVisibilityInput" class="community-form-control">
+              <option value="public">공개 문의</option>
+              <option value="private">비공개 문의</option>
+            </select>
+          </div>
+          <textarea id="qnaDetailInput" class="community-form-control community-form-textarea" rows="4" placeholder="문의 내용을 자세히 입력하세요"></textarea>
+          <div class="community-write-panel__actions">
+            <button id="qnaCancelBtn" class="btn btn--ghost btn--sm" type="button">취소</button>
+            <button id="qnaSubmitBtn" class="community-write-submit" type="button">Q&A 등록</button>
+          </div>
+        </div>
+
+        <!-- 공지사항 -->
+        <div id="noticeBoard" class="community-board-panel is-active">
+          <div class="community-table-wrap">
+            <table class="community-table">
+              <thead>
+                <tr>
+                  <th class="col-num">번호</th>
+                  <th class="col-title">제목</th>
+                  <th class="col-date">등록일</th>
+                  <th class="col-view">구분</th>
+                </tr>
+              </thead>
+              <tbody id="noticeTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Q&A -->
+        <div id="qnaBoard" class="community-board-panel">
+          <div id="qnaList" class="community-qna-list"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="footerPlaceholder"></div>
+
+<script src="/common/common.js?v=17"></script>
+  <script src="/common/header.js"></script>
+  <script src="/common/floating-actions.js"></script>
+  <script src="/common/footer.js"></script>
+  <script src="/data/community-sample-data.js"></script>
+  <script src="/community/community.js?v=4"></script>
+</body>
+</html>

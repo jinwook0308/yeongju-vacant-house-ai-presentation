@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>마이페이지 - 영주 빈집 플랫폼</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../common/common.css?v=16">
+  <link rel="stylesheet" href="guest-mypage.css?v=3">
+</head>
+<body>
+  <div id="headerPlaceholder"></div>
+
+  <div class="page-header">
+    <div class="page-header__inner">
+      <h1 class="page-header__title">마이페이지</h1>
+    </div>
+  </div>
+
+  <main class="page-layout">
+    <!-- 사이드바 -->
+    <aside class="page-layout__sidebar">
+      <nav class="sidebar-nav">
+        <div class="sidebar-nav__header">마이페이지 메뉴</div>
+        <a href="#bookings" class="sidebar-nav__item is-active" data-tab-trigger="bookings">
+          📋 예약 요청 내역
+        </a>
+        <a href="#wishlist" class="sidebar-nav__item" data-tab-trigger="wishlist">
+          ❤️ 찜한 빈집
+        </a>
+        <a href="#ai-history" class="sidebar-nav__item" data-tab-trigger="ai-history">
+          ✨ AI 추천 기록
+        </a>
+        <a href="#guestNotifications" class="sidebar-nav__item" data-tab-trigger="guestNotifications">
+          🔔 알림
+        </a>
+        <a href="../guest/guest-list.html" class="sidebar-nav__item">
+          🏠 빈집 목록 보기
+        </a>
+        <a href="../guest/guest-ai.html" class="sidebar-nav__item">
+          🤖 AI 추천 받기
+        </a>
+      </nav>
+    </aside>
+
+    <!-- 메인 콘텐츠 -->
+    <div class="page-layout__main">
+      <!-- 예약 요청 내역 -->
+      <section id="bookings" class="mypage-section">
+        <h2 class="mypage-section__title">📋 예약 요청 내역</h2>
+        <div id="bookingsList"></div>
+      </section>
+
+      <!-- 찜한 빈집 -->
+      <section id="wishlist" class="mypage-section" style="display:none;">
+        <h2 class="mypage-section__title">❤️ 찜한 빈집</h2>
+        <div class="grid grid--3" id="wishlistGrid"></div>
+      </section>
+
+      <!-- AI 추천 기록 -->
+      <section id="ai-history" class="mypage-section" style="display:none;">
+        <h2 class="mypage-section__title">✨ AI 추천 기록</h2>
+        <div id="aiHistoryList"></div>
+      </section>
+
+      <section id="guestNotifications" class="mypage-section" style="display:none;">
+        <h2 class="mypage-section__title">🔔 알림</h2>
+        <div id="guestNotificationsList"></div>
+      </section>
+    </div>
+  </main>
+
+  <div id="footerPlaceholder"></div>
+
+  <script src="../data/sample-data.js"></script>
+  <script src="../common/common.js?v=17"></script>
+  <script src="../common/header.js"></script>
+  <script src="../common/footer.js"></script>
+  <script src="guest-mypage.js?v=3"></script>
+</body>
+</html>

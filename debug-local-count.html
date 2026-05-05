@@ -1,0 +1,8 @@
+
+<!doctype html><meta charset="utf-8"><body><script src="./common/common.js"></script><script>
+const requests = (typeof getAllRegistrationRequests==='function'?getAllRegistrationRequests():[]);
+const approvedReq = requests.filter(r => String(r.reviewStatus||'').toLowerCase()==='approved').length;
+const storedApproved = (typeof getStoredApprovedHouses==='function'?getStoredApprovedHouses():[]).length;
+const result = {requests: requests.length, approvedRequests: approvedReq, storedApproved};
+document.body.textContent = JSON.stringify(result);
+</script></body>

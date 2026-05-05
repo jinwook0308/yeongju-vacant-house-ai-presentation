@@ -1,0 +1,253 @@
+/**
+ * guest-mypage.css
+ * 영주시 공공형 빈집 활용 플랫폼 - 게스트 마이페이지 스타일
+ */
+.page-layout {
+  padding-top: calc(var(--header-height) + 40px);
+}
+
+.mypage-section {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-card);
+  margin-bottom: var(--spacing-xl);
+}
+
+.mypage-section__title {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xl);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 2px solid var(--color-border-light);
+}
+
+/* 예약 카드 */
+.booking-item-card {
+  display: flex;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-md);
+  margin-bottom: var(--spacing-md);
+  transition: all var(--transition-fast);
+}
+
+.booking-item-card:hover {
+  border-color: var(--color-primary-light);
+  box-shadow: var(--shadow-sm);
+}
+
+.booking-item-card__emoji {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.booking-item-card__info {
+  flex: 1;
+}
+
+.booking-item-card__name {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.booking-item-card__dates {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-xs);
+}
+
+.booking-item-card__meta {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* AI 기록 */
+.ai-history-item {
+  padding: var(--spacing-md);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-sm);
+  margin-bottom: var(--spacing-sm);
+  background-color: var(--color-bg-section);
+}
+
+.ai-history-item__date {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-bottom: 4px;
+}
+
+.ai-history-item__query {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+.mypage-notification-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: var(--spacing-sm);
+  align-items: center;
+  padding: var(--spacing-md);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-sm);
+  margin-bottom: var(--spacing-sm);
+  text-decoration: none;
+  color: inherit;
+  background-color: var(--color-bg-card);
+}
+
+.mypage-notification-item:hover {
+  border-color: var(--color-primary-light);
+  box-shadow: var(--shadow-sm);
+}
+
+.mypage-notification-item.is-unread {
+  background-color: rgba(201, 168, 76, 0.06);
+}
+
+.mypage-notification-item__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #ccb789;
+}
+
+.mypage-notification-item.is-unread .mypage-notification-item__dot {
+  background-color: var(--color-primary);
+}
+
+.mypage-notification-item__body {
+  min-width: 0;
+}
+
+.mypage-notification-item__body strong,
+.mypage-notification-item__body span,
+.mypage-notification-item small {
+  display: block;
+}
+
+.mypage-notification-item__body strong {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  line-height: 1.55;
+}
+
+.mypage-notification-item__body span,
+.mypage-notification-item small {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+@media (max-width: 768px) {
+  .page-layout {
+    padding-top: var(--spacing-md);
+  }
+}
+
+/* ============================================================
+   Institutional White Notification Refresh
+   ============================================================ */
+
+.mypage-section {
+  background: #ffffff !important;
+  border: 1px solid rgba(17, 24, 39, 0.12) !important;
+  box-shadow: none !important;
+}
+
+.booking-item-card,
+.ai-history-item,
+.mypage-notification-item {
+  background: #ffffff !important;
+  border: 1px solid rgba(17, 24, 39, 0.12) !important;
+  box-shadow: none !important;
+}
+
+.booking-item-card:hover,
+.mypage-notification-item:hover {
+  background: #f8fafc !important;
+  border-color: rgba(17, 24, 39, 0.24) !important;
+  box-shadow: none !important;
+}
+
+.mypage-notification-item {
+  border-radius: 18px;
+}
+
+.mypage-notification-item.is-unread {
+  background: #f8fafc !important;
+  border-left: 4px solid #111827 !important;
+}
+
+.mypage-notification-item__dot {
+  background: #d1d5db !important;
+}
+
+.mypage-notification-item.is-unread .mypage-notification-item__dot {
+  background: #111827 !important;
+}
+
+/* ============================================================
+   Pure White Guest Notification Cards
+   ============================================================ */
+
+body {
+  background: #f4f6f8 !important;
+}
+
+.sidebar-nav,
+.mypage-section {
+  background: #ffffff !important;
+  border: 1px solid rgba(17, 24, 39, 0.14) !important;
+  box-shadow: none !important;
+}
+
+.mypage-notification-item {
+  background: #ffffff !important;
+  border: 1px solid rgba(17, 24, 39, 0.14) !important;
+  box-shadow: none !important;
+}
+
+.mypage-notification-item:hover {
+  background: #f8fafc !important;
+  border-color: rgba(17, 24, 39, 0.28) !important;
+}
+
+.mypage-notification-item.is-unread {
+  background: #f8fafc !important;
+  border-left: 4px solid #111827 !important;
+}
+
+/* ============================================================
+   Final White/Gray Guest Notification Cards
+   ============================================================ */
+
+.mypage-notification-item {
+  background: #ffffff !important;
+  border: 1px solid rgba(15, 23, 42, 0.14) !important;
+  box-shadow: none !important;
+}
+
+.mypage-notification-item:hover {
+  background: #f8fafc !important;
+  border-color: rgba(15, 23, 42, 0.24) !important;
+}
+
+.mypage-notification-item.is-unread {
+  background: #f8fafc !important;
+  border-left: 4px solid #111827 !important;
+}
+
+.mypage-notification-item__dot {
+  background: #d1d5db !important;
+}
+
+.mypage-notification-item.is-unread .mypage-notification-item__dot {
+  background: #111827 !important;
+}

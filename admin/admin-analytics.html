@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>빈집 분석 - 영주 빈집 플랫폼</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../common/common.css">
+  <link rel="stylesheet" href="admin.css?v=11">
+  <link rel="stylesheet" href="admin-analytics.css">
+</head>
+<body class="admin-body">
+  <div id="headerPlaceholder"></div>
+
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="admin-sidebar__header">
+        <div class="admin-sidebar__logo">YJ</div>
+        <div>
+          <div class="admin-sidebar__title">영주시 관리자</div>
+          <div class="admin-sidebar__subtitle">공공기관 운영 콘솔</div>
+        </div>
+      </div>
+      <nav class="admin-nav">
+        <div class="admin-nav__group-label">운영 현황</div>
+        <a href="admin-dashboard.html" class="admin-nav__item">
+          <span class="admin-nav__icon">01</span>
+          <span>대시보드</span>
+        </a>
+        <div class="admin-nav__group-label">빈집 관리</div>
+        <a href="admin-review-list.html" class="admin-nav__item">
+          <span class="admin-nav__icon">02</span>
+          <span>신청 검토 목록</span>
+          <span class="admin-nav__badge" id="pendingCountBadge" hidden>0</span>
+        </a>
+        <a href="admin-district.html" class="admin-nav__item">
+          <span class="admin-nav__icon">03</span>
+          <span>지역별 현황</span>
+        </a>
+        <a href="admin-analytics.html" class="admin-nav__item is-active">
+          <span class="admin-nav__icon">04</span>
+          <span>빈집 분석</span>
+        </a>
+        <div class="admin-nav__group-label">연계 관리</div>
+        <a href="../vendor/vendor-list.html" class="admin-nav__item">
+          <span class="admin-nav__icon">05</span>
+          <span>협력업체 관리</span>
+        </a>
+      </nav>
+    </aside>
+
+    <main class="admin-main">
+      <div class="admin-main__header">
+        <h1 class="admin-main__title">빈집 분석 리포트</h1>
+        <button class="btn btn--ghost btn--sm" onclick="exportToExcel()">리포트 내보내기</button>
+      </div>
+
+      <div class="analytics-summary-row" id="analyticsSummaryRow"></div>
+
+      <div class="analytics-chart-row">
+        <div class="admin-panel">
+          <div class="admin-panel__header">
+            <h3 class="admin-panel__title">지역별 신청 현황</h3>
+          </div>
+          <div id="districtBarChart" class="analytics-chart-body"></div>
+        </div>
+
+        <div class="admin-panel">
+          <div class="admin-panel__header">
+            <h3 class="admin-panel__title">건물 유형 분포</h3>
+          </div>
+          <div id="buildingTypeChart" class="analytics-chart-body"></div>
+        </div>
+      </div>
+
+      <div class="analytics-chart-row">
+        <div class="admin-panel">
+          <div class="admin-panel__header">
+            <h3 class="admin-panel__title">월별 신청 추이</h3>
+          </div>
+          <div id="monthlyTrendChart" class="analytics-chart-body"></div>
+        </div>
+
+        <div class="admin-panel">
+          <div class="admin-panel__header">
+            <h3 class="admin-panel__title">운영 유형 분포</h3>
+          </div>
+          <div id="operationTypeChart" class="analytics-chart-body"></div>
+        </div>
+      </div>
+
+      <div class="admin-panel">
+        <div class="admin-panel__header">
+          <h3 class="admin-panel__title">AI 분석 인사이트</h3>
+        </div>
+        <div id="analyticsInsights" class="analytics-insights-body"></div>
+      </div>
+    </main>
+  </div>
+
+  <div id="footerPlaceholder"></div>
+
+  <script src="../data/sample-data.js"></script>
+  <script src="../common/common.js?v=13"></script>
+  <script src="../common/header.js"></script>
+  <script src="../common/footer.js"></script>
+  <script src="admin-analytics.js?v=4"></script>
+</body>
+</html>

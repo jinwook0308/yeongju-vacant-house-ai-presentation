@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>관리자 운영 대시보드 - 영주 빈집 플랫폼</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../common/common.css">
+  <link rel="stylesheet" href="admin.css?v=11">
+  <link rel="stylesheet" href="admin-dashboard.css?v=11">
+</head>
+<body class="admin-body admin-dashboard-body">
+  <div id="headerPlaceholder"></div>
+
+  <div class="admin-layout admin-dashboard-layout">
+    <aside class="admin-sidebar admin-dashboard-sidebar" id="adminSidebar">
+      <div class="admin-sidebar__header">
+        <div class="admin-sidebar__logo" aria-hidden="true">YJ</div>
+        <div>
+          <div class="admin-sidebar__title">영주시 관리자</div>
+          <div class="admin-sidebar__subtitle">공공기관 운영 콘솔</div>
+        </div>
+      </div>
+      <nav class="admin-nav" aria-label="관리자 메뉴">
+        <div class="admin-nav__group-label">운영 현황</div>
+        <a href="admin-dashboard.html" class="admin-nav__item is-active">
+          <span class="admin-nav__icon" aria-hidden="true">01</span>
+          <span>대시보드</span>
+        </a>
+        <div class="admin-nav__group-label">빈집 관리</div>
+        <a href="admin-review-list.html" class="admin-nav__item">
+          <span class="admin-nav__icon" aria-hidden="true">02</span>
+          <span>신청 검토 목록</span>
+          <span class="admin-nav__badge" id="pendingCountBadge">0</span>
+        </a>
+        <a href="admin-district.html" class="admin-nav__item">
+          <span class="admin-nav__icon" aria-hidden="true">03</span>
+          <span>지역별 현황</span>
+        </a>
+        <a href="admin-analytics.html" class="admin-nav__item">
+          <span class="admin-nav__icon" aria-hidden="true">04</span>
+          <span>빈집 분석</span>
+        </a>
+        <div class="admin-nav__group-label">연계 관리</div>
+        <a href="../vendor/vendor-list.html" class="admin-nav__item">
+          <span class="admin-nav__icon" aria-hidden="true">05</span>
+          <span>협력업체 관리</span>
+        </a>
+      </nav>
+    </aside>
+
+    <main class="admin-main admin-dashboard" id="adminDashboardMain">
+      <section class="admin-command-bar" aria-labelledby="adminDashboardTitle">
+        <div class="admin-command-bar__copy">
+          <span class="admin-command-bar__eyebrow">Yeongju Operations Center</span>
+          <h1 class="admin-command-bar__title" id="adminDashboardTitle">관리자 운영 대시보드</h1>
+          <p class="admin-command-bar__desc">접수, 검토, 예약, 알림을 한 화면에서 확인하고 즉시 처리합니다.</p>
+        </div>
+        <div class="admin-command-bar__meta" aria-label="대시보드 기준 정보">
+          <span class="admin-meta-pill" id="adminCurrentDate">오늘 기준</span>
+          <span class="admin-meta-pill">기준: 영주시 공개 데이터 + 신청 접수</span>
+          <span class="admin-meta-pill" id="adminLastUpdated">갱신 대기</span>
+        </div>
+      </section>
+
+      <section class="admin-kpi-grid" id="adminKpiGrid" aria-label="핵심 운영 지표"></section>
+
+      <section class="admin-board-grid admin-board-grid--top">
+        <article class="admin-panel admin-work-panel">
+          <div class="admin-panel__header">
+            <div>
+              <p class="admin-panel__eyebrow">Priority Queue</p>
+              <h2 class="admin-panel__title">오늘 처리할 업무</h2>
+            </div>
+            <a href="admin-review-list.html" class="admin-panel__link">전체 검토</a>
+          </div>
+          <div id="adminWorkQueue"></div>
+        </article>
+
+        <article class="admin-panel admin-ops-panel">
+          <div class="admin-panel__header">
+            <div>
+              <p class="admin-panel__eyebrow">Live Snapshot</p>
+              <h2 class="admin-panel__title">실시간 운영 현황</h2>
+            </div>
+            <span class="admin-panel__caption">등록 수는 사용자 신청 반영</span>
+          </div>
+          <div id="adminOpsOverview"></div>
+        </article>
+      </section>
+
+      <section class="admin-board-grid admin-board-grid--middle">
+        <article class="admin-panel admin-panel--wide">
+          <div class="admin-panel__header">
+            <div>
+              <p class="admin-panel__eyebrow">Review Register</p>
+              <h2 class="admin-panel__title">신청검토목록</h2>
+            </div>
+            <a href="admin-review-list.html" class="admin-panel__link">목록으로 이동</a>
+          </div>
+          <div id="recentRequestsTable"></div>
+        </article>
+
+        <article class="admin-panel">
+          <div class="admin-panel__header">
+            <div>
+              <p class="admin-panel__eyebrow">Reservation</p>
+              <h2 class="admin-panel__title">예약 승인 관리</h2>
+            </div>
+            <span class="admin-panel__caption">운영 책임자 기준</span>
+          </div>
+          <div id="bookingApprovalPanel"></div>
+        </article>
+      </section>
+
+      <section class="admin-board-grid admin-board-grid--withdraw">
+        <article class="admin-panel admin-panel--wide" id="withdrawalApprovalPanel">
+          <div class="admin-panel__header">
+            <div>
+              <p class="admin-panel__eyebrow">Withdrawal Approval</p>
+              <h2 class="admin-panel__title">회원 탈퇴 승인 요청</h2>
+            </div>
+            <span class="admin-panel__caption">빈집 소유자 요청 검토</span>
+          </div>
+          <div id="adminWithdrawalPanel"></div>
+        </article>
+      </section>
+
+      <section class="admin-chart-grid" aria-label="운영 통계">
+        <article class="admin-panel">
+          <div class="admin-panel__header">
+            <div>
+              <p class="admin-panel__eyebrow">Status Mix</p>
+              <h2 class="admin-panel__title">신청 상태 분포</h2>
+            </div>
+          </div>
+          <div id="statusDistributionChart"></div>
+        </article>
+
+        <article class="admin-panel">
+          <div class="admin-panel__header">
+            <div>
+              <p class="admin-panel__eyebrow">Monthly Intake</p>
+              <h2 class="admin-panel__title">월별 접수 추이</h2>
+            </div>
+          </div>
+          <div id="monthlyTrendChart"></div>
+        </article>
+
+        <article class="admin-panel">
+          <div class="admin-panel__header">
+            <div>
+              <p class="admin-panel__eyebrow">Operation Type</p>
+              <h2 class="admin-panel__title">운영 유형 분석</h2>
+            </div>
+          </div>
+          <div id="operationTypeChart"></div>
+        </article>
+      </section>
+
+      <section class="admin-board-grid admin-board-grid--bottom">
+        <article class="admin-panel">
+          <div class="admin-panel__header">
+            <div>
+              <p class="admin-panel__eyebrow">District Matrix</p>
+              <h2 class="admin-panel__title">읍면동별 현황</h2>
+            </div>
+            <a href="admin-district.html" class="admin-panel__link">지역 상세</a>
+          </div>
+          <div id="districtSummaryTable"></div>
+        </article>
+
+        <article class="admin-panel">
+          <div class="admin-panel__header">
+            <div>
+              <p class="admin-panel__eyebrow">Notice Center</p>
+              <h2 class="admin-panel__title">최근 알림</h2>
+            </div>
+            <button class="admin-panel__button" type="button" id="adminMarkReadBtn">모두 읽음</button>
+          </div>
+          <div id="adminNotificationsPanel"></div>
+        </article>
+
+        <article class="admin-panel">
+          <div class="admin-panel__header">
+            <div>
+              <p class="admin-panel__eyebrow">Quick Actions</p>
+              <h2 class="admin-panel__title">빠른 작업</h2>
+            </div>
+          </div>
+          <div class="admin-quick-actions" id="adminQuickActions"></div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <div id="footerPlaceholder"></div>
+
+  <script src="../data/sample-data.js"></script>
+<script src="../common/common.js?v=17"></script>
+  <script src="../common/header.js"></script>
+  <script src="../common/footer.js"></script>
+  <script src="admin-dashboard.js?v=7"></script>
+</body>
+</html>

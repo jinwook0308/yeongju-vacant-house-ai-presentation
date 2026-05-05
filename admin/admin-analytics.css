@@ -1,0 +1,138 @@
+/**
+ * admin-analytics.css
+ * 영주시 공공형 빈집 활용 플랫폼 - 빈집 분석 페이지 스타일
+ */
+
+/* 분석 요약 행 */
+.analytics-summary-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+}
+
+.analytics-summary-card {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-card);
+  text-align: center;
+}
+
+.analytics-summary-card__value {
+  font-size: var(--font-size-2xl);
+  font-weight: 800;
+  color: var(--color-primary);
+  margin-bottom: 4px;
+}
+
+.analytics-summary-card__label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* 차트 행 */
+.analytics-chart-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+}
+
+.analytics-chart-body {
+  padding: var(--spacing-lg);
+  min-height: 240px;
+}
+
+/* 가로 막대 차트 */
+.h-bar-chart {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.h-bar-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.h-bar-item__label {
+  width: 90px;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.h-bar-item__bar-wrap {
+  flex: 1;
+  height: 24px;
+  background-color: var(--color-bg-section);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.h-bar-item__bar {
+  height: 100%;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  padding-left: 8px;
+  font-size: 11px;
+  color: white;
+  font-weight: 600;
+  transition: width 0.8s ease;
+  min-width: 24px;
+}
+
+/* 인사이트 */
+.analytics-insights-body {
+  padding: var(--spacing-lg);
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-md);
+}
+
+.insight-card {
+  background-color: var(--color-bg-section);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-lg);
+  border-left: 4px solid var(--color-primary);
+}
+
+.insight-card__title {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.insight-card__text {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+}
+
+/* 반응형 */
+@media (max-width: 1280px) {
+  .analytics-summary-row {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 1024px) {
+  .analytics-chart-row {
+    grid-template-columns: 1fr;
+  }
+
+  .analytics-insights-body {
+    grid-template-columns: 1fr;
+  }
+}
