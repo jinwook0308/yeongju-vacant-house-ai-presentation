@@ -8,7 +8,7 @@ import hashlib
 import secrets
 from contextlib import asynccontextmanager
 from datetime import datetime
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlparse
 from typing import Any
 
 try:
@@ -17,9 +17,10 @@ except ImportError:  # pandas가 없어도 서버 자체는 켜지게 처리
     pd = None
 
 import requests
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import RedirectResponse
+from fastapi.responses import FileResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, String, UniqueConstraint, create_engine, inspect, select, text
 from sqlalchemy.exc import IntegrityError
@@ -152,7 +153,7 @@ def _load_local_env_file(env_path: str) -> None:
                 key = key.strip()
                 value = value.strip().strip('"').strip("'")
                 if key:
-                    os.environ[key] = value
+                    os.environ.setdefault(key, value)
     except OSError:
         return
 
@@ -240,7 +241,9 @@ DEMO_COORDS_BY_DISTRICT: dict[str, tuple[float, float]] = {
 YEONGJU_CENTER_COORD = (36.8057, 128.6241)
 ADMIN_ORG_CODE = os.getenv("YEONGJU_ADMIN_ORG_CODE", "YEONGJU2025")
 AUTH_STATE_SECRET = os.getenv("YEONGJU_AUTH_STATE_SECRET", "yeongju-social-state-secret")
-FRONTEND_BASE_URL = os.getenv("YEONGJU_FRONTEND_BASE_URL", "http://127.0.0.1:5500")
+PUBLIC_BASE_URL = os.getenv("YEONGJU_PUBLIC_BASE_URL", "").strip()
+FRONTEND_BASE_URL = os.getenv("YEONGJU_FRONTEND_BASE_URL", "").strip()
+DEFAULT_LOCAL_API_BASE_URL = "http://localhost:8000"
 
 ROLE_LABELS = {
     "guest": "투숙 희망자",
@@ -262,14 +265,14 @@ SOCIAL_PROVIDER_LABELS = {
 
 SOCIAL_PROVIDER_SETTINGS = {
     "kakao": {
-        "client_id": os.getenv("KAKAO_CLIENT_ID", ""),
-        "client_secret": os.getenv("KAKAO_CLIENT_SECRET", ""),
-        "redirect_uri": os.getenv("KAKAO_REDIRECT_URI", "http://localhost:8000/auth/social/kakao/callback"),
+        "client_id_env": "KAKAO_CLIENT_ID",
+        "client_secret_env": "KAKAO_CLIENT_SECRET",
+        "redirect_uri_env": "KAKAO_REDIRECT_URI",
     },
     "google": {
-        "client_id": os.getenv("GOOGLE_CLIENT_ID", ""),
-        "client_secret": os.getenv("GOOGLE_CLIENT_SECRET", ""),
-        "redirect_uri": os.getenv("GOOGLE_REDIRECT_URI", "http://localhost:8000/auth/social/google/callback"),
+        "client_id_env": "GOOGLE_CLIENT_ID",
+        "client_secret_env": "GOOGLE_CLIENT_SECRET",
+        "redirect_uri_env": "GOOGLE_REDIRECT_URI",
     },
 }
 
@@ -2085,23 +2088,100 @@ def _parse_social_state(state: str, provider: str) -> dict[str, Any]:
     return payload
 
 
-def _get_social_provider_settings(provider: str) -> dict[str, str]:
+def _is_local_hostname(hostname: str) -> bool:
+    normalized = (hostname or "").split(":", 1)[0].strip().lower()
+    return normalized in {"127.0.0.1", "localhost", "0.0.0.0"}
+
+
+def _is_local_url(url: str) -> bool:
+    if not url:
+        return False
+
+    try:
+        hostname = urlparse(url).hostname or ""
+    except ValueError:
+        return False
+
+    return _is_local_hostname(hostname)
+
+
+def _get_request_base_url(request: Request | None = None) -> str:
+    if request is None:
+        return ""
+
+    forwarded_host = (
+        request.headers.get("x-forwarded-host")
+        or request.headers.get("host")
+        or request.url.netloc
+        or ""
+    ).split(",", 1)[0].strip()
+    forwarded_proto = (
+        request.headers.get("x-forwarded-proto")
+        or request.url.scheme
+        or "http"
+    ).split(",", 1)[0].strip()
+    forwarded_port = (request.headers.get("x-forwarded-port") or "").split(",", 1)[0].strip()
+
+    host = forwarded_host or request.url.netloc
+    if forwarded_port and host and ":" not in host and forwarded_port not in {"80", "443"}:
+        host = f"{host}:{forwarded_port}"
+
+    if not host:
+        return ""
+
+    return f"{forwarded_proto}://{host}".rstrip("/")
+
+
+def _get_public_base_url(request: Request | None = None) -> str:
+    if PUBLIC_BASE_URL:
+        return PUBLIC_BASE_URL.rstrip("/")
+    return _get_request_base_url(request)
+
+
+def _get_default_social_redirect_uri(provider: str) -> str:
+    return f"{DEFAULT_LOCAL_API_BASE_URL}/auth/social/{provider}/callback"
+
+
+def _resolve_social_redirect_uri(provider: str, request: Request | None = None) -> str:
+    provider_config = SOCIAL_PROVIDER_SETTINGS.get(provider)
+    if not provider_config:
+        raise HTTPException(status_code=404, detail="지원하지 않는 소셜 로그인 제공자입니다.")
+
+    configured_redirect_uri = os.getenv(provider_config["redirect_uri_env"], "").strip()
+    public_base_url = _get_public_base_url(request)
+
+    if configured_redirect_uri:
+        if public_base_url and not _is_local_url(public_base_url) and _is_local_url(configured_redirect_uri):
+            return f"{public_base_url}/auth/social/{provider}/callback"
+        return configured_redirect_uri.rstrip("/")
+
+    if public_base_url:
+        return f"{public_base_url}/auth/social/{provider}/callback"
+
+    return _get_default_social_redirect_uri(provider)
+
+
+def _get_social_provider_settings(provider: str, request: Request | None = None) -> dict[str, str]:
     config = SOCIAL_PROVIDER_SETTINGS.get(provider)
     if not config:
         raise HTTPException(status_code=404, detail="지원하지 않는 소셜 로그인 제공자입니다.")
-    return config
+    return {
+        "client_id": os.getenv(config["client_id_env"], "").strip(),
+        "client_secret": os.getenv(config["client_secret_env"], "").strip(),
+        "redirect_uri": _resolve_social_redirect_uri(provider, request),
+    }
 
 
-def _is_social_provider_configured(provider: str) -> bool:
-    config = _get_social_provider_settings(provider)
+def _is_social_provider_configured(provider: str, request: Request | None = None) -> bool:
+    config = _get_social_provider_settings(provider, request)
     if provider == "google":
         return bool(config.get("client_id") and config.get("client_secret") and config.get("redirect_uri"))
     return bool(config.get("client_id") and config.get("redirect_uri"))
 
 
-def _build_social_authorization_url(provider: str, role: str) -> str:
-    config = _get_social_provider_settings(provider)
-    if not _is_social_provider_configured(provider):
+def _build_social_authorization_url(provider: str, role: str, request: Request | None = None) -> str:
+    config = _get_social_provider_settings(provider, request)
+    if not _is_social_provider_configured(provider, request):
         raise HTTPException(status_code=503, detail=f"{SOCIAL_PROVIDER_LABELS.get(provider, provider)} 로그인 설정이 아직 완료되지 않았습니다.")
 
     state = _create_social_state(provider, role)
@@ -2136,8 +2216,8 @@ def _build_social_authorization_url(provider: str, role: str) -> str:
     raise HTTPException(status_code=404, detail="지원하지 않는 소셜 로그인 제공자입니다.")
 
 
-def _exchange_social_access_token(provider: str, code: str) -> str:
-    config = _get_social_provider_settings(provider)
+def _exchange_social_access_token(provider: str, code: str, request: Request | None = None) -> str:
+    config = _get_social_provider_settings(provider, request)
 
     if provider == "kakao":
         token_url = "https://kauth.kakao.com/oauth/token"
@@ -2212,8 +2292,26 @@ def _fetch_social_profile(provider: str, access_token: str) -> dict[str, str | N
     raise HTTPException(status_code=404, detail="지원하지 않는 소셜 로그인 제공자입니다.")
 
 
-def _build_frontend_auth_redirect(user: dict[str, Any] | None = None, error: str | None = None) -> str:
-    base_url = FRONTEND_BASE_URL.rstrip("/")
+def _get_frontend_base_url(request: Request | None = None) -> str:
+    public_base_url = _get_public_base_url(request)
+
+    if FRONTEND_BASE_URL:
+        if public_base_url and not _is_local_url(public_base_url) and _is_local_url(FRONTEND_BASE_URL):
+            return public_base_url
+        return FRONTEND_BASE_URL.rstrip("/")
+
+    if public_base_url:
+        return public_base_url
+
+    return DEFAULT_LOCAL_API_BASE_URL
+
+
+def _build_frontend_auth_redirect(
+    request: Request | None = None,
+    user: dict[str, Any] | None = None,
+    error: str | None = None,
+) -> str:
+    base_url = _get_frontend_base_url(request)
     params: dict[str, str] = {}
 
     if user:
@@ -2332,6 +2430,16 @@ app.add_middleware(
 # =========================================================
 @app.get("/")
 def root():
+    return RedirectResponse(url="/home/index.html", status_code=307)
+
+
+@app.get("/index.html", include_in_schema=False)
+def root_index():
+    return RedirectResponse(url="/home/index.html", status_code=307)
+
+
+@app.get("/api")
+def api_root():
     return {
         "message": "Yeongju Empty House API is running",
         "health": "/health",
@@ -2526,14 +2634,14 @@ def update_public_admin_role(payload: AdminPublicUserActionRequest, db: Session 
 
 
 @app.get("/auth/social/{provider}/start", response_model=SocialAuthStartResponse)
-def social_login_start(provider: str, role: str) -> dict[str, str]:
+def social_login_start(provider: str, role: str, request: Request) -> dict[str, str]:
     normalized_provider = (provider or "").strip().lower()
     normalized_role = (role or "").strip().lower()
 
     if normalized_role not in ROLE_LABELS:
         raise HTTPException(status_code=400, detail="회원 유형을 먼저 선택해 주세요.")
 
-    auth_url = _build_social_authorization_url(normalized_provider, normalized_role)
+    auth_url = _build_social_authorization_url(normalized_provider, normalized_role, request)
     return {
         "provider": normalized_provider,
         "providerLabel": SOCIAL_PROVIDER_LABELS.get(normalized_provider, normalized_provider),
@@ -2543,6 +2651,7 @@ def social_login_start(provider: str, role: str) -> dict[str, str]:
 
 @app.get("/auth/social/{provider}/callback")
 def social_login_callback(
+    request: Request,
     provider: str,
     code: str | None = None,
     state: str | None = None,
@@ -2552,13 +2661,13 @@ def social_login_callback(
     normalized_provider = (provider or "").strip().lower()
 
     if error:
-        return RedirectResponse(url=_build_frontend_auth_redirect(error="소셜 로그인 인증이 취소되었거나 실패했습니다."))
+        return RedirectResponse(url=_build_frontend_auth_redirect(request, error="소셜 로그인 인증이 취소되었거나 실패했습니다."))
     if not code or not state:
-        return RedirectResponse(url=_build_frontend_auth_redirect(error="소셜 로그인 응답값이 올바르지 않습니다."))
+        return RedirectResponse(url=_build_frontend_auth_redirect(request, error="소셜 로그인 응답값이 올바르지 않습니다."))
 
     try:
         state_payload = _parse_social_state(state, normalized_provider)
-        access_token = _exchange_social_access_token(normalized_provider, code)
+        access_token = _exchange_social_access_token(normalized_provider, code, request)
         profile = _fetch_social_profile(normalized_provider, access_token)
         user = _upsert_social_user(
             db=db,
@@ -2568,9 +2677,9 @@ def social_login_callback(
             name=str(profile.get("name") or ""),
             role=str(state_payload.get("role") or "guest"),
         )
-        return RedirectResponse(url=_build_frontend_auth_redirect(user=_serialize_user(user)))
+        return RedirectResponse(url=_build_frontend_auth_redirect(request, user=_serialize_user(user)))
     except HTTPException as exc:
-        return RedirectResponse(url=_build_frontend_auth_redirect(error=str(exc.detail)))
+        return RedirectResponse(url=_build_frontend_auth_redirect(request, error=str(exc.detail)))
 
 
 @app.get("/houses", response_model=list[HouseFrontOut])
@@ -2789,6 +2898,34 @@ def ai_chat(payload: AiChatRequest, db: Session = Depends(get_db)) -> dict[str, 
         "parsedConditions": conditions,
         "knowledgeApplied": has_ai_knowledge(),
     }
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+def favicon():
+    favicon_path = os.path.join(BASE_DIR, "favicon.ico")
+    if not os.path.exists(favicon_path):
+        raise HTTPException(status_code=404, detail="favicon not found")
+    return FileResponse(favicon_path)
+
+
+STATIC_DIR_NAMES = (
+    "assets",
+    "auth",
+    "home",
+    "guest",
+    "owner",
+    "admin",
+    "legal",
+    "community",
+    "common",
+    "data",
+    "vendor",
+)
+
+for static_dir_name in STATIC_DIR_NAMES:
+    static_dir_path = os.path.join(BASE_DIR, static_dir_name)
+    if os.path.isdir(static_dir_path):
+        app.mount(f"/{static_dir_name}", StaticFiles(directory=static_dir_path), name=f"{static_dir_name}-static")
 
 
 if __name__ == "__main__":

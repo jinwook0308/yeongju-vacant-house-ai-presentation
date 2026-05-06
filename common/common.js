@@ -1295,7 +1295,22 @@ function getApiBaseUrl() {
     return String(window.YEONGJU_API_BASE_URL).replace(/\/$/, '');
   }
 
-  return 'https://yeongju-vacant-house-ai.onrender.com';
+  const { protocol, hostname, port, origin } = window.location;
+  const isHttp = protocol === 'http:' || protocol === 'https:';
+
+  if (!isHttp) {
+    return 'http://localhost:8000';
+  }
+
+  if (hostname.includes('github.io')) {
+    return 'https://yeongju-vacant-house-ai.onrender.com';
+  }
+
+  if ((hostname === '127.0.0.1' || hostname === 'localhost') && port && port !== '8000') {
+    return 'http://localhost:8000';
+  }
+
+  return origin.replace(/\/$/, '');
 }
 
 async function withdrawCurrentUser() {
