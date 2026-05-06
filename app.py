@@ -2105,6 +2105,22 @@ def _is_local_url(url: str) -> bool:
     return _is_local_hostname(hostname)
 
 
+def _normalize_absolute_base_url(url: str) -> str:
+    value = (url or "").strip().rstrip("/")
+    if not value:
+        return ""
+
+    try:
+        parsed = urlparse(value)
+    except ValueError:
+        return ""
+
+    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+        return ""
+
+    return value
+
+
 def _get_request_base_url(request: Request | None = None) -> str:
     if request is None:
         return ""
@@ -2133,8 +2149,9 @@ def _get_request_base_url(request: Request | None = None) -> str:
 
 
 def _get_public_base_url(request: Request | None = None) -> str:
-    if PUBLIC_BASE_URL:
-        return PUBLIC_BASE_URL.rstrip("/")
+    configured_public_base_url = _normalize_absolute_base_url(PUBLIC_BASE_URL)
+    if configured_public_base_url:
+        return configured_public_base_url
     return _get_request_base_url(request)
 
 
@@ -2294,11 +2311,12 @@ def _fetch_social_profile(provider: str, access_token: str) -> dict[str, str | N
 
 def _get_frontend_base_url(request: Request | None = None) -> str:
     public_base_url = _get_public_base_url(request)
+    configured_frontend_base_url = _normalize_absolute_base_url(FRONTEND_BASE_URL)
 
-    if FRONTEND_BASE_URL:
-        if public_base_url and not _is_local_url(public_base_url) and _is_local_url(FRONTEND_BASE_URL):
+    if configured_frontend_base_url:
+        if public_base_url and not _is_local_url(public_base_url) and _is_local_url(configured_frontend_base_url):
             return public_base_url
-        return FRONTEND_BASE_URL.rstrip("/")
+        return configured_frontend_base_url
 
     if public_base_url:
         return public_base_url
