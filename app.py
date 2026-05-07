@@ -2234,7 +2234,7 @@ def _build_social_authorization_url(provider: str, role: str, request: Request |
                 "client_id": config["client_id"],
                 "redirect_uri": config["redirect_uri"],
                 "state": state,
-                "scope": "profile_nickname account_email",
+                "scope": "profile_nickname",
                 "prompt": "select_account",
             }
         )
