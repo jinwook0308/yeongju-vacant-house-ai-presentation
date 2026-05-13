@@ -260,8 +260,7 @@ function highlightQuickLoginBtn(role) {
   Object.values(btnMap).forEach(cls => {
     const btn = document.querySelector(`.${cls}`);
     if (btn) {
-      btn.style.borderColor = '';
-      btn.style.backgroundColor = '';
+      btn.classList.remove('is-selected');
     }
   });
 
@@ -269,8 +268,7 @@ function highlightQuickLoginBtn(role) {
   if (selectedClass) {
     const selectedBtn = document.querySelector(`.${selectedClass}`);
     if (selectedBtn) {
-      selectedBtn.style.borderColor = 'var(--color-primary)';
-      selectedBtn.style.backgroundColor = 'rgba(201, 168, 76, 0.08)';
+      selectedBtn.classList.add('is-selected');
     }
   }
 }

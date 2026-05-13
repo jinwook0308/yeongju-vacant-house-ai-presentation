@@ -141,7 +141,9 @@
    맨 위로 버튼
    ============================================================ */
 .floating-btn--top {
-  background: linear-gradient(135deg, #2c2416 0%, #1a1510 100%);
+  background: linear-gradient(145deg, #ffffff 0%, #f4f6f8 100%);
+  border: 1px solid rgba(15, 23, 42, 0.16);
+  color: #111827;
   font-size: 12px;
   font-weight: 700;
   opacity: 0;
@@ -157,7 +159,8 @@
 }
 
 .floating-btn--top:hover {
-  background: linear-gradient(135deg, #3a3120 0%, #2c2416 100%);
+  background: linear-gradient(145deg, #ffffff 0%, #edf2f7 100%);
+  border-color: rgba(15, 23, 42, 0.28);
 }
 
 .floating-btn--top .floating-btn__label {
@@ -165,6 +168,7 @@
   font-weight: 700;
   letter-spacing: 0.8px;
   line-height: 1;
+  color: #111827;
 }
 
 /* ============================================================
@@ -288,7 +292,7 @@
 }
 
 .floating-btn--top:focus {
-  outline: 2px solid #2c2416;
+  outline: 2px solid #111827;
   outline-offset: 2px;
 }
 

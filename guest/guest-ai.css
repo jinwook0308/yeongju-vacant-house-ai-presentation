@@ -690,6 +690,125 @@ body,
 }
 
 /* ============================================================
+   Final AI Response Layout Fixes
+   ============================================================ */
+
+.guest-ai-page .page-header__title {
+  color: #111827 !important;
+}
+
+.guest-ai-page .page-header__subtitle {
+  color: #6b7280 !important;
+}
+
+.ai-chat-msg__content--wide {
+  max-width: min(94%, 960px) !important;
+}
+
+.ai-chat-msg__bubble--response {
+  display: grid;
+  gap: 14px;
+}
+
+.ai-response-copy {
+  font-size: 0.92rem;
+  line-height: 1.7;
+  color: #111827;
+}
+
+.ai-response-summary,
+.ai-response-results {
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 16px;
+  background: #ffffff;
+  padding: 14px 16px;
+}
+
+.ai-response-summary__title,
+.ai-response-results__title {
+  display: block;
+  margin-bottom: 8px;
+  color: #111827;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.ai-response-summary__text,
+.ai-response-summary__meta {
+  margin: 0;
+  color: #4b5563;
+  font-size: 0.8rem;
+  line-height: 1.65;
+}
+
+.ai-response-summary__meta {
+  margin-top: 6px;
+}
+
+.ai-result-stack {
+  display: grid;
+  gap: 10px;
+}
+
+.ai-result-card {
+  display: grid !important;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: flex-start;
+  margin-top: 0 !important;
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  background: #f8fafc !important;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.18s ease, background-color 0.18s ease, transform 0.18s ease;
+}
+
+.ai-result-card:hover {
+  border-color: rgba(15, 23, 42, 0.22);
+  background: #ffffff !important;
+  transform: translateY(-1px);
+}
+
+.ai-result-card__badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 7px 0 8px;
+}
+
+.ai-result-card__meta {
+  display: grid;
+  gap: 4px;
+  margin-top: 8px;
+  color: #6b7280;
+  font-size: 0.74rem;
+  line-height: 1.55;
+}
+
+.ai-result-card__meta strong {
+  color: #374151;
+}
+
+.ai-result-card__price {
+  color: #111827;
+  font-size: 0.82rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+@media (max-width: 680px) {
+  .ai-result-card {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .ai-result-card__price {
+    grid-column: 2;
+  }
+}
+
+/* ============================================================
    Pure White AI Recommendation Redesign
    ============================================================ */
 

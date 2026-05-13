@@ -29,6 +29,17 @@ body {
   font-size: 0.84rem;
 }
 
+.site-header__actions {
+  align-items: center;
+}
+
+.site-header__user-link,
+.site-header__notice-btn {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+}
+
 .site-header__logo-image {
   width: clamp(92px, 8vw, 120px);
   height: auto;

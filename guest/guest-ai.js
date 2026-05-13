@@ -1,11 +1,13 @@
 /**
  * guest-ai.js
- * 영주시 공공형 빈집 활용 플랫폼 - AI 추천 페이지 스크립트
- * GPT API + 백엔드 추천 API 연동 버전
+ * ?곸＜??怨듦났??鍮덉쭛 ?쒖슜 ?뚮옯??- AI 異붿쿇 ?섏씠吏 ?ㅽ겕由쏀듃
+ * GPT API + 諛깆뿏??異붿쿇 API ?곕룞 踰꾩쟾
  */
 
 const API_BASE_URL = typeof getApiBaseUrl === 'function' ? getApiBaseUrl() : 'http://localhost:8000';
+const AI_CHAT_STORAGE_KEY = 'yeongjuAiChatHistory';
 let aiChatHistory = [];
+let aiChatDisplayHistory = [];
 
 async function handleChatSend() {
   const input = document.getElementById('aiChatInput');
@@ -15,7 +17,9 @@ async function handleChatSend() {
   if (!text) return;
 
   appendChatMessage(messages, 'user', escapeHtml(text));
-  aiChatHistory.push({ role: 'user', content: text });
+  aiChatDisplayHistory.push({ kind: 'user', message: text });
+  syncAiApiHistory();
+  saveAiChatHistory();
   input.value = '';
 
   const loadingEl = appendLoadingMessage(messages);
@@ -37,31 +41,43 @@ async function handleChatSend() {
     const data = await response.json();
     loadingEl.remove();
 
-    appendChatMessage(messages, 'bot', formatBotText(data.message));
-    aiChatHistory.push({ role: 'assistant', content: data.message });
-
-    if (Array.isArray(data.recommendations) && data.recommendations.length > 0) {
-      appendRecommendationCards(
-        messages,
-        data.recommendations,
-        data.parsedConditions,
-        data.knowledgeApplied
-      );
-    }
+    appendBotResponse(
+      messages,
+      data.message,
+      Array.isArray(data.recommendations) ? data.recommendations : [],
+      data.parsedConditions,
+      data.knowledgeApplied
+    );
+    aiChatDisplayHistory.push({
+      kind: 'bot',
+      message: data.message,
+      recommendations: Array.isArray(data.recommendations) ? data.recommendations : [],
+      parsedConditions: data.parsedConditions || null,
+      knowledgeApplied: Boolean(data.knowledgeApplied),
+    });
+    syncAiApiHistory();
+    saveAiChatHistory();
   } catch (error) {
     console.error('AI 채팅 요청 실패:', error);
     loadingEl.remove();
+    aiChatDisplayHistory.push({
+      kind: 'bot',
+      message: '죄송합니다. 현재 AI 채팅 서버와 연결되지 않았습니다. 백엔드가 실행 중인지 확인해주세요.',
+      recommendations: [],
+      parsedConditions: null,
+      knowledgeApplied: false,
+    });
+    syncAiApiHistory();
+    saveAiChatHistory();
     appendChatMessage(
       messages,
       'bot',
       '죄송합니다. 현재 AI 채팅 서버와 연결되지 않았습니다.<br>백엔드가 실행 중인지 확인해주세요.'
     );
   }
-
-  messages.scrollTop = messages.scrollHeight;
 }
 
-// HTML onclick에서도 쓰고 싶으면 이 줄 추가
+// HTML onclick?먯꽌???곌퀬 ?띠쑝硫???以?異붽?
 window.handleChatSend = handleChatSend;
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -69,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (typeof renderHeader === 'function') renderHeader('ai');
     if (typeof renderFooter === 'function') renderFooter();
   } catch (e) {
-    console.error('헤더/푸터 렌더링 오류:', e);
+    console.error('?ㅻ뜑/?명꽣 ?뚮뜑留??ㅻ쪟:', e);
   }
 
   const sendBtn = document.getElementById('aiChatSendBtn');
@@ -87,10 +103,12 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
   }
+
+  restoreAiChatHistory();
 });
 
 /**
- * 분위기 선택 버튼을 설정합니다.
+ * 遺꾩쐞湲??좏깮 踰꾪듉???ㅼ젙?⑸땲??
  */
 function setupMoodButtons() {
   document.querySelectorAll('.ai-mood-btn').forEach(btn => {
@@ -108,8 +126,8 @@ function setupMoodButtons() {
 }
 
 /**
- * AI 추천 로직을 실행합니다.
- * 실제 서비스에서는 Python 백엔드 API를 호출합니다.
+ * AI 異붿쿇 濡쒖쭅???ㅽ뻾?⑸땲??
+ * ?ㅼ젣 ?쒕퉬?ㅼ뿉?쒕뒗 Python 諛깆뿏??API瑜??몄텧?⑸땲??
  */
 function runAiRecommendation() {
   const district = document.getElementById('aiDistrict').value;
@@ -117,12 +135,12 @@ function runAiRecommendation() {
   const stayDuration = document.getElementById('aiStayDuration').value;
   const budget = document.getElementById('aiBudget').value;
 
-  // 로딩 표시
+  // 濡쒕뵫 ?쒖떆
   document.getElementById('aiResultIntro').style.display = 'none';
   document.getElementById('aiResultContent').style.display = 'none';
   document.getElementById('aiResultLoading').style.display = 'flex';
 
-  // 추천 처리 (데모: 1.5초 지연 후 결과)
+  // 異붿쿇 泥섎━ (?곕え: 1.5珥?吏????寃곌낵)
   setTimeout(() => {
     const recommendations = computeAiRecommendations({ district, capacity, stayDuration, budget, moods: selectedMoods });
     displayAiRecommendations(recommendations, { district, capacity, stayDuration, budget });
@@ -130,90 +148,204 @@ function runAiRecommendation() {
 }
 
 /**
- * 조건에 따라 추천 빈집을 계산합니다.
- * @param {Object} conditions - 추천 조건
- * @returns {Array} 추천 빈집 목록 (점수 포함)
+ * 議곌굔???곕씪 異붿쿇 鍮덉쭛??怨꾩궛?⑸땲??
+ * @param {Object} conditions - 異붿쿇 議곌굔
+ * @returns {Array} 異붿쿇 鍮덉쭛 紐⑸줉 (?먯닔 ?ы븿)
  */
 function computeAiRecommendations(conditions) {
-  // 승인된 빈집만 대상
-  const approvedHouses = VACANT_HOUSE_LIST.filter(h => h.isApproved);
+  const approvedHouses = VACANT_HOUSE_LIST.filter((house) => house.isApproved);
 
-  const scored = approvedHouses.map(house => {
+  const scored = approvedHouses.map((house) => {
     let score = 0;
     const reasons = [];
 
-    // 지역 일치
     if (conditions.district && house.districtId === conditions.district) {
       score += 30;
-      reasons.push('희망 지역 일치');
+      reasons.push('영주시 희망 지역과 일치');
     } else if (!conditions.district) {
       score += 10;
     }
 
-    // 수용 인원
     if (house.maxCapacity >= conditions.capacity) {
       score += 20;
-      reasons.push(`${conditions.capacity}명 수용 가능`);
+      reasons.push(`${conditions.capacity}명 이상 수용 가능`);
     }
 
-    // 체류 기간 - 운영 유형 매핑
     if (conditions.stayDuration === 'long' && house.operationType === 'longterm') {
       score += 25;
-      reasons.push('장기체류형 적합');
+      reasons.push('장기 체류 활용에 적합');
     } else if (conditions.stayDuration === 'short' && house.operationType === 'lodging') {
       score += 20;
-      reasons.push('단기 숙박 적합');
+      reasons.push('단기 숙박 활용에 적합');
     } else if (conditions.stayDuration === 'medium') {
       score += 10;
     }
 
-    // 분위기 매핑
-    if (conditions.moods.includes('nature') && house.tags.some(t => ['자연', '산촌', '농촌'].includes(t))) {
+    if (conditions.moods.includes('nature') && house.tags.some((tag) => ['자연', '계곡', '숲'].includes(tag))) {
       score += 15;
-      reasons.push('자연 환경 적합');
+      reasons.push('자연 친화적인 입지');
     }
-    if (conditions.moods.includes('family') && house.tags.some(t => ['가족', '한옥'].includes(t))) {
+    if (conditions.moods.includes('family') && house.tags.some((tag) => ['가족', '키즈', '체험'].includes(tag))) {
       score += 15;
-      reasons.push('가족 여행 적합');
+      reasons.push('가족 단위 이용에 적합');
     }
     if (conditions.moods.includes('experience') && house.operationType === 'experience') {
       score += 20;
-      reasons.push('체험 공간 적합');
+      reasons.push('체험형 공간 운영에 적합');
     }
-    if (conditions.moods.includes('farming') && house.tags.some(t => ['농촌', '귀농', '사과'].includes(t))) {
+    if (conditions.moods.includes('farming') && house.tags.some((tag) => ['농촌', '과수', '사과'].includes(tag))) {
       score += 20;
-      reasons.push('귀농 체험 적합');
+      reasons.push('영주 농촌 체험과 연결 가능');
     }
-    if (conditions.moods.includes('hiking') && house.tags.some(t => ['등산', '소백산'].includes(t))) {
+    if (conditions.moods.includes('hiking') && house.tags.some((tag) => ['등산', '트레킹', '산'].includes(tag))) {
       score += 20;
-      reasons.push('등산·트레킹 적합');
+      reasons.push('등산·트레킹 수요와 잘 맞음');
     }
 
-    // 상태 등급 A 보너스
     if (house.conditionGrade === 'A') {
       score += 10;
-      reasons.push('A등급 (즉시 활용)');
+      reasons.push('상태 등급 A로 즉시 활용 가능');
     }
 
     return { house, score, reasons };
   });
 
   return scored
-    .filter(s => s.score > 0)
+    .filter((item) => item.score > 0)
     .sort((a, b) => b.score - a.score)
     .slice(0, 4);
 }
 
+function syncAiApiHistory() {
+  aiChatHistory = aiChatDisplayHistory
+    .filter((entry) => entry && (entry.kind === 'user' || entry.kind === 'bot'))
+    .map((entry) => ({
+      role: entry.kind === 'user' ? 'user' : 'assistant',
+      content: entry.message || '',
+    }));
+}
+
+function saveAiChatHistory() {
+  try {
+    localStorage.setItem(AI_CHAT_STORAGE_KEY, JSON.stringify(aiChatDisplayHistory.slice(-20)));
+  } catch (error) {
+    console.warn('AI ???湲곕줉 ??μ뿉 ?ㅽ뙣?덉뒿?덈떎.', error);
+  }
+}
+
+function restoreAiChatHistory() {
+  const messages = document.getElementById('aiChatMessages');
+  if (!messages) return;
+
+  try {
+    const saved = JSON.parse(localStorage.getItem(AI_CHAT_STORAGE_KEY) || '[]');
+    if (!Array.isArray(saved) || saved.length === 0) return;
+
+    aiChatDisplayHistory = saved.filter((entry) => entry && typeof entry === 'object');
+    syncAiApiHistory();
+
+    aiChatDisplayHistory.forEach((entry) => {
+      if (entry.kind === 'user') {
+        appendChatMessage(messages, 'user', escapeHtml(entry.message || ''));
+        return;
+      }
+
+      appendBotResponse(
+        messages,
+        entry.message || '',
+        Array.isArray(entry.recommendations) ? entry.recommendations : [],
+        entry.parsedConditions || null,
+        Boolean(entry.knowledgeApplied),
+        { scroll: false }
+      );
+    });
+  } catch (error) {
+    aiChatDisplayHistory = [];
+    aiChatHistory = [];
+    localStorage.removeItem(AI_CHAT_STORAGE_KEY);
+  }
+}
+
+function appendBotResponse(container, message, recommendations = [], parsedConditions = null, knowledgeApplied = false, options = {}) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'ai-chat-msg ai-chat-msg--bot ai-chat-msg--bot-response';
+
+  const parsedSummary = buildParsedSummary(parsedConditions || {});
+  const cardsHtml = renderRecommendationCards(recommendations);
+  const summaryHtml = recommendations.length
+    ? `
+      <div class="ai-response-summary">
+        <strong class="ai-response-summary__title">추천 조건 해석</strong>
+        <p class="ai-response-summary__text">${escapeHtml(parsedSummary)}</p>
+        ${knowledgeApplied ? '<p class="ai-response-summary__meta">영주시 지역 특성을 반영해 추천했습니다.</p>' : ''}
+      </div>
+    `
+    : '';
+  const resultHtml = cardsHtml
+    ? `
+      <div class="ai-response-results">
+        <div class="ai-response-results__title">추천 빈집 연결</div>
+        <div class="ai-result-stack">${cardsHtml}</div>
+      </div>
+    `
+    : '';
+
+  wrapper.innerHTML = `
+    <div class="ai-chat-msg__avatar"><img src="../assets/images/yeongju_mas.jpg" alt="영주 AI 마스코트"></div>
+    <div class="ai-chat-msg__content ai-chat-msg__content--wide">
+      <div class="ai-chat-msg__name">AI 추천 도우미</div>
+      <div class="ai-chat-msg__bubble ai-chat-msg__bubble--response">
+        <div class="ai-response-copy">${formatBotText(message)}</div>
+        ${summaryHtml}
+        ${resultHtml}
+      </div>
+    </div>
+  `;
+
+  container.appendChild(wrapper);
+  if (options.scroll !== false) {
+    requestAnimationFrame(() => {
+      wrapper.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+  return wrapper;
+}
+
+function renderRecommendationCards(recommendations = []) {
+  return recommendations.map((item, idx) => {
+    const house = item.house;
+    return `
+      <a href="guest-detail.html?id=${house.id}" class="ai-result-card">
+        <div class="ai-result-card__rank">${idx + 1}</div>
+        <div class="ai-result-card__emoji">${getHouseEmoji(house.operationType)}</div>
+        <div class="ai-result-card__info">
+          <div class="ai-result-card__name">${escapeHtml(house.name)}</div>
+          <div class="ai-result-card__location">영주시 ${escapeHtml(house.districtName)} ? 최대 ${house.maxCapacity}명</div>
+          <div class="ai-result-card__badge-row">
+            ${getConditionGradeBadge(house.conditionGrade)}
+            ${getOperationTypeBadge(house.operationType)}
+          </div>
+          <div class="ai-result-card__match">추천 이유: ${item.reasons.map(escapeHtml).join(' ? ')}</div>
+          <div class="ai-result-card__meta">
+            <div><strong>공공데이터 반영</strong> : ${escapeHtml(getPublicDataSummary(house))}</div>
+            <div><strong>참고</strong> : ${escapeHtml(getGradeCautionText(house.conditionGrade))}</div>
+          </div>
+        </div>
+        <div class="ai-result-card__price">${escapeHtml(house.priceRange)}</div>
+      </a>
+    `;
+  }).join('');
+}
 
 function appendLoadingMessage(container) {
   const msg = document.createElement('div');
   msg.className = 'ai-chat-msg ai-chat-msg--bot';
   msg.innerHTML = `
-    <div class="ai-chat-msg__avatar"><img src="../assets/images/yeongju_mas.jpg" alt="영주도령 프로필"></div>
+    <div class="ai-chat-msg__avatar"><img src="../assets/images/yeongju_mas.jpg" alt="영주 AI 마스코트"></div>
     <div class="ai-chat-msg__content">
       <div class="ai-chat-msg__name">AI 추천 도우미</div>
       <div class="ai-chat-msg__bubble">
-        추천 조건을 분석하고 있습니다
+        추천 조건을 분석하고 있습니다.
         <span class="ai-chat-loading" aria-hidden="true"><span></span><span></span><span></span></span>
       </div>
     </div>
@@ -230,13 +362,13 @@ function appendChatMessage(container, role, html) {
   if (role === 'user') {
     msg.innerHTML = `
       <div class="ai-chat-msg__content">
-        <div class="ai-chat-msg__name">나</div>
+        <div class="ai-chat-msg__name">사용자</div>
         <div class="ai-chat-msg__bubble">${html}</div>
       </div>
     `;
   } else {
     msg.innerHTML = `
-      <div class="ai-chat-msg__avatar"><img src="../assets/images/yeongju_mas.jpg" alt="영주도령 프로필"></div>
+      <div class="ai-chat-msg__avatar"><img src="../assets/images/yeongju_mas.jpg" alt="영주 AI 마스코트"></div>
       <div class="ai-chat-msg__content">
         <div class="ai-chat-msg__name">AI 추천 도우미</div>
         <div class="ai-chat-msg__bubble">${html}</div>
@@ -247,77 +379,31 @@ function appendChatMessage(container, role, html) {
   container.scrollTop = container.scrollHeight;
 }
 
-function appendRecommendationCards(container, recommendations, parsedConditions, knowledgeApplied) {
-  const wrapper = document.createElement('div');
-  wrapper.className = 'ai-chat-msg ai-chat-msg--bot';
-
-  const parsedSummary = buildParsedSummary(parsedConditions);
-  const cardsHtml = recommendations.map((item, idx) => {
-    const house = item.house;
-    return `
-      <a href="guest-detail.html?id=${house.id}" class="ai-result-card" style="display:flex;text-decoration:none;color:inherit;margin-top:12px;">
-        <div class="ai-result-card__rank">${idx + 1}</div>
-        <div class="ai-result-card__emoji">${getHouseEmoji(house.operationType)}</div>
-        <div class="ai-result-card__info">
-          <div class="ai-result-card__name">${escapeHtml(house.name)}</div>
-          <div class="ai-result-card__location">📍 영주시 ${escapeHtml(house.districtName)} · 최대 ${house.maxCapacity}명</div>
-          <div style="display:flex;gap:4px;flex-wrap:wrap;margin:6px 0;">
-            ${getConditionGradeBadge(house.conditionGrade)}
-            ${getOperationTypeBadge(house.operationType)}
-          </div>
-          <div class="ai-result-card__match">✓ 추천 이유: ${item.reasons.map(escapeHtml).join(' · ')}</div>
-          <div style="margin-top:8px;font-size:var(--font-size-xs);color:var(--color-text-secondary);line-height:1.7;">
-            <div><strong>공공데이터 반영</strong> : ${escapeHtml(getPublicDataSummary(house))}</div>
-            <div><strong>주의사항</strong> : ${escapeHtml(getGradeCautionText(house.conditionGrade))}</div>
-          </div>
-        </div>
-        <div style="font-size:var(--font-size-sm);font-weight:700;color:var(--color-primary);flex-shrink:0;">${escapeHtml(house.priceRange)}</div>
-      </a>
-    `;
-  }).join('');
-
-  wrapper.innerHTML = `
-    <div class="ai-chat-msg__avatar"><img src="../assets/images/yeongju_mas.jpg" alt="영주도령 프로필"></div>
-    <div class="ai-chat-msg__content" style="max-width:min(92%,980px);">
-      <div class="ai-chat-msg__name">AI 추천 도우미</div>
-      <div class="ai-chat-msg__bubble" style="width:100%;max-width:100%;">
-        <div style="font-weight:700;margin-bottom:8px;">추천 후보 ${recommendations.length}개</div>
-        <div style="font-size:var(--font-size-sm);color:var(--color-text-muted);margin-bottom:8px;">${parsedSummary}</div>
-        ${knowledgeApplied ? '<div style="font-size:var(--font-size-xs);color:var(--color-primary);margin-bottom:8px;">지식 파일 반영됨</div>' : ''}
-        ${cardsHtml}
-      </div>
-    </div>
-  `;
-
-  container.appendChild(wrapper);
-  container.scrollTop = container.scrollHeight;
-}
-
 function buildParsedSummary(parsedConditions = {}) {
   const parts = [];
   if (parsedConditions.districtName) parts.push(`지역: ${parsedConditions.districtName}`);
   if (parsedConditions.capacity) parts.push(`인원: ${parsedConditions.capacity}명`);
   if (parsedConditions.stayDuration) {
-    const map = { short: '단기', medium: '중기', long: '장기' };
-    parts.push(`체류: ${map[parsedConditions.stayDuration] || parsedConditions.stayDuration}`);
+    const stayDurationMap = { short: '단기', medium: '중기', long: '장기' };
+    parts.push(`체류: ${stayDurationMap[parsedConditions.stayDuration] || parsedConditions.stayDuration}`);
   }
   if (Array.isArray(parsedConditions.moods) && parsedConditions.moods.length > 0) {
     parts.push(`분위기: ${parsedConditions.moods.join(', ')}`);
   }
-  return parts.length > 0 ? parts.join(' · ') : '질문 내용을 기준으로 조건을 자동 해석했습니다.';
+  return parts.length > 0 ? parts.join(' ? ') : '질문 내용을 기준으로 조건을 자동 해석했습니다.';
 }
 
 function getPublicDataSummary(house) {
-  const rawStatus = house.status ? `원문 상태 '${house.status}'` : '원문 상태 정보 없음';
-  return `${rawStatus}, ${getConditionGradeText(house.conditionGrade)} 반영`;
+  const statusSummary = house.status ? `현장 상태 ${house.status}` : '현장 상태 정보 없음';
+  return `${statusSummary}, ${getConditionGradeText(house.conditionGrade)} 반영`;
 }
 
 function getHouseEmoji(operationType) {
   return {
-    lodging: '🏠',
-    longterm: '📅',
+    lodging: '🏡',
+    longterm: '🛏️',
     experience: '🌿',
-    review_needed: '🔍',
+    review_needed: '📋',
   }[operationType] || '🏠';
 }
 

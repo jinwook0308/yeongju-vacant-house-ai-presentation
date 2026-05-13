@@ -156,7 +156,21 @@ const navItems = [
 
   const headerEl = document.getElementById('siteHeader');
   const toggleBtn = document.getElementById('mobileMenuToggle');
+  const notificationToggle = document.getElementById('notificationToggle');
+  const mobileNotificationToggle = document.getElementById('mobileNotificationToggle');
 const mobileNavEl = document.getElementById('mobileNav');
+
+if (notificationToggle) {
+  const notificationCountHtml = unreadCount > 0
+    ? `<span class="site-header__notice-count">${unreadCount}</span>`
+    : '';
+  notificationToggle.classList.add('site-header__notice-btn--icon');
+  notificationToggle.innerHTML = `<span class="site-header__notice-icon" aria-hidden="true">🔔</span>${notificationCountHtml}`;
+}
+
+if (mobileNotificationToggle) {
+  mobileNotificationToggle.innerHTML = `\uD83D\uDD14 \uc54c\ub9bc${unreadCount > 0 ? ` (${unreadCount})` : ''}`;
+}
 
 if (toggleBtn && mobileNavEl) {
   toggleBtn.addEventListener('click', () => {
@@ -388,7 +402,7 @@ function setupHeaderNotifications(user, activePage = '') {
     body.user-platform-page.home-page .site-header__nav-link:hover:not(.is-active),
     body.user-platform-page.home-page .site-header__nav-link:focus-visible:not(.is-active) {
       color: #ffffff !important;
-      background: rgba(255, 255, 255, 0.12) !important;
+      background: rgba(201, 168, 76, 0.18) !important;
       text-shadow: 0 2px 10px rgba(0, 0, 0, 0.34) !important;
       box-shadow: none !important;
     }
@@ -449,7 +463,7 @@ function setupHeaderNotifications(user, activePage = '') {
     body.user-platform-page.home-page .site-header.is-scrolled .site-header__nav-link:hover:not(.is-active),
     body.user-platform-page.home-page .site-header.is-scrolled .site-header__nav-link:focus-visible:not(.is-active) {
       color: #111111 !important;
-      background: rgba(0, 0, 0, 0.06) !important;
+      background: rgba(201, 168, 76, 0.12) !important;
       text-shadow: none !important;
       box-shadow: none !important;
     }

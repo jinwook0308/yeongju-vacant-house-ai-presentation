@@ -3,11 +3,51 @@
  * 영주시 공공형 빈집 활용 플랫폼 - 소유자 신청 내역 페이지 스타일
  */
 
+body {
+  --owner-accent: #2f8f4e;
+  --owner-accent-strong: #1f6e39;
+  --owner-accent-soft: #edf7f0;
+  background: #f4f8f5 !important;
+}
+
 .requests-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: var(--spacing-lg);
+}
+
+.page-header {
+  background:
+    linear-gradient(140deg, rgba(248, 252, 249, 0.98) 0%, rgba(232, 244, 236, 0.95) 100%),
+    radial-gradient(circle at 88% 20%, rgba(47, 143, 78, 0.14), transparent 34%);
+  border-bottom: 1px solid rgba(47, 143, 78, 0.18);
+  box-shadow: none;
+}
+
+.page-header__title,
+.requests-header__title {
+  color: #1f2c20;
+}
+
+.sidebar-nav {
+  background: #ffffff;
+  border: 1px solid rgba(47, 143, 78, 0.16);
+  box-shadow: none;
+}
+
+.sidebar-nav__header {
+  background: linear-gradient(135deg, #3aa45c 0%, #28753f 100%);
+}
+
+.sidebar-nav__item:hover,
+.sidebar-nav__item.is-active {
+  background: var(--owner-accent-soft);
+  color: var(--owner-accent);
+}
+
+.sidebar-nav__item.is-active {
+  border-left-color: var(--owner-accent);
 }
 
 .requests-header__title {
@@ -36,32 +76,34 @@
 }
 
 .status-filter-tab:hover {
-  border-color: var(--color-primary-light);
-  color: var(--color-primary);
+  border-color: rgba(47, 143, 78, 0.34);
+  color: var(--owner-accent);
+  background: var(--owner-accent-soft);
 }
 
 .status-filter-tab.is-active {
-  background-color: var(--color-primary);
-  border-color: var(--color-primary);
+  background: linear-gradient(145deg, #3aa45c 0%, #28753f 100%);
+  border-color: var(--owner-accent);
   color: white;
   font-weight: 600;
 }
 
 /* 신청 카드 */
 .request-card {
-  background-color: var(--color-bg-card);
-  border: 1px solid var(--color-border-light);
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.12);
   border-radius: var(--border-radius-md);
   padding: var(--spacing-lg);
   margin-bottom: var(--spacing-md);
-  box-shadow: var(--shadow-card);
+  box-shadow: none;
   transition: all var(--transition-fast);
   cursor: pointer;
 }
 
 .request-card:hover {
-  border-color: var(--color-primary-light);
-  box-shadow: var(--shadow-md);
+  border-color: rgba(47, 143, 78, 0.28);
+  background: #fbfefb;
+  transform: translateY(-1px);
 }
 
 .request-card__header {
@@ -88,8 +130,8 @@
   grid-template-columns: repeat(3, 1fr);
   gap: var(--spacing-md);
   padding: var(--spacing-md) 0;
-  border-top: 1px solid var(--color-border-light);
-  border-bottom: 1px solid var(--color-border-light);
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
   margin-bottom: var(--spacing-md);
 }
 
@@ -121,6 +163,11 @@
   color: var(--color-text-muted);
 }
 
+.request-card__footer span:last-child {
+  color: var(--owner-accent);
+  font-weight: 700;
+}
+
 /* 신청 상세 모달 */
 .request-detail-section {
   margin-bottom: var(--spacing-lg);
@@ -142,7 +189,8 @@
 }
 
 .request-detail-item {
-  background-color: var(--color-bg-section);
+  background: #f8fbf8;
+  border: 1px solid rgba(47, 143, 78, 0.08);
   border-radius: var(--border-radius-sm);
   padding: var(--spacing-sm) var(--spacing-md);
 }
@@ -182,12 +230,12 @@
 }
 
 .status-timeline-item.is-done .status-timeline-item__dot {
-  background-color: var(--color-success);
+  background-color: var(--owner-accent);
 }
 
 .status-timeline-item.is-current .status-timeline-item__dot {
-  background-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.2);
+  background-color: var(--owner-accent);
+  box-shadow: 0 0 0 3px rgba(47, 143, 78, 0.16);
 }
 
 .status-timeline-item__label {

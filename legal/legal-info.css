@@ -754,6 +754,13 @@
   transform: translateY(0) scale(1);
 }
 
+.legal-info-page .reveal-on-scroll,
+.legal-info-page .reveal-on-scroll.is-visible {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
+
 @media (max-width: 1024px) {
   .vision-grid,
   .duty-grid,

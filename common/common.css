@@ -2767,3 +2767,87 @@ body.user-platform-page:not(.guest-list-page) #footerPlaceholder * {
 .site-notification-item small {
   color: inherit !important;
 }
+
+/* ============================================================
+   Final Frontend Review Fixes
+   ============================================================ */
+
+body.user-platform-page .site-header__user-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0.56rem 0.95rem;
+  border-radius: 12px;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  background: #ffffff;
+  color: #111827;
+  box-shadow: none;
+}
+
+body.user-platform-page .site-header__user-link:hover {
+  background: #f8fafc;
+  border-color: rgba(15, 23, 42, 0.24);
+  color: #111827;
+}
+
+body.user-platform-page.home-page .site-header__user-link {
+  background: transparent;
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+body.user-platform-page.home-page .site-header:hover .site-header__user-link,
+body.user-platform-page.home-page .site-header:focus-within .site-header__user-link,
+body.user-platform-page.home-page .site-header.is-home-revealed .site-header__user-link,
+body.user-platform-page.home-page .site-header.is-scrolled .site-header__user-link {
+  background: #ffffff;
+  color: #111111;
+  border-color: rgba(15, 23, 42, 0.14);
+}
+
+.site-header__notice-btn--icon {
+  min-width: 44px;
+  justify-content: center;
+  gap: 8px;
+  padding-inline: 0.75rem;
+}
+
+.site-header__notice-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.site-header__notice-count {
+  min-width: 20px;
+  height: 20px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.floating-btn--top {
+  background: linear-gradient(145deg, #ffffff 0%, #f4f6f8 100%) !important;
+  border: 1px solid rgba(15, 23, 42, 0.16) !important;
+  color: #111827 !important;
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.18) !important;
+}
+
+.floating-btn--top:hover {
+  background: linear-gradient(145deg, #ffffff 0%, #edf2f7 100%) !important;
+  border-color: rgba(15, 23, 42, 0.28) !important;
+}
+
+.floating-btn--top .floating-btn__label {
+  color: #111827 !important;
+}
+
+@media (max-width: 768px) {
+  body.user-platform-page .site-header__user-link {
+    max-width: clamp(150px, 52vw, 220px);
+  }
+}

@@ -119,16 +119,17 @@
 
 .quick-login-buttons {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
 }
 
 .quick-login-btn {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
-  padding: 12px 14px;
-  border-radius: var(--border-radius-sm);
+  min-height: 122px;
+  padding: 18px 16px;
+  border-radius: 16px;
   border: 1.5px solid var(--color-border);
   background-color: #fffefb;
   cursor: pointer;
@@ -136,32 +137,69 @@
   text-align: left;
 }
 
-.quick-login-btn--admin {
-  grid-column: 1 / -1;
+.quick-login-btn > div {
+  display: grid;
+  gap: 4px;
 }
 
 .quick-login-btn:hover {
-  border-color: var(--color-primary-light);
-  background-color: rgba(201, 168, 76, 0.08);
-  transform: translateX(3px);
+  transform: translateY(-2px);
+}
+
+.quick-login-btn--guest {
+  border-color: rgba(201, 168, 76, 0.28);
+  background: linear-gradient(180deg, #fffdf7 0%, #fbf5e8 100%);
+}
+
+.quick-login-btn--owner {
+  border-color: rgba(47, 143, 78, 0.24);
+  background: linear-gradient(180deg, #fbfefb 0%, #eef7f0 100%);
+}
+
+.quick-login-btn--admin {
+  border-color: rgba(15, 23, 42, 0.14);
+  background: linear-gradient(180deg, #ffffff 0%, #f6f7f9 100%);
+}
+
+.quick-login-btn--guest:hover,
+.quick-login-btn--guest.is-selected {
+  border-color: rgba(201, 168, 76, 0.56);
+  background: linear-gradient(180deg, #fffaf0 0%, #f7ecd0 100%);
+}
+
+.quick-login-btn--owner:hover,
+.quick-login-btn--owner.is-selected {
+  border-color: rgba(47, 143, 78, 0.5);
+  background: linear-gradient(180deg, #f7fcf8 0%, #dff1e4 100%);
+}
+
+.quick-login-btn--admin:hover,
+.quick-login-btn--admin.is-selected {
+  border-color: rgba(15, 23, 42, 0.3);
+  background: linear-gradient(180deg, #ffffff 0%, #eceff3 100%);
+}
+
+.quick-login-btn.is-selected {
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
 }
 
 .quick-login-btn__icon {
-  font-size: 1.35rem;
+  font-size: 1.85rem;
   flex-shrink: 0;
+  line-height: 1;
 }
 
 .quick-login-btn__role {
-  font-size: 0.92rem;
-  font-weight: 600;
+  font-size: 1rem;
+  font-weight: 700;
   color: var(--color-text-primary);
   line-height: 1.3;
 }
 
 .quick-login-btn__desc {
-  font-size: 0.74rem;
+  font-size: 0.79rem;
   color: var(--color-text-muted);
-  line-height: 1.35;
+  line-height: 1.5;
 }
 
 /* 구분선 */
@@ -359,8 +397,8 @@
     grid-template-columns: 1fr;
   }
 
-  .quick-login-btn--admin {
-    grid-column: auto;
+  .quick-login-btn {
+    min-height: auto;
   }
 }
 
