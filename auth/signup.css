@@ -45,7 +45,8 @@
 }
 
 .role-option {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: flex-start;
   gap: var(--spacing-md);
   min-height: 128px;
@@ -99,6 +100,7 @@
   font-size: 1.9rem;
   flex-shrink: 0;
   line-height: 1;
+  grid-row: 1 / span 2;
 }
 
 .role-option__label {
@@ -106,6 +108,11 @@
   font-weight: 700;
   color: var(--color-text-primary);
   display: block;
+  min-width: 0;
+  line-height: 1.35;
+  word-break: keep-all;
+  overflow-wrap: normal;
+  text-wrap: balance;
 }
 
 .role-option__desc {
@@ -114,6 +121,9 @@
   color: var(--color-text-muted);
   display: block;
   line-height: 1.5;
+  min-width: 0;
+  word-break: keep-all;
+  overflow-wrap: normal;
 }
 
 .signup-sns-section {

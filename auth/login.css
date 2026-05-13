@@ -140,6 +140,8 @@
 .quick-login-btn > div {
   display: grid;
   gap: 4px;
+  flex: 1;
+  min-width: 0;
 }
 
 .quick-login-btn:hover {
@@ -194,12 +196,17 @@
   font-weight: 700;
   color: var(--color-text-primary);
   line-height: 1.3;
+  word-break: keep-all;
+  overflow-wrap: normal;
+  text-wrap: balance;
 }
 
 .quick-login-btn__desc {
   font-size: 0.79rem;
   color: var(--color-text-muted);
   line-height: 1.5;
+  word-break: keep-all;
+  overflow-wrap: normal;
 }
 
 /* 구분선 */
