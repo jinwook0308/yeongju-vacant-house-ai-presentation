@@ -66,10 +66,7 @@ function restoreAiChatHistory() {
 
   try {
     const storageKey = getAiChatStorageKey();
-    const fallbackKey = storageKey === AI_CHAT_ANONYMOUS_STORAGE_KEY ? AI_CHAT_STORAGE_KEY : null;
-    const rawSaved = localStorage.getItem(storageKey)
-      || (fallbackKey ? localStorage.getItem(fallbackKey) : null)
-      || '[]';
+    const rawSaved = localStorage.getItem(storageKey) || '[]';
     const saved = JSON.parse(rawSaved);
 
     if (!Array.isArray(saved) || saved.length === 0) return;
