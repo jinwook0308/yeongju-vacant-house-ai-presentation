@@ -703,12 +703,32 @@ function sortHouses(houses, sortKey) {
 function createHouseDetailHref(houseId) {
   const params = new URLSearchParams({ id: String(houseId) });
 
+  if (currentFilters.keyword) {
+    params.set('keyword', currentFilters.keyword);
+  }
+
+  if (currentFilters.district) {
+    params.set('district', currentFilters.district);
+  }
+
   if (currentFilters.checkIn) {
     params.set('checkIn', currentFilters.checkIn);
   }
 
   if (currentFilters.checkOut) {
     params.set('checkOut', currentFilters.checkOut);
+  }
+
+  if (currentFilters.operationType) {
+    params.set('operationType', currentFilters.operationType);
+  }
+
+  if (currentFilters.grade) {
+    params.set('grade', currentFilters.grade);
+  }
+
+  if (currentFilters.minCapacity) {
+    params.set('minCapacity', currentFilters.minCapacity);
   }
 
   return `guest-detail.html?${params.toString()}`;

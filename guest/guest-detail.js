@@ -2,6 +2,7 @@ const API_BASE_URL = typeof getApiBaseUrl === 'function' ? getApiBaseUrl() : 'ht
 const HOUSE_REVIEW_STORAGE_KEY = 'yeongjuHouseReviews';
 let currentHouse = null;
 let currentSimilarHouses = [];
+let currentHouseDetailParams = {};
 
 const DETAIL_DISTRICT_COORDS = {
   '풍기읍': [36.9830, 128.5440],
@@ -44,31 +45,102 @@ function isApiHouseIdSupported(houseId) {
   return /^VH\d+$/i.test(normalized) || /^\d+$/.test(normalized);
 }
 
-function renderDetailMap(house) {
-  const element = document.getElementById('bookingLocationMap');
-  if (!element || typeof L === 'undefined') return;
-
-  if (element._leaflet_id) {
-    element._leaflet_id = null;
-    element.innerHTML = '';
+function getDetailDistrictNameFromQuery(districtId, fallbackName = '') {
+  if (districtId && Array.isArray(YEONGJU_DISTRICTS)) {
+    const matched = YEONGJU_DISTRICTS.find((district) => String(district.id) === String(districtId));
+    if (matched?.name) {
+      return matched.name;
+    }
   }
 
+  return fallbackName || '';
+}
+
+function formatDetailShortDate(value) {
+  if (!value) return '';
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
+  return `${date.getMonth() + 1}.${date.getDate()}(${weekdays[date.getDay()]})`;
+}
+
+function buildDetailSearchSummary(params, house) {
+  const chips = [];
+  const districtName = getDetailDistrictNameFromQuery(params.district, house?.districtName || '');
+  const operationLabel = DETAIL_OPERATION_LABELS[params.operationType] || '';
+
+  if (districtName) {
+    chips.push(`영주시 ${districtName}`);
+  }
+
+  if (params.keyword) {
+    chips.push(`검색어 ${params.keyword}`);
+  }
+
+  if (params.checkIn && params.checkOut) {
+    chips.push(`${formatDetailShortDate(params.checkIn)} ~ ${formatDetailShortDate(params.checkOut)}`);
+  } else if (params.checkIn) {
+    chips.push(`입실 ${formatDetailShortDate(params.checkIn)}`);
+  }
+
+  if (params.minCapacity) {
+    chips.push(`${params.minCapacity}명 이상`);
+  }
+
+  if (operationLabel) {
+    chips.push(operationLabel);
+  }
+
+  if (params.grade) {
+    chips.push(`공공데이터 ${params.grade}등급`);
+  }
+
+  return chips;
+}
+
+function buildHouseGalleryPhotos(house, primaryPhoto) {
+  const candidatePhotos = typeof getHousePhotos === 'function' ? getHousePhotos(house) : [];
+  const rawPhotos = Array.isArray(candidatePhotos) ? candidatePhotos : [];
+
+  const photoUrls = [
+    primaryPhoto,
+    ...rawPhotos.map((photo) => photo?.dataUrl || photo?.url || photo?.src || '').filter(Boolean),
+  ].filter(Boolean);
+
+  return Array.from(new Set(photoUrls)).slice(0, 5);
+}
+
+function renderDetailMap(house) {
   const lat = Number(house.lat);
   const lon = Number(house.lon);
   const coords = Number.isFinite(lat) && Number.isFinite(lon)
     ? [lat, lon]
     : (DETAIL_DISTRICT_COORDS[house.districtName] || [36.872, 128.60]);
 
-  const map = L.map(element, { scrollWheelZoom: false, zoomControl: true }).setView(coords, 13);
-  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: 'OpenStreetMap contributors',
-    maxZoom: 19,
-  }).addTo(map);
+  ['bookingLocationMap', 'detailLocationMap'].forEach((elementId) => {
+    const element = document.getElementById(elementId);
+    if (!element || typeof L === 'undefined') return;
 
-  L.marker(coords)
-    .addTo(map)
-    .bindPopup(`${house.name || '승인 빈집'}<br>${house.address || `영주시 ${house.districtName || ''}`}`)
-    .openPopup();
+    if (element._leaflet_id) {
+      element._leaflet_id = null;
+      element.innerHTML = '';
+    }
+
+    const map = L.map(element, { scrollWheelZoom: false, zoomControl: true }).setView(coords, 13);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: 'OpenStreetMap contributors',
+      maxZoom: 19,
+    }).addTo(map);
+
+    L.marker(coords)
+      .addTo(map)
+      .bindPopup(`${house.name || '승인 빈집'}<br>${house.address || `영주시 ${house.districtName || ''}`}`)
+      .openPopup();
+  });
 }
 
 async function initHouseDetailPage() {
@@ -92,6 +164,7 @@ async function initHouseDetailPage() {
     }
 
     currentHouse = fallbackHouse;
+    currentHouseDetailParams = params;
     const similarHouses = getFallbackApprovedHouses()
       .filter((item) =>
         item.id !== fallbackHouse.id &&
@@ -101,7 +174,7 @@ async function initHouseDetailPage() {
       .slice(0, 3);
 
     currentSimilarHouses = similarHouses;
-    renderHouseDetail(fallbackHouse, similarHouses);
+    renderHouseDetailTopRedesign(fallbackHouse, similarHouses, params);
     renderDetailMap(fallbackHouse);
     setupModalClose('bookingRequestModal');
     return;
@@ -137,8 +210,9 @@ async function initHouseDetailPage() {
     }
 
     currentHouse = house;
+    currentHouseDetailParams = params;
     currentSimilarHouses = similarHouses;
-    renderHouseDetail(house, similarHouses);
+    renderHouseDetailTopRedesign(house, similarHouses, params);
     renderDetailMap(house);
     setupModalClose('bookingRequestModal');
   } catch (error) {
@@ -150,6 +224,7 @@ async function initHouseDetailPage() {
     }
 
     currentHouse = fallbackHouse;
+    currentHouseDetailParams = params;
     const similarHouses = getFallbackApprovedHouses()
       .filter((item) =>
         item.id !== fallbackHouse.id &&
@@ -159,7 +234,7 @@ async function initHouseDetailPage() {
       .slice(0, 3);
 
     currentSimilarHouses = similarHouses;
-    renderHouseDetail(fallbackHouse, similarHouses);
+    renderHouseDetailTopRedesign(fallbackHouse, similarHouses, params);
     renderDetailMap(fallbackHouse);
     setupModalClose('bookingRequestModal');
   }
@@ -178,6 +253,354 @@ function getFallbackApprovedHouses() {
 function getFallbackHouseById(houseId) {
   return getFallbackApprovedHouses().find((house) => String(house.id) === String(houseId)) || null;
 }
+
+function renderHouseDetailTopRedesign(house, similarHouses = [], params = {}) {
+  const main = document.getElementById('houseDetailMain');
+  if (!main) return;
+
+  const defaultDetailPhoto = '../assets/images/hero-yeongju.jpg';
+  const primaryPhoto = (typeof getHousePhotoUrl === 'function' ? getHousePhotoUrl(house) : '') || defaultDetailPhoto;
+  const housePhotos = buildHouseGalleryPhotos(house, primaryPhoto);
+  const isWishlisted = getWishlist().includes(house.id);
+  const availablePeriod = house.availablePeriod || '?? ??';
+  const usagePurpose = Array.isArray(house.usagePurpose) && house.usagePurpose.length
+    ? house.usagePurpose
+    : [DETAIL_OPERATION_LABELS[house.operationType] || '?? ?? ??'];
+  const facilities = Array.isArray(house.facilities) && house.facilities.length
+    ? house.facilities
+    : ['?? ?? ?? ??', '?? ?? ?? ??', '?? ?? ??'];
+  const tags = Array.isArray(house.tags) && house.tags.length
+    ? house.tags
+    : [house.districtName, DETAIL_OPERATION_LABELS[house.operationType]].filter(Boolean);
+  const reviewSummary = house.reviewSummary || '??? ???? ??? ?? ?? ??? ???? ???????. ?? ?? ??? ?? ??? ?? ??? ?? ??? ???.';
+  const houseName = escapeHtml(house.name || '?? ??');
+  const districtNameRaw = house.districtName || '-';
+  const districtName = escapeHtml(districtNameRaw);
+  const reviews = getHouseReviewsById(house.id);
+  const reviewStats = getHouseReviewStats(reviews);
+  const address = escapeHtml(house.address || '-');
+  const wishlistLabel = isWishlisted ? '? ??' : '???';
+  const searchSummaryChips = buildDetailSearchSummary(params, house);
+  const fallbackSummaryChips = [
+    districtNameRaw ? `??? ${districtNameRaw}` : '',
+    house.maxCapacity ? `${Number(house.maxCapacity)}? ?? ??` : '',
+    DETAIL_OPERATION_LABELS[house.operationType] || '',
+  ].filter(Boolean);
+  const summaryChips = (searchSummaryChips.length ? searchSummaryChips : fallbackSummaryChips).slice(0, 5);
+  const listSearchParams = new URLSearchParams();
+
+  ['keyword', 'district', 'checkIn', 'checkOut', 'operationType', 'grade', 'minCapacity'].forEach((key) => {
+    if (params[key]) {
+      listSearchParams.set(key, params[key]);
+    }
+  });
+
+  const listHref = `guest-list.html${listSearchParams.toString() ? `?${listSearchParams.toString()}` : ''}`;
+  const galleryMainPhoto = housePhotos[0] || primaryPhoto;
+  const gallerySidePhotos = housePhotos.slice(1, 5);
+
+  while (gallerySidePhotos.length < 4) {
+    gallerySidePhotos.push(galleryMainPhoto);
+  }
+
+  const detailTabs = [
+    { id: 'detailOverview', label: '??' },
+    { id: 'detailReview', label: '?? ??' },
+    { id: 'detailFacilities', label: '?? ??' },
+    { id: 'detailLocation', label: '??' },
+    { id: 'detailReviews', label: '?? ??' },
+    { id: 'detailPolicy', label: '?? ??' },
+  ];
+
+  main.innerHTML = `
+    <div class="house-detail-page">
+      <section class="house-search-summary">
+        <div class="house-search-summary__inner">
+          <div class="house-search-summary__content">
+            <span class="house-search-summary__eyebrow">??? ?? ?? ??</span>
+            <div class="house-search-summary__chips">
+              ${summaryChips.map((chip) => `<span class="house-search-summary__chip">${escapeHtml(chip)}</span>`).join('')}
+            </div>
+          </div>
+          <a class="house-search-summary__action" href="${escapeAttr(listHref)}">?? ?? ??</a>
+        </div>
+      </section>
+
+      <div class="house-gallery-shell">
+        <nav class="house-breadcrumb" aria-label="??">
+          <a href="../home/index.html">?</a>
+          <span class="house-breadcrumb__sep">/</span>
+          <a href="${escapeAttr(listHref)}">?? ??</a>
+          <span class="house-breadcrumb__sep">/</span>
+          <span class="house-breadcrumb__current">${houseName}</span>
+        </nav>
+
+        <section class="house-gallery">
+          <div class="house-gallery__badge-area">
+            <span class="badge badge--public">?? ??</span>
+            ${safeBadge(getConditionGradeBadge, house.conditionGrade)}
+            ${safeBadge(getOperationTypeBadge, house.operationType)}
+            ${house.isVerified ? '<span class="badge badge--public">?? ??</span>' : ''}
+          </div>
+
+          <div class="house-gallery__layout">
+            <div class="house-gallery__main">
+              <img class="house-gallery__image" src="${galleryMainPhoto}" alt="${houseName}">
+              <div class="house-gallery__overlay">
+                <div class="house-gallery__headline">
+                  <span class="house-gallery__district">??? ${districtName}</span>
+                  <h1>${houseName}</h1>
+                  <p>${address}</p>
+                </div>
+                <span class="house-gallery__photo-count">?? ${housePhotos.length || 1}?</span>
+              </div>
+            </div>
+
+            <div class="house-gallery__side">
+              ${gallerySidePhotos.map((photo, index) => `
+                <div class="house-gallery__side-card">
+                  <img class="house-gallery__side-image" src="${photo}" alt="${houseName} ?? ?? ${index + 1}">
+                  ${index === 3 ? '<span class="house-gallery__side-overlay">?? ?? ??</span>' : ''}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </section>
+
+        <nav class="house-detail-tabs" aria-label="?? ?? ??">
+          ${detailTabs.map((tab) => `<a class="house-detail-tabs__link" href="#${tab.id}">${tab.label}</a>`).join('')}
+        </nav>
+      </div>
+
+      <div class="house-detail-layout">
+        <div class="house-detail-info">
+          <section class="house-detail-overview" id="detailOverview">
+            <h2 class="house-detail-info__title">${houseName}</h2>
+            <div class="house-detail-info__location">?? ???? ??? ${districtName} ? ${address}</div>
+            <div class="house-detail-info__badges">
+              ${safeBadge(getReviewStatusBadge, house.reviewStatus)}
+              ${safeBadge(getConditionGradeBadge, house.conditionGrade)}
+              ${safeBadge(getOperationTypeBadge, house.operationType)}
+              ${house.isVerified ? '<span class="badge badge--public">?? ??</span>' : ''}
+            </div>
+
+            <div class="house-detail-overview__highlights">
+              <div class="house-detail-overview__highlight">
+                <span class="house-detail-overview__label">?? ?? ??</span>
+                <strong class="house-detail-overview__value">${Number(house.maxCapacity || 0)}?</strong>
+              </div>
+              <div class="house-detail-overview__highlight">
+                <span class="house-detail-overview__label">?? ?? ??</span>
+                <strong class="house-detail-overview__value">${escapeHtml(availablePeriod)}</strong>
+              </div>
+              <div class="house-detail-overview__highlight">
+                <span class="house-detail-overview__label">?? ??</span>
+                <strong class="house-detail-overview__value">${escapeHtml(DETAIL_OPERATION_LABELS[house.operationType] || '?? ??')}</strong>
+              </div>
+              <div class="house-detail-overview__highlight">
+                <span class="house-detail-overview__label">?? ??</span>
+                <strong class="house-detail-overview__value">${escapeHtml(getSafeConditionText(house.conditionGrade))}</strong>
+              </div>
+            </div>
+          </section>
+
+          <div class="house-detail-section house-detail-section--facts">
+            <h2 class="house-detail-section__title"><span class="section-title-icon">??</span>?? ??</h2>
+            <div class="house-info-grid">
+              <div class="house-info-item">
+                <div class="house-info-item__label">??</div>
+                <div class="house-info-item__value">??? ${districtName}</div>
+              </div>
+              <div class="house-info-item">
+                <div class="house-info-item__label">?? ?? ??</div>
+                <div class="house-info-item__value">${Number(house.maxCapacity || 0)}?</div>
+              </div>
+              <div class="house-info-item">
+                <div class="house-info-item__label">?? ?? ??</div>
+                <div class="house-info-item__value">${escapeHtml(availablePeriod)}</div>
+              </div>
+              <div class="house-info-item">
+                <div class="house-info-item__label">?? ??</div>
+                <div class="house-info-item__value">${escapeHtml(usagePurpose.join(', '))}</div>
+              </div>
+              <div class="house-info-item">
+                <div class="house-info-item__label">???</div>
+                <div class="house-info-item__value">${formatDateKo(house.approvedAt || house.registeredAt)}</div>
+              </div>
+              <div class="house-info-item">
+                <div class="house-info-item__label">?? ??</div>
+                <div class="house-info-item__value">${house.isCleaningDone ? '??' : '?? ?? ??'}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="house-detail-section house-detail-section--story">
+            <h2 class="house-detail-section__title"><span class="section-title-icon">??</span>?? ??</h2>
+            <p class="house-description-text">${escapeHtml(house.description || '??? ?? ??? ????.')}</p>
+          </div>
+
+          <div class="house-detail-section house-detail-section--facilities" id="detailFacilities">
+            <h2 class="house-detail-section__title"><span class="section-title-icon">??</span>?? ??</h2>
+            <div class="house-facilities-list">
+              ${facilities.map((facility) => `<span class="house-facility-tag">? ${escapeHtml(facility)}</span>`).join('')}
+            </div>
+          </div>
+
+          <div class="house-detail-section house-detail-section--review" id="detailReview">
+            <h2 class="house-detail-section__title"><span class="section-title-icon">??</span>???? ?? ??</h2>
+            <div class="review-panel review-panel--approved">
+              <div class="review-panel__headline">
+                <span class="review-panel__tag">?? ??</span>
+                <span class="review-panel__title">??? ???? ?? ? ??</span>
+              </div>
+              <p class="review-panel__body">${escapeHtml(reviewSummary)}</p>
+            </div>
+
+            <div class="info-panel info-panel--neutral">
+              <div class="info-panel__header">
+                <span class="info-panel__header-icon">?</span>
+                <span class="info-panel__header-title">?? ?? ??</span>
+              </div>
+              <div class="info-panel__body">
+                <p class="info-panel__summary">${escapeHtml(getSafeConditionText(house.conditionGrade))}</p>
+                <p class="info-panel__detail">?? ? ?? ??? ?? ?? ??? ?? ?? ?? ??? ??? ? ????.</p>
+              </div>
+            </div>
+
+            <div class="info-panel info-panel--caution">
+              <div class="info-panel__header">
+                <span class="info-panel__header-icon">!</span>
+                <span class="info-panel__header-title">?? ? ????</span>
+              </div>
+              <div class="info-panel__body">
+                <p class="info-panel__detail">${escapeHtml(getSafeGradeCautionText(house.conditionGrade))}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="house-detail-section house-detail-section--location" id="detailLocation">
+            <h2 class="house-detail-section__title"><span class="section-title-icon">??</span>?? ? ??</h2>
+            <div class="house-location-grid">
+              <div class="house-location-copy">
+                <p class="house-location-copy__lead">??? ${districtName} ?? ??? ?? ?? ?? ??? ????, ?? ? ??? ?? ?? ??? ?? ??? ? ????.</p>
+                <div class="house-policy-list">
+                  <div class="house-policy-item">
+                    <strong>??</strong>
+                    <span>${address}</span>
+                  </div>
+                  <div class="house-policy-item">
+                    <strong>?? ??</strong>
+                    <span>?? ?? ?? ??? ???? ?? ?? ??? ?? ?????.</span>
+                  </div>
+                  <div class="house-policy-item">
+                    <strong>??? ?? ??</strong>
+                    <span>??? ?? ?? ? ?? ??? ????? ??? ??? ?????.</span>
+                  </div>
+                </div>
+              </div>
+              <div class="house-detail-map booking-map" id="detailLocationMap"></div>
+            </div>
+          </div>
+
+          <div class="house-detail-section house-detail-section--policy" id="detailPolicy">
+            <h2 class="house-detail-section__title"><span class="section-title-icon">??</span>?? ?? ? ?? ??</h2>
+            <div class="house-policy-list">
+              <div class="house-policy-item">
+                <strong>?? ?? ??</strong>
+                <span>?? ??? ?? ???? ???, ??? ??? ??? ?? ??? ?? ?? ??? ?????.</span>
+              </div>
+              <div class="house-policy-item">
+                <strong>?? ? ?? ??</strong>
+                <span>??, ??, ?? ??? ?? ?? ??? ?? ?? ??? ??? ? ?? ?? ??? ?????.</span>
+              </div>
+              <div class="house-policy-item">
+                <strong>?? ? ?? ??</strong>
+                <span>??? ?? ??? ?? ??? ?? ?? ????, ?? ?? ??? ?? ?? ???? ?? ??? ???.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="house-detail-section house-detail-section--tags">
+            <h2 class="house-detail-section__title"><span class="section-title-icon">#</span>??</h2>
+            <div class="house-tags-list">
+              ${tags.map((tag) => `<span class="house-tag-item">${escapeHtml(tag)}</span>`).join('')}
+            </div>
+          </div>
+
+          ${renderHouseReviewSection(house, reviews, reviewStats)}
+        </div>
+
+        <div class="booking-sidebar">
+          <div class="booking-card">
+            <div class="booking-card__header">
+              <div class="booking-card__price">${escapeHtml(house.priceRange || '?? ??')}</div>
+              <div class="booking-card__price-label">??? ???? ??? ??? ?? ?? ??</div>
+            </div>
+            <div class="booking-card__body">
+              <div class="booking-card__info-row">
+                <span class="booking-card__info-label">????? ??</span>
+                <span class="booking-card__info-value">${escapeHtml(getSafeConditionText(house.conditionGrade))}</span>
+              </div>
+              <div class="booking-card__info-row">
+                <span class="booking-card__info-label">?? ??</span>
+                <span class="booking-card__info-value">${escapeHtml(DETAIL_OPERATION_LABELS[house.operationType] || '?? ??')}</span>
+              </div>
+              <div class="booking-card__info-row">
+                <span class="booking-card__info-label">?? ??</span>
+                <span class="booking-card__info-value">${Number(house.maxCapacity || 0)}?</span>
+              </div>
+              <div class="booking-card__info-row">
+                <span class="booking-card__info-label">?? ??</span>
+                <span class="booking-card__info-value">${escapeHtml(availablePeriod)}</span>
+              </div>
+
+              <button class="btn btn--primary btn--full btn--lg" onclick="openBookingModal()">?? ?? ??</button>
+              <button class="btn btn--ghost btn--full" id="detailWishlistBtn" onclick="handleDetailWishlist('${escapeAttr(house.id)}')">${wishlistLabel}</button>
+
+              <div class="booking-notice">
+                <span>??</span>
+                <p>?? ??? ?? ???? ????.<br>??? ??? ?? ??? ??? ?? ??? ??? ????.</p>
+              </div>
+
+              <div class="booking-location-label">??? ?? ??</div>
+              <div class="booking-location-addr">???? ??? ${districtName}</div>
+              <div class="booking-map" id="bookingLocationMap"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      ${similarHouses.length > 0 ? `
+        <div class="similar-houses-section">
+          <div class="similar-houses-section__header">
+            <h2 class="similar-houses-section__title">??? ?? ??</h2>
+          </div>
+          <div class="grid grid--3">
+            ${similarHouses.map((item) => `
+              <a href="guest-detail.html?id=${encodeURIComponent(item.id)}" style="text-decoration:none;color:inherit;">
+                <div class="card">
+                  <div class="card__image-placeholder">${DETAIL_OPERATION_EMOJIS[item.operationType] || '??'}</div>
+                  <div class="card__body">
+                    <div style="font-size:var(--font-size-xs);color:var(--color-text-muted);margin-bottom:4px;">?? ??? ${escapeHtml(item.districtName || '-')}</div>
+                    <h3 class="card__title">${escapeHtml(item.name || '?? ??')}</h3>
+                    <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:8px;">
+                      ${safeBadge(getConditionGradeBadge, item.conditionGrade)}
+                      ${safeBadge(getOperationTypeBadge, item.operationType)}
+                    </div>
+                  </div>
+                </div>
+              </a>
+            `).join('')}
+          </div>
+        </div>
+      ` : ''}
+    </div>
+  `;
+
+  syncDetailWishlistButton();
+  bindHouseReviewEvents(house);
+}
+
 
 function renderHouseDetail(house, similarHouses = []) {
   const main = document.getElementById('houseDetailMain');
@@ -430,7 +853,7 @@ function renderHouseReviewSection(house, reviews, stats) {
       `;
 
   return `
-    <section class="house-detail-section house-detail-section--reviews">
+    <section class="house-detail-section house-detail-section--reviews" id="detailReviews">
       <div class="house-review-section__header">
         <div>
           <h2 class="house-detail-section__title"><span class="section-title-icon">★</span>이용 후기</h2>
@@ -562,7 +985,7 @@ function bindHouseReviewEvents(house) {
       createdAt: new Date().toISOString(),
     });
 
-    renderHouseDetail(currentHouse, currentSimilarHouses);
+    renderHouseDetailTopRedesign(currentHouse, currentSimilarHouses, currentHouseDetailParams);
     renderDetailMap(currentHouse);
 
     const reviewSection = document.querySelector('.house-detail-section--reviews');
