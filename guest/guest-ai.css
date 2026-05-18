@@ -690,6 +690,68 @@ body,
 }
 
 /* ============================================================
+   Floating AI Panel Embed Mode
+   ============================================================ */
+
+html:has(body.guest-ai-page--embed),
+body.guest-ai-page--embed {
+  height: 100%;
+}
+
+body.guest-ai-page--embed {
+  margin: 0;
+  background: #ffffff !important;
+  overflow: hidden;
+}
+
+body.guest-ai-page--embed #headerPlaceholder,
+body.guest-ai-page--embed #footerPlaceholder,
+body.guest-ai-page--embed .page-header,
+body.guest-ai-page--embed .site-footer,
+body.guest-ai-page--embed .floating-actions {
+  display: none !important;
+}
+
+body.guest-ai-page--embed .ai-main {
+  min-height: 100dvh !important;
+  height: 100dvh;
+  padding: 0 !important;
+}
+
+body.guest-ai-page--embed .ai-chat-layout {
+  width: 100% !important;
+  max-width: none;
+  height: 100%;
+}
+
+body.guest-ai-page--embed .ai-chat-section {
+  height: 100dvh !important;
+  min-height: 100dvh;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+body.guest-ai-page--embed .ai-chat-section__header {
+  display: none !important;
+}
+
+body.guest-ai-page--embed .ai-chat-messages {
+  padding: 16px 16px 12px;
+}
+
+body.guest-ai-page--embed .ai-chat-input-area {
+  padding: 12px !important;
+  grid-template-columns: minmax(0, 1fr) 112px;
+}
+
+@media (max-width: 640px) {
+  body.guest-ai-page--embed .ai-chat-input-area {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================================
    Final AI Response Layout Fixes
    ============================================================ */
 

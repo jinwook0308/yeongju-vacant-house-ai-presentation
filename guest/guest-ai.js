@@ -4,6 +4,13 @@ const AI_CHAT_STORAGE_KEY_PREFIX = 'yeongjuAiChatHistory:';
 const AI_CHAT_ANONYMOUS_STORAGE_KEY = `${AI_CHAT_STORAGE_KEY_PREFIX}anonymous`;
 const AI_CHAT_HISTORY_LIMIT = 20;
 const AI_API_HISTORY_LIMIT = 8;
+const AI_CHAT_IS_EMBEDDED = (() => {
+  try {
+    return new URLSearchParams(window.location.search).get('embed') === '1';
+  } catch (error) {
+    return false;
+  }
+})();
 
 let aiChatHistory = [];
 let aiChatDisplayHistory = [];
@@ -376,11 +383,22 @@ function escapeHtml(text) {
 }
 
 window.handleChatSend = handleChatSend;
+window.restoreAiChatHistory = restoreAiChatHistory;
+window.focusAiChatInput = () => {
+  const input = document.getElementById('aiChatInput');
+  if (input) {
+    input.focus();
+  }
+};
 
 document.addEventListener('DOMContentLoaded', () => {
+  if (AI_CHAT_IS_EMBEDDED) {
+    document.body.classList.add('guest-ai-page--embed');
+  }
+
   try {
-    if (typeof renderHeader === 'function') renderHeader('ai');
-    if (typeof renderFooter === 'function') renderFooter();
+    if (!AI_CHAT_IS_EMBEDDED && typeof renderHeader === 'function') renderHeader('ai');
+    if (!AI_CHAT_IS_EMBEDDED && typeof renderFooter === 'function') renderFooter();
   } catch (error) {
     console.error('레이아웃 렌더링 실패:', error);
   }
@@ -403,4 +421,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   restoreAiChatHistory();
   window.addEventListener('yeongju:auth-changed', restoreAiChatHistory);
+
+  if (AI_CHAT_IS_EMBEDDED && input) {
+    requestAnimationFrame(() => {
+      input.focus();
+    });
+  }
 });
