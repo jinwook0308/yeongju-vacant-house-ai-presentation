@@ -39,6 +39,11 @@ window.addEventListener('load', initHouseDetailPage);
 window.addEventListener('yeongju:auth-changed', syncDetailWishlistButton);
 window.addEventListener('yeongju:wishlist-changed', syncDetailWishlistButton);
 
+function isApiHouseIdSupported(houseId) {
+  const normalized = String(houseId || '').trim();
+  return /^VH\d+$/i.test(normalized) || /^\d+$/.test(normalized);
+}
+
 function renderDetailMap(house) {
   const element = document.getElementById('bookingLocationMap');
   if (!element || typeof L === 'undefined') return;
@@ -76,6 +81,29 @@ async function initHouseDetailPage() {
 
   if (!houseId) {
     showNotFound();
+    return;
+  }
+
+  if (!isApiHouseIdSupported(houseId)) {
+    const fallbackHouse = getFallbackHouseById(houseId);
+    if (!fallbackHouse) {
+      showNotFound();
+      return;
+    }
+
+    currentHouse = fallbackHouse;
+    const similarHouses = getFallbackApprovedHouses()
+      .filter((item) =>
+        item.id !== fallbackHouse.id &&
+        item.isApproved &&
+        (item.districtId === fallbackHouse.districtId || item.operationType === fallbackHouse.operationType)
+      )
+      .slice(0, 3);
+
+    currentSimilarHouses = similarHouses;
+    renderHouseDetail(fallbackHouse, similarHouses);
+    renderDetailMap(fallbackHouse);
+    setupModalClose('bookingRequestModal');
     return;
   }
 
