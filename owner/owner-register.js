@@ -216,6 +216,16 @@ function buildPhotoKey(photo) {
   return [photo?.name || '', photo?.size || 0, photo?.type || '', photo?.lastModified || 0].join('::');
 }
 
+function releasePhotoPreviewUrl(photo) {
+  if (!photo?.previewUrl || !String(photo.previewUrl).startsWith('blob:')) return;
+  URL.revokeObjectURL(photo.previewUrl);
+}
+
+function clearSelectedHousePhotos() {
+  selectedHousePhotos.forEach(releasePhotoPreviewUrl);
+  selectedHousePhotos = [];
+}
+
 function renderPhotoSelectionMeta() {
   const meta = document.getElementById('photoSelectionMeta');
   if (!meta) return;
@@ -277,13 +287,14 @@ function setupPhotoUpload() {
         continue;
       }
 
-      const dataUrl = await readFileAsDataUrl(file);
+      const previewUrl = URL.createObjectURL(file);
       selectedHousePhotos.push({
         name: file.name,
         size: file.size,
         type: file.type,
         lastModified: file.lastModified || 0,
-        dataUrl,
+        file,
+        previewUrl,
       });
       existingPhotoKeys.add(photoKey);
     }
@@ -303,6 +314,7 @@ function setupPhotoUpload() {
     const index = Number(removeButton.dataset.photoRemoveIndex);
     if (!Number.isInteger(index) || index < 0 || index >= selectedHousePhotos.length) return;
 
+    releasePhotoPreviewUrl(selectedHousePhotos[index]);
     selectedHousePhotos.splice(index, 1);
     renderPhotoPreviews();
   });
@@ -323,11 +335,36 @@ function renderPhotoPreviews() {
 
   grid.innerHTML = selectedHousePhotos.map((photo, index) => `
     <div class="photo-preview-card">
-      <img src="${photo.dataUrl}" alt="${photo.name}">
+      <img src="${photo.previewUrl || photo.dataUrl || photo.url || photo.src || ''}" alt="${photo.name}">
       <button type="button" class="photo-preview-card__remove" data-photo-remove-index="${index}" aria-label="${photo.name} 삭제">×</button>
       <span>${photo.name}</span>
     </div>
   `).join('');
+}
+
+async function uploadSelectedHousePhotos() {
+  if (!selectedHousePhotos.length) {
+    return [];
+  }
+
+  const formData = new FormData();
+  selectedHousePhotos.forEach((photo) => {
+    if (photo?.file instanceof File) {
+      formData.append('files', photo.file, photo.name || photo.file.name);
+    }
+  });
+
+  const response = await fetch(`${getApiBaseUrl()}/uploads/house-photos`, {
+    method: 'POST',
+    body: formData,
+  });
+
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(payload.detail || '사진 업로드 중 오류가 발생했습니다.');
+  }
+
+  return Array.isArray(payload.photos) ? payload.photos : [];
 }
 
 function populateDistrictSelect() {
@@ -435,7 +472,7 @@ function setupFormSubmit() {
   const form = document.getElementById('ownerRegistrationForm');
   if (!form) return;
 
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (!validateOwnerRegistrationPolicy()) return;
     if (!validateCurrentStep(4)) return;
@@ -449,7 +486,7 @@ function setupFormSubmit() {
 
     let savedRequest = null;
     try {
-      savedRequest = saveOwnerRegistrationRequest(usageTypes);
+      savedRequest = await saveOwnerRegistrationRequest(usageTypes);
     } catch (error) {
       showToast(error.message || '등록 신청 접수 중 오류가 발생했습니다.', 'danger');
       return;
@@ -467,17 +504,20 @@ function setupFormSubmit() {
       statusEl.insertAdjacentHTML('beforeend', `<span class="register-complete__flow">신청번호 ${savedRequest.id}</span>`);
     }
 
+    clearSelectedHousePhotos();
+    renderPhotoPreviews();
     syncOwnerRegistrationPolicy();
   });
 }
 
-function saveOwnerRegistrationRequest(usageTypes) {
+async function saveOwnerRegistrationRequest(usageTypes) {
   const user = getCurrentUser();
   const districtSelect = document.getElementById('houseDistrict');
   const districtName = districtSelect?.selectedOptions?.[0]?.textContent?.replace('영주시 ', '') || '';
   const typeSelect = document.getElementById('buildingType');
   const conditionSelect = document.getElementById('buildingCondition');
   const ownerTypeSelect = document.getElementById('ownerIdType');
+  const uploadedPhotos = await uploadSelectedHousePhotos();
 
   const request = {
     id: `req-${Date.now()}`,
@@ -507,8 +547,8 @@ function saveOwnerRegistrationRequest(usageTypes) {
     }[type] || type)),
     needsCleaning: document.querySelector('input[name="needsCleaning"]:checked')?.value || '',
     needsRepair: document.querySelector('input[name="needsRepair"]:checked')?.value || '',
-    photos: selectedHousePhotos,
-    photoCount: selectedHousePhotos.length,
+    photos: uploadedPhotos,
+    photoCount: uploadedPhotos.length,
     cityVerificationCode: '',
     cityVerificationRequired: false,
     cityVerificationStatus: 'not_required',

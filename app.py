@@ -17,7 +17,7 @@ except ImportError:  # pandas가 없어도 서버 자체는 켜지게 처리
     pd = None
 
 import requests
-from fastapi import FastAPI, Depends, HTTPException, Request
+from fastapi import FastAPI, Depends, HTTPException, Request, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -160,6 +160,15 @@ def _load_local_env_file(env_path: str) -> None:
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 _load_local_env_file(os.path.join(BASE_DIR, ".env"))
+REGISTRATION_UPLOAD_DIR = os.path.join(BASE_DIR, "assets", "uploads", "registration")
+REGISTRATION_UPLOAD_URL_PREFIX = "/assets/uploads/registration"
+ALLOWED_REGISTRATION_IMAGE_TYPES = {
+    "image/jpeg": ".jpg",
+    "image/png": ".png",
+    "image/webp": ".webp",
+}
+MAX_REGISTRATION_UPLOAD_FILES = 5
+MAX_REGISTRATION_UPLOAD_SIZE = 10 * 1024 * 1024
 
 PY_DIR = os.path.join(BASE_DIR, "py")
 if PY_DIR not in sys.path:
@@ -2508,6 +2517,42 @@ def api_root():
 @app.get("/health")
 def health_check() -> dict[str, str]:
     return {"status": "ok"}
+
+
+@app.post("/uploads/house-photos")
+async def upload_house_photos(files: list[UploadFile] = File(...)) -> dict[str, Any]:
+    if not files:
+        raise HTTPException(status_code=400, detail="업로드할 사진이 없습니다.")
+    if len(files) > MAX_REGISTRATION_UPLOAD_FILES:
+        raise HTTPException(status_code=400, detail=f"사진은 최대 {MAX_REGISTRATION_UPLOAD_FILES}장까지 업로드할 수 있습니다.")
+
+    os.makedirs(REGISTRATION_UPLOAD_DIR, exist_ok=True)
+    uploaded_photos: list[dict[str, Any]] = []
+
+    for upload in files:
+        content_type = (upload.content_type or "").lower()
+        if content_type not in ALLOWED_REGISTRATION_IMAGE_TYPES:
+            raise HTTPException(status_code=400, detail="JPG, PNG, WEBP 형식의 사진만 업로드할 수 있습니다.")
+
+        content = await upload.read()
+        if len(content) > MAX_REGISTRATION_UPLOAD_SIZE:
+            raise HTTPException(status_code=400, detail="사진 1장당 최대 10MB까지 업로드할 수 있습니다.")
+
+        extension = ALLOWED_REGISTRATION_IMAGE_TYPES[content_type]
+        safe_filename = f"{datetime.utcnow().strftime('%Y%m%d%H%M%S')}-{secrets.token_hex(8)}{extension}"
+        file_path = os.path.join(REGISTRATION_UPLOAD_DIR, safe_filename)
+
+        with open(file_path, "wb") as file_obj:
+            file_obj.write(content)
+
+        uploaded_photos.append({
+            "name": upload.filename or safe_filename,
+            "size": len(content),
+            "type": content_type,
+            "url": f"{REGISTRATION_UPLOAD_URL_PREFIX}/{safe_filename}",
+        })
+
+    return {"photos": uploaded_photos}
 
 
 @app.post("/auth/signup", response_model=SignupResponse)

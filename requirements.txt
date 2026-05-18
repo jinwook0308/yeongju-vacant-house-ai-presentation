@@ -4,6 +4,7 @@ sqlalchemy
 pandas
 openpyxl
 requests
+python-multipart
 python-dotenv
 openai
 pydantic
