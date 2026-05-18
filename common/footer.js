@@ -121,15 +121,10 @@ function initFloatingActions() {
           <div class="floating-ai-panel__body">
             <section class="floating-ai-panel__intro" id="floatingAiIntro">
               <p class="floating-ai-panel__date">${formatFloatingAiPanelDate()}</p>
-              <h3 class="floating-ai-panel__headline">작은 채팅창에서 바로 묻고,<br>필요하면 전체 AI 추천 페이지로 이어갈 수 있어요</h3>
-              <p class="floating-ai-panel__copy">
-                희망 지역, 인원, 체류 기간, 활용 목적을 남기면 영주시 기준 빈집 추천과 행정 안내를 도와드립니다.
-              </p>
               <div class="floating-ai-panel__actions">
                 <button type="button" class="floating-ai-panel__primary" id="floatingAiInlineBtn">여기서 바로 시작</button>
                 <a href="${aiPageUrl}" class="floating-ai-panel__secondary">AI 추천 페이지로 가기</a>
               </div>
-              <p class="floating-ai-panel__hint">같은 계정으로 사용하면 이 채팅창과 AI 페이지의 대화 기록이 이어집니다.</p>
             </section>
 
             <section class="floating-ai-panel__chat" id="floatingAiChat" hidden>
@@ -189,6 +184,7 @@ function initFloatingActions() {
 
   const closeFloatingAiPanel = () => {
     if (!floatingAiPanel || !floatingAiToggleBtn) return;
+    showFloatingAiIntro();
     floatingAiPanel.hidden = true;
     floatingAiPanel.setAttribute('aria-hidden', 'true');
     floatingAiToggleBtn.setAttribute('aria-expanded', 'false');
@@ -222,10 +218,8 @@ function initFloatingActions() {
         return;
       }
 
+      showFloatingAiIntro();
       openFloatingAiPanel();
-      if (!floatingAiPanel.classList.contains('is-chat-mode')) {
-        showFloatingAiIntro();
-      }
     });
   }
 
