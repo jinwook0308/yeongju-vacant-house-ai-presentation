@@ -1,219 +1,42 @@
-/**
- * guest-ai.js
- * ?곸＜??怨듦났??鍮덉쭛 ?쒖슜 ?뚮옯??- AI 異붿쿇 ?섏씠吏 ?ㅽ겕由쏀듃
- * GPT API + 諛깆뿏??異붿쿇 API ?곕룞 踰꾩쟾
- */
-
 const API_BASE_URL = typeof getApiBaseUrl === 'function' ? getApiBaseUrl() : 'http://localhost:8000';
 const AI_CHAT_STORAGE_KEY = 'yeongjuAiChatHistory';
+const AI_CHAT_STORAGE_KEY_PREFIX = 'yeongjuAiChatHistory:';
+const AI_CHAT_ANONYMOUS_STORAGE_KEY = `${AI_CHAT_STORAGE_KEY_PREFIX}anonymous`;
+const AI_CHAT_HISTORY_LIMIT = 20;
+const AI_API_HISTORY_LIMIT = 8;
+
 let aiChatHistory = [];
 let aiChatDisplayHistory = [];
 
-async function handleChatSend() {
-  const input = document.getElementById('aiChatInput');
-  const messages = document.getElementById('aiChatMessages');
-  const text = input.value.trim();
+function getAiChatStorageKey() {
+  const currentUser = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
 
-  if (!text) return;
-
-  appendChatMessage(messages, 'user', escapeHtml(text));
-  aiChatDisplayHistory.push({ kind: 'user', message: text });
-  syncAiApiHistory();
-  saveAiChatHistory();
-  input.value = '';
-
-  const loadingEl = appendLoadingMessage(messages);
-
-  try {
-    const response = await fetch(`${API_BASE_URL}/ai/chat`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        message: text,
-        history: aiChatHistory.slice(-8)
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
+  if (typeof buildUserScopedStorageId === 'function') {
+    const scopedId = buildUserScopedStorageId(currentUser);
+    if (scopedId) {
+      return `${AI_CHAT_STORAGE_KEY_PREFIX}${scopedId}`;
     }
-
-    const data = await response.json();
-    loadingEl.remove();
-
-    appendBotResponse(
-      messages,
-      data.message,
-      Array.isArray(data.recommendations) ? data.recommendations : [],
-      data.parsedConditions,
-      data.knowledgeApplied
-    );
-    aiChatDisplayHistory.push({
-      kind: 'bot',
-      message: data.message,
-      recommendations: Array.isArray(data.recommendations) ? data.recommendations : [],
-      parsedConditions: data.parsedConditions || null,
-      knowledgeApplied: Boolean(data.knowledgeApplied),
-    });
-    syncAiApiHistory();
-    saveAiChatHistory();
-  } catch (error) {
-    console.error('AI 채팅 요청 실패:', error);
-    loadingEl.remove();
-    aiChatDisplayHistory.push({
-      kind: 'bot',
-      message: '죄송합니다. 현재 AI 채팅 서버와 연결되지 않았습니다. 백엔드가 실행 중인지 확인해주세요.',
-      recommendations: [],
-      parsedConditions: null,
-      knowledgeApplied: false,
-    });
-    syncAiApiHistory();
-    saveAiChatHistory();
-    appendChatMessage(
-      messages,
-      'bot',
-      '죄송합니다. 현재 AI 채팅 서버와 연결되지 않았습니다.<br>백엔드가 실행 중인지 확인해주세요.'
-    );
   }
+
+  if (currentUser && typeof currentUser === 'object') {
+    const role = String(currentUser.role || 'guest').trim().toLowerCase();
+    const rawIdentifier = currentUser.id || currentUser.email || currentUser.username || currentUser.name;
+    if (rawIdentifier) {
+      return `${AI_CHAT_STORAGE_KEY_PREFIX}${encodeURIComponent(`${role}:${String(rawIdentifier).trim().toLowerCase()}`)}`;
+    }
+  }
+
+  return AI_CHAT_ANONYMOUS_STORAGE_KEY;
 }
 
-// HTML onclick?먯꽌???곌퀬 ?띠쑝硫???以?異붽?
-window.handleChatSend = handleChatSend;
+function clearRenderedAiChatHistory(container) {
+  if (!container) return;
 
-document.addEventListener('DOMContentLoaded', function () {
-  try {
-    if (typeof renderHeader === 'function') renderHeader('ai');
-    if (typeof renderFooter === 'function') renderFooter();
-  } catch (e) {
-    console.error('?ㅻ뜑/?명꽣 ?뚮뜑留??ㅻ쪟:', e);
-  }
-
-  const sendBtn = document.getElementById('aiChatSendBtn');
-  const input = document.getElementById('aiChatInput');
-
-  if (sendBtn) {
-    sendBtn.addEventListener('click', handleChatSend);
-  }
-
-  if (input) {
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        handleChatSend();
-      }
-    });
-  }
-
-  restoreAiChatHistory();
-});
-
-/**
- * 遺꾩쐞湲??좏깮 踰꾪듉???ㅼ젙?⑸땲??
- */
-function setupMoodButtons() {
-  document.querySelectorAll('.ai-mood-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const mood = btn.dataset.mood;
-      if (btn.classList.contains('is-selected')) {
-        btn.classList.remove('is-selected');
-        selectedMoods = selectedMoods.filter(m => m !== mood);
-      } else {
-        btn.classList.add('is-selected');
-        selectedMoods.push(mood);
-      }
-    });
+  const renderedMessages = container.querySelectorAll('.ai-chat-msg');
+  renderedMessages.forEach((messageEl, index) => {
+    if (index === 0) return;
+    messageEl.remove();
   });
-}
-
-/**
- * AI 異붿쿇 濡쒖쭅???ㅽ뻾?⑸땲??
- * ?ㅼ젣 ?쒕퉬?ㅼ뿉?쒕뒗 Python 諛깆뿏??API瑜??몄텧?⑸땲??
- */
-function runAiRecommendation() {
-  const district = document.getElementById('aiDistrict').value;
-  const capacity = parseInt(document.getElementById('aiCapacity').value);
-  const stayDuration = document.getElementById('aiStayDuration').value;
-  const budget = document.getElementById('aiBudget').value;
-
-  // 濡쒕뵫 ?쒖떆
-  document.getElementById('aiResultIntro').style.display = 'none';
-  document.getElementById('aiResultContent').style.display = 'none';
-  document.getElementById('aiResultLoading').style.display = 'flex';
-
-  // 異붿쿇 泥섎━ (?곕え: 1.5珥?吏????寃곌낵)
-  setTimeout(() => {
-    const recommendations = computeAiRecommendations({ district, capacity, stayDuration, budget, moods: selectedMoods });
-    displayAiRecommendations(recommendations, { district, capacity, stayDuration, budget });
-  }, 1500);
-}
-
-/**
- * 議곌굔???곕씪 異붿쿇 鍮덉쭛??怨꾩궛?⑸땲??
- * @param {Object} conditions - 異붿쿇 議곌굔
- * @returns {Array} 異붿쿇 鍮덉쭛 紐⑸줉 (?먯닔 ?ы븿)
- */
-function computeAiRecommendations(conditions) {
-  const approvedHouses = VACANT_HOUSE_LIST.filter((house) => house.isApproved);
-
-  const scored = approvedHouses.map((house) => {
-    let score = 0;
-    const reasons = [];
-
-    if (conditions.district && house.districtId === conditions.district) {
-      score += 30;
-      reasons.push('영주시 희망 지역과 일치');
-    } else if (!conditions.district) {
-      score += 10;
-    }
-
-    if (house.maxCapacity >= conditions.capacity) {
-      score += 20;
-      reasons.push(`${conditions.capacity}명 이상 수용 가능`);
-    }
-
-    if (conditions.stayDuration === 'long' && house.operationType === 'longterm') {
-      score += 25;
-      reasons.push('장기 체류 활용에 적합');
-    } else if (conditions.stayDuration === 'short' && house.operationType === 'lodging') {
-      score += 20;
-      reasons.push('단기 숙박 활용에 적합');
-    } else if (conditions.stayDuration === 'medium') {
-      score += 10;
-    }
-
-    if (conditions.moods.includes('nature') && house.tags.some((tag) => ['자연', '계곡', '숲'].includes(tag))) {
-      score += 15;
-      reasons.push('자연 친화적인 입지');
-    }
-    if (conditions.moods.includes('family') && house.tags.some((tag) => ['가족', '키즈', '체험'].includes(tag))) {
-      score += 15;
-      reasons.push('가족 단위 이용에 적합');
-    }
-    if (conditions.moods.includes('experience') && house.operationType === 'experience') {
-      score += 20;
-      reasons.push('체험형 공간 운영에 적합');
-    }
-    if (conditions.moods.includes('farming') && house.tags.some((tag) => ['농촌', '과수', '사과'].includes(tag))) {
-      score += 20;
-      reasons.push('영주 농촌 체험과 연결 가능');
-    }
-    if (conditions.moods.includes('hiking') && house.tags.some((tag) => ['등산', '트레킹', '산'].includes(tag))) {
-      score += 20;
-      reasons.push('등산·트레킹 수요와 잘 맞음');
-    }
-
-    if (house.conditionGrade === 'A') {
-      score += 10;
-      reasons.push('상태 등급 A로 즉시 활용 가능');
-    }
-
-    return { house, score, reasons };
-  });
-
-  return scored
-    .filter((item) => item.score > 0)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 4);
 }
 
 function syncAiApiHistory() {
@@ -227,9 +50,9 @@ function syncAiApiHistory() {
 
 function saveAiChatHistory() {
   try {
-    localStorage.setItem(AI_CHAT_STORAGE_KEY, JSON.stringify(aiChatDisplayHistory.slice(-20)));
+    localStorage.setItem(getAiChatStorageKey(), JSON.stringify(aiChatDisplayHistory.slice(-AI_CHAT_HISTORY_LIMIT)));
   } catch (error) {
-    console.warn('AI ???湲곕줉 ??μ뿉 ?ㅽ뙣?덉뒿?덈떎.', error);
+    console.warn('AI 대화 기록 저장에 실패했습니다.', error);
   }
 }
 
@@ -237,8 +60,18 @@ function restoreAiChatHistory() {
   const messages = document.getElementById('aiChatMessages');
   if (!messages) return;
 
+  clearRenderedAiChatHistory(messages);
+  aiChatDisplayHistory = [];
+  aiChatHistory = [];
+
   try {
-    const saved = JSON.parse(localStorage.getItem(AI_CHAT_STORAGE_KEY) || '[]');
+    const storageKey = getAiChatStorageKey();
+    const fallbackKey = storageKey === AI_CHAT_ANONYMOUS_STORAGE_KEY ? AI_CHAT_STORAGE_KEY : null;
+    const rawSaved = localStorage.getItem(storageKey)
+      || (fallbackKey ? localStorage.getItem(fallbackKey) : null)
+      || '[]';
+    const saved = JSON.parse(rawSaved);
+
     if (!Array.isArray(saved) || saved.length === 0) return;
 
     aiChatDisplayHistory = saved.filter((entry) => entry && typeof entry === 'object');
@@ -262,7 +95,77 @@ function restoreAiChatHistory() {
   } catch (error) {
     aiChatDisplayHistory = [];
     aiChatHistory = [];
-    localStorage.removeItem(AI_CHAT_STORAGE_KEY);
+    localStorage.removeItem(getAiChatStorageKey());
+  }
+}
+
+async function handleChatSend() {
+  const input = document.getElementById('aiChatInput');
+  const messages = document.getElementById('aiChatMessages');
+  if (!input || !messages) return;
+
+  const text = input.value.trim();
+  if (!text) return;
+
+  appendChatMessage(messages, 'user', escapeHtml(text));
+  aiChatDisplayHistory.push({ kind: 'user', message: text });
+  syncAiApiHistory();
+  saveAiChatHistory();
+  input.value = '';
+
+  const loadingEl = appendLoadingMessage(messages);
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/ai/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: text,
+        history: aiChatHistory.slice(-AI_API_HISTORY_LIMIT),
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+    loadingEl.remove();
+
+    const recommendations = Array.isArray(data.recommendations) ? data.recommendations : [];
+    appendBotResponse(
+      messages,
+      data.message || '',
+      recommendations,
+      data.parsedConditions || null,
+      Boolean(data.knowledgeApplied)
+    );
+
+    aiChatDisplayHistory.push({
+      kind: 'bot',
+      message: data.message || '',
+      recommendations,
+      parsedConditions: data.parsedConditions || null,
+      knowledgeApplied: Boolean(data.knowledgeApplied),
+    });
+    syncAiApiHistory();
+    saveAiChatHistory();
+  } catch (error) {
+    console.error('AI 채팅 요청 실패:', error);
+    loadingEl.remove();
+
+    const fallbackMessage = '죄송합니다. 지금은 AI 채팅 서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.';
+    appendChatMessage(messages, 'bot', `${escapeHtml(fallbackMessage)}`);
+
+    aiChatDisplayHistory.push({
+      kind: 'bot',
+      message: fallbackMessage,
+      recommendations: [],
+      parsedConditions: null,
+      knowledgeApplied: false,
+    });
+    syncAiApiHistory();
+    saveAiChatHistory();
   }
 }
 
@@ -271,8 +174,11 @@ function appendBotResponse(container, message, recommendations = [], parsedCondi
   wrapper.className = 'ai-chat-msg ai-chat-msg--bot ai-chat-msg--bot-response';
 
   const parsedSummary = buildParsedSummary(parsedConditions || {});
-  const cardsHtml = renderRecommendationCards(recommendations);
-  const summaryHtml = recommendations.length
+  const introMessage = recommendations.length > 0
+    ? `조건에 맞는 빈집을 ${recommendations.length}곳 골랐습니다. 아래에서 설명 하나와 연결 링크 하나씩 바로 확인해 주세요.`
+    : message;
+
+  const summaryHtml = recommendations.length > 0
     ? `
       <div class="ai-response-summary">
         <strong class="ai-response-summary__title">추천 조건 해석</strong>
@@ -281,11 +187,12 @@ function appendBotResponse(container, message, recommendations = [], parsedCondi
       </div>
     `
     : '';
-  const resultHtml = cardsHtml
+
+  const resultHtml = recommendations.length > 0
     ? `
       <div class="ai-response-results">
-        <div class="ai-response-results__title">추천 빈집 연결</div>
-        <div class="ai-result-stack">${cardsHtml}</div>
+        <div class="ai-response-results__title">추천 빈집 안내</div>
+        <div class="ai-result-flow">${renderRecommendationFlow(recommendations)}</div>
       </div>
     `
     : '';
@@ -295,7 +202,7 @@ function appendBotResponse(container, message, recommendations = [], parsedCondi
     <div class="ai-chat-msg__content ai-chat-msg__content--wide">
       <div class="ai-chat-msg__name">AI 추천 도우미</div>
       <div class="ai-chat-msg__bubble ai-chat-msg__bubble--response">
-        <div class="ai-response-copy">${formatBotText(message)}</div>
+        <div class="ai-response-copy">${formatBotText(introMessage)}</div>
         ${summaryHtml}
         ${resultHtml}
       </div>
@@ -311,30 +218,76 @@ function appendBotResponse(container, message, recommendations = [], parsedCondi
   return wrapper;
 }
 
-function renderRecommendationCards(recommendations = []) {
+function renderRecommendationFlow(recommendations = []) {
   return recommendations.map((item, idx) => {
-    const house = item.house;
+    const house = item.house || {};
     return `
-      <a href="guest-detail.html?id=${house.id}" class="ai-result-card">
-        <div class="ai-result-card__rank">${idx + 1}</div>
-        <div class="ai-result-card__emoji">${getHouseEmoji(house.operationType)}</div>
-        <div class="ai-result-card__info">
-          <div class="ai-result-card__name">${escapeHtml(house.name)}</div>
-          <div class="ai-result-card__location">영주시 ${escapeHtml(house.districtName)} ? 최대 ${house.maxCapacity}명</div>
-          <div class="ai-result-card__badge-row">
-            ${getConditionGradeBadge(house.conditionGrade)}
-            ${getOperationTypeBadge(house.operationType)}
-          </div>
-          <div class="ai-result-card__match">추천 이유: ${item.reasons.map(escapeHtml).join(' ? ')}</div>
-          <div class="ai-result-card__meta">
-            <div><strong>공공데이터 반영</strong> : ${escapeHtml(getPublicDataSummary(house))}</div>
-            <div><strong>참고</strong> : ${escapeHtml(getGradeCautionText(house.conditionGrade))}</div>
-          </div>
+      <section class="ai-recommendation-block">
+        <div class="ai-recommendation-block__copy">
+          <div class="ai-recommendation-block__heading">${idx + 1}. ${escapeHtml(house.name || `추천 빈집 ${idx + 1}`)}</div>
+          <p class="ai-recommendation-block__line"><strong>추천 이유</strong> ${escapeHtml(buildRecommendationReasonLine(item))}</p>
+          <p class="ai-recommendation-block__line"><strong>잘 맞는 점</strong> ${escapeHtml(buildRecommendationFitLine(house))}</p>
+          <p class="ai-recommendation-block__line"><strong>참고할 점</strong> ${escapeHtml(buildRecommendationCautionLine(house))}</p>
         </div>
-        <div class="ai-result-card__price">${escapeHtml(house.priceRange)}</div>
-      </a>
+        <div class="ai-recommendation-block__card">
+          ${renderRecommendationCard(item, idx)}
+        </div>
+      </section>
     `;
   }).join('');
+}
+
+function renderRecommendationCard(item, idx) {
+  const house = item.house || {};
+  const reasons = Array.isArray(item.reasons) ? item.reasons.filter(Boolean) : [];
+  const locationText = `영주시 ${escapeHtml(house.districtName || '-')} · 최대 ${escapeHtml(house.maxCapacity || '-')}명`;
+
+  return `
+    <a href="guest-detail.html?id=${house.id}" class="ai-result-card">
+      <div class="ai-result-card__rank">${idx + 1}</div>
+      <div class="ai-result-card__emoji">${getHouseEmoji(house.operationType)}</div>
+      <div class="ai-result-card__info">
+        <div class="ai-result-card__name">${escapeHtml(house.name || '추천 빈집')}</div>
+        <div class="ai-result-card__location">${locationText}</div>
+        <div class="ai-result-card__badge-row">
+          ${getConditionGradeBadge(house.conditionGrade)}
+          ${getOperationTypeBadge(house.operationType)}
+        </div>
+        <div class="ai-result-card__match">추천 이유: ${escapeHtml(reasons.join(' · ') || '조건에 맞는 공개 승인 빈집입니다.')}</div>
+        <div class="ai-result-card__meta">
+          <div><strong>공공데이터 반영</strong> : ${escapeHtml(getPublicDataSummary(house))}</div>
+          <div><strong>참고</strong> : ${escapeHtml(getGradeCautionText(house.conditionGrade))}</div>
+        </div>
+      </div>
+      <div class="ai-result-card__price">${escapeHtml(house.priceRange || '-')}</div>
+    </a>
+  `;
+}
+
+function buildRecommendationReasonLine(item = {}) {
+  const reasons = Array.isArray(item.reasons) ? item.reasons.filter(Boolean) : [];
+  if (reasons.length > 0) {
+    return reasons.join(', ');
+  }
+  return '입력하신 조건과 비교했을 때 무난하게 검토할 수 있는 후보입니다.';
+}
+
+function buildRecommendationFitLine(house = {}) {
+  const parts = [];
+  if (house.maxCapacity) parts.push(`최대 ${house.maxCapacity}명 이용 가능`);
+  if (house.priceRange) parts.push(`${house.priceRange} 예산대`);
+  if (house.conditionGrade) parts.push(`${house.conditionGrade}등급 기준 반영`);
+  return parts.length > 0
+    ? `${parts.join(', ')}해서 조건에 맞춰 보기 좋습니다.`
+    : '상세 조건과 기본 상태 정보를 함께 확인하기 좋은 후보입니다.';
+}
+
+function buildRecommendationCautionLine(house = {}) {
+  const caution = getGradeCautionText(house.conditionGrade);
+  if (house.area && Number(house.area) > 0) {
+    return `${caution} 면적은 ${house.area}㎡로 표시되어 있어 상세 페이지에서 활용 가능 범위를 함께 보는 것이 좋습니다.`;
+  }
+  return `${caution} 상세 페이지에서 실제 운영 상태와 이용 조건을 같이 확인해 주세요.`;
 }
 
 function appendLoadingMessage(container) {
@@ -375,25 +328,30 @@ function appendChatMessage(container, role, html) {
       </div>
     `;
   }
+
   container.appendChild(msg);
   container.scrollTop = container.scrollHeight;
+  return msg;
 }
 
 function buildParsedSummary(parsedConditions = {}) {
   const parts = [];
   if (parsedConditions.districtName) parts.push(`지역: ${parsedConditions.districtName}`);
   if (parsedConditions.capacity) parts.push(`인원: ${parsedConditions.capacity}명`);
+
   if (parsedConditions.stayDuration) {
     const stayDurationMap = { short: '단기', medium: '중기', long: '장기' };
     parts.push(`체류: ${stayDurationMap[parsedConditions.stayDuration] || parsedConditions.stayDuration}`);
   }
+
   if (Array.isArray(parsedConditions.moods) && parsedConditions.moods.length > 0) {
     parts.push(`분위기: ${parsedConditions.moods.join(', ')}`);
   }
-  return parts.length > 0 ? parts.join(' ? ') : '질문 내용을 기준으로 조건을 자동 해석했습니다.';
+
+  return parts.length > 0 ? parts.join(' · ') : '질문 내용을 기준으로 조건을 자동 해석했습니다.';
 }
 
-function getPublicDataSummary(house) {
+function getPublicDataSummary(house = {}) {
   const statusSummary = house.status ? `현장 상태 ${house.status}` : '현장 상태 정보 없음';
   return `${statusSummary}, ${getConditionGradeText(house.conditionGrade)} 반영`;
 }
@@ -403,19 +361,49 @@ function getHouseEmoji(operationType) {
     lodging: '🏡',
     longterm: '🛏️',
     experience: '🌿',
-    review_needed: '📋',
+    review_needed: '🔎',
   }[operationType] || '🏠';
 }
 
 function formatBotText(text) {
-  return escapeHtml(text).replace(/\n/g, '<br>');
+  return escapeHtml(text || '').replace(/\n/g, '<br>');
 }
 
 function escapeHtml(text) {
-  return String(text)
+  return String(text ?? '')
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
+
+window.handleChatSend = handleChatSend;
+
+document.addEventListener('DOMContentLoaded', () => {
+  try {
+    if (typeof renderHeader === 'function') renderHeader('ai');
+    if (typeof renderFooter === 'function') renderFooter();
+  } catch (error) {
+    console.error('레이아웃 렌더링 실패:', error);
+  }
+
+  const sendBtn = document.getElementById('aiChatSendBtn');
+  const input = document.getElementById('aiChatInput');
+
+  if (sendBtn) {
+    sendBtn.addEventListener('click', handleChatSend);
+  }
+
+  if (input) {
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        handleChatSend();
+      }
+    });
+  }
+
+  restoreAiChatHistory();
+  window.addEventListener('yeongju:auth-changed', restoreAiChatHistory);
+});
