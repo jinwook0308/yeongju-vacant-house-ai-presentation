@@ -876,6 +876,45 @@ body.guest-ai-page {
   border-color: #111827 !important;
 }
 
+.ai-result-flow {
+  display: grid;
+  gap: 18px;
+}
+
+.ai-recommendation-block {
+  display: grid;
+  gap: 12px;
+}
+
+.ai-recommendation-block__copy {
+  background: #f8fafc;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 20px;
+  padding: 18px 20px;
+}
+
+.ai-recommendation-block__heading {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 10px;
+}
+
+.ai-recommendation-block__line {
+  margin: 0;
+  color: #374151;
+  line-height: 1.7;
+}
+
+.ai-recommendation-block__line + .ai-recommendation-block__line {
+  margin-top: 8px;
+}
+
+.ai-recommendation-block__line strong {
+  color: #111827;
+  margin-right: 6px;
+}
+
 .ai-chat-loading span {
   background: #475569 !important;
 }
