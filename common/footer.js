@@ -1,7 +1,9 @@
 /**
  * footer.js
- * 영주시 공공형 빈집 플랫폼 공통 푸터 및 플로팅 액션
+ * 영주시 공공형 빈집 플랫폼 공통 푸터 및 플로팅 AI 채팅창
  */
+
+let aiChatCoreLoaderPromise = null;
 
 function renderFooter() {
   if (document.getElementById('siteFooter')) {
@@ -9,7 +11,6 @@ function renderFooter() {
   }
 
   const root = getRootPath();
-
   const footerHtml = `
     <footer class="site-footer" id="siteFooter">
       <div class="site-footer__inner">
@@ -17,8 +18,9 @@ function renderFooter() {
           <div class="site-footer__brand">
             <div class="site-footer__brand-title">영주 빈집 플랫폼</div>
             <p class="site-footer__brand-desc">
-              영주시 안의 빈집을 공공기관 검토와 지역 협력 체계로 다시 연결하는 영주 전용 공공데이터 기반 플랫폼입니다.
-              빈집 등록, 활용 추천, 협력업체 연결, 법적 안내를 한 흐름에서 확인할 수 있도록 구성했습니다.
+              영주시의 방치된 빈집을 공공기관 검토와 지역 연계 체계로 다시 연결하는
+              영주시 전용 공공데이터 기반 플랫폼입니다.
+              빈집 등록, 이용 추천, 협력업체 연결, 법적 안내를 한곳에서 확인할 수 있도록 구성했습니다.
             </p>
             <div style="margin-top: 16px;">
               <span class="site-footer__badge">영주시 공공데이터 활용 대회</span>
@@ -59,7 +61,7 @@ function renderFooter() {
 
         <div class="site-footer__bottom">
           <div class="site-footer__copyright">
-            <span class="site-footer__copyright-line">© 2025 영주시 공공형 빈집 플랫폼. 영주시 공공데이터 활용 대회 제출용 서비스입니다.</span>
+            <span class="site-footer__copyright-line">© 2025 영주 빈집 플랫폼 · 영주시 공공데이터 활용 대회 제출용 서비스</span>
             <span class="site-footer__copyright-line">주소: 경상북도 영주시 시청로 1 | 문의: 054-639-6000</span>
           </div>
           <div class="site-footer__meta">
@@ -79,12 +81,48 @@ function renderFooter() {
   }
 }
 
-function isEmbeddedAiMode() {
-  try {
-    return new URLSearchParams(window.location.search).get('embed') === '1';
-  } catch (error) {
-    return false;
+function ensureStylesheet(id, href) {
+  if (document.getElementById(id)) {
+    return;
   }
+
+  const link = document.createElement('link');
+  link.id = id;
+  link.rel = 'stylesheet';
+  link.href = href;
+  document.head.appendChild(link);
+}
+
+function ensureFloatingChatStyles(root) {
+  ensureStylesheet('floatingActionsStylesheet', `${root}common/floating-actions.css?v=4`);
+  ensureStylesheet('guestAiChatStylesheet', `${root}guest/guest-ai.css?v=9`);
+}
+
+function ensureAiChatCore(root) {
+  if (window.YeongjuAiChatCore) {
+    return Promise.resolve(window.YeongjuAiChatCore);
+  }
+
+  if (aiChatCoreLoaderPromise) {
+    return aiChatCoreLoaderPromise;
+  }
+
+  aiChatCoreLoaderPromise = new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = `${root}common/ai-chat-core.js?v=1`;
+    script.async = true;
+    script.onload = () => {
+      if (window.YeongjuAiChatCore) {
+        resolve(window.YeongjuAiChatCore);
+        return;
+      }
+      reject(new Error('AI chat core loaded without global export.'));
+    };
+    script.onerror = () => reject(new Error('Failed to load AI chat core.'));
+    document.body.appendChild(script);
+  });
+
+  return aiChatCoreLoaderPromise;
 }
 
 function formatFloatingAiPanelDate() {
@@ -93,67 +131,86 @@ function formatFloatingAiPanelDate() {
   return `${now.getMonth() + 1}월 ${now.getDate()}일 (${weekdays[now.getDay()]})`;
 }
 
+function buildFloatingChatMarkup() {
+  return `
+    <section class="floating-chat-shell" id="floatingChatRoot" aria-label="AI 채팅">
+      <div class="guest-ai-chat__messages floating-chat-shell__messages" data-ai-chat-messages aria-live="polite"></div>
+
+      <div class="guest-ai-chat__composer floating-chat-shell__composer">
+        <label class="guest-ai-chat__input-wrap floating-chat-shell__input-wrap" for="floatingAiChatInput">
+          <textarea
+            id="floatingAiChatInput"
+            data-ai-chat-input
+            class="guest-ai-chat__input floating-chat-shell__input"
+            rows="1"
+            placeholder="무엇이든 물어보세요"
+          ></textarea>
+        </label>
+        <button type="button" class="guest-ai-chat__send floating-chat-shell__send" data-ai-chat-send>보내기</button>
+      </div>
+
+      <p class="guest-ai-chat__status floating-chat-shell__status" data-ai-chat-status></p>
+    </section>
+  `;
+}
+
 function initFloatingActions() {
   if (document.querySelector('.floating-actions')) {
     return;
   }
 
   const root = getRootPath();
+  const isFullAiPage = document.body.classList.contains('guest-ai-page');
   const aiPageUrl = `${root}guest/guest-ai.html`;
-  const isFullAiPage = document.body.classList.contains('guest-ai-page') && !isEmbeddedAiMode();
+
+  ensureFloatingChatStyles(root);
 
   const floatingActionsHtml = `
     <div class="floating-actions floating-actions--panel">
       ${isFullAiPage ? '' : `
-      <div class="floating-ai-panel" id="floatingAiPanel" hidden aria-hidden="true">
-        <div class="floating-ai-panel__card" role="dialog" aria-modal="false" aria-labelledby="floatingAiPanelTitle">
-          <div class="floating-ai-panel__header">
-            <div class="floating-ai-panel__header-copy">
-              <span class="floating-ai-panel__eyebrow">영주시 빈집 AI 도우미</span>
-              <strong class="floating-ai-panel__title" id="floatingAiPanelTitle">영주시 빈집 활용 조건을 바로 물어보세요</strong>
-            </div>
-            <div class="floating-ai-panel__controls">
-              <button type="button" class="floating-ai-panel__icon" id="floatingAiOpenPageBtn" aria-label="AI 추천 페이지 열기">↗</button>
-              <button type="button" class="floating-ai-panel__icon" id="floatingAiCloseBtn" aria-label="AI 채팅창 닫기">×</button>
-            </div>
-          </div>
-
-          <div class="floating-ai-panel__body">
-            <section class="floating-ai-panel__intro" id="floatingAiIntro">
-              <p class="floating-ai-panel__date">${formatFloatingAiPanelDate()}</p>
-              <div class="floating-ai-panel__actions">
-                <button type="button" class="floating-ai-panel__primary" id="floatingAiInlineBtn">여기서 바로 시작</button>
-                <a href="${aiPageUrl}" class="floating-ai-panel__secondary">AI 추천 페이지로 가기</a>
+        <div class="floating-ai-panel" id="floatingAiPanel" hidden aria-hidden="true">
+          <div class="floating-ai-panel__card" role="dialog" aria-modal="false" aria-labelledby="floatingAiPanelTitle">
+            <header class="floating-ai-panel__header">
+              <div class="floating-ai-panel__header-copy">
+                <strong class="floating-ai-panel__title" id="floatingAiPanelTitle">영주시 빈집 AI 도우미</strong>
+                <p class="floating-ai-panel__subtitle">영주시 빈집 활용 조건을 바로 물어보세요</p>
               </div>
-            </section>
+              <div class="floating-ai-panel__controls">
+                <button type="button" class="floating-ai-panel__icon" id="floatingAiOpenPageBtn" aria-label="AI 추천 페이지로 이동">↗</button>
+                <button type="button" class="floating-ai-panel__icon" id="floatingAiCloseBtn" aria-label="AI 채팅창 닫기">×</button>
+              </div>
+            </header>
 
-            <section class="floating-ai-panel__chat" id="floatingAiChat" hidden>
-              <iframe
-                id="floatingAiIframe"
-                class="floating-ai-panel__iframe"
-                title="영주시 빈집 AI 바로 상담"
-                loading="lazy"
-                src=""
-              ></iframe>
-            </section>
+            <div class="floating-ai-panel__body">
+              <section class="floating-ai-panel__intro" id="floatingAiIntro">
+                <p class="floating-ai-panel__date">${formatFloatingAiPanelDate()}</p>
+                <div class="floating-ai-panel__actions">
+                  <button type="button" class="floating-ai-panel__primary" id="floatingAiInlineBtn">여기서 바로 시작</button>
+                  <a href="${aiPageUrl}" class="floating-ai-panel__secondary" id="floatingAiPageBtn">AI 추천 페이지로 가기</a>
+                </div>
+              </section>
+
+              <section class="floating-ai-panel__chat" id="floatingAiChat" hidden>
+                ${buildFloatingChatMarkup()}
+              </section>
+            </div>
           </div>
         </div>
-      </div>
 
-      <button
-        type="button"
-        class="floating-ai-link floating-ai-link--toggle"
-        id="floatingAiToggleBtn"
-        aria-label="AI 채팅 열기"
-        aria-haspopup="dialog"
-        aria-expanded="false"
-        aria-controls="floatingAiPanel"
-      >
-        <span class="floating-btn floating-btn--ai">
-          <img src="${root}assets/images/yeongju_mas.jpg" alt="영주 AI 도우미" class="floating-btn__img">
-        </span>
-        <span class="floating-ai-link__label">AI 상담</span>
-      </button>
+        <button
+          type="button"
+          class="floating-ai-link floating-ai-link--toggle"
+          id="floatingAiToggleBtn"
+          aria-label="AI 채팅 열기"
+          aria-haspopup="dialog"
+          aria-expanded="false"
+          aria-controls="floatingAiPanel"
+        >
+          <span class="floating-btn floating-btn--ai">
+            <img src="${root}assets/images/yeongju_mas.jpg" alt="영주시 AI 도우미" class="floating-btn__img">
+          </span>
+          <span class="floating-ai-link__label">AI 상담</span>
+        </button>
       `}
 
       <button class="floating-btn floating-btn--top" id="scrollTopBtn" title="맨 위로 이동" aria-label="페이지 맨 위로">
@@ -171,45 +228,97 @@ function initFloatingActions() {
   const floatingAiOpenPageBtn = document.getElementById('floatingAiOpenPageBtn');
   const floatingAiIntro = document.getElementById('floatingAiIntro');
   const floatingAiChat = document.getElementById('floatingAiChat');
-  const floatingAiIframe = document.getElementById('floatingAiIframe');
   const scrollTopBtn = document.getElementById('scrollTopBtn');
-  let floatingAiChatInitialized = false;
 
-  const openFloatingAiPanel = () => {
-    if (!floatingAiPanel || !floatingAiToggleBtn) return;
-    floatingAiPanel.hidden = false;
-    floatingAiPanel.setAttribute('aria-hidden', 'false');
-    floatingAiToggleBtn.setAttribute('aria-expanded', 'true');
-  };
+  let chatInstance = null;
 
-  const closeFloatingAiPanel = () => {
-    if (!floatingAiPanel || !floatingAiToggleBtn) return;
-    showFloatingAiIntro();
-    floatingAiPanel.hidden = true;
-    floatingAiPanel.setAttribute('aria-hidden', 'true');
-    floatingAiToggleBtn.setAttribute('aria-expanded', 'false');
-  };
+  function resetChatMount() {
+    if (!floatingAiChat) {
+      return null;
+    }
 
-  const showFloatingAiIntro = () => {
+    floatingAiChat.innerHTML = buildFloatingChatMarkup();
+    return document.getElementById('floatingChatRoot');
+  }
+
+  function getFloatingChatRoot() {
+    return document.getElementById('floatingChatRoot');
+  }
+
+  function showIntroScreen() {
     if (!floatingAiPanel || !floatingAiIntro || !floatingAiChat) return;
     floatingAiPanel.classList.remove('is-chat-mode');
     floatingAiIntro.hidden = false;
     floatingAiChat.hidden = true;
-  };
+  }
 
-  const showFloatingAiChat = () => {
-    if (!floatingAiPanel || !floatingAiIntro || !floatingAiChat || !floatingAiIframe) return;
-
-    if (!floatingAiChatInitialized || !floatingAiIframe.src) {
-      floatingAiIframe.src = `${aiPageUrl}?embed=1`;
-      floatingAiChatInitialized = true;
-    }
-
+  function showChatScreen() {
+    if (!floatingAiPanel || !floatingAiIntro || !floatingAiChat) return;
     floatingAiPanel.classList.add('is-chat-mode');
     floatingAiIntro.hidden = true;
     floatingAiChat.hidden = false;
-    openFloatingAiPanel();
-  };
+  }
+
+  function openFloatingAiPanel() {
+    if (!floatingAiPanel || !floatingAiToggleBtn) return;
+    floatingAiPanel.hidden = false;
+    floatingAiPanel.setAttribute('aria-hidden', 'false');
+    floatingAiToggleBtn.setAttribute('aria-expanded', 'true');
+  }
+
+  function closeFloatingAiPanel() {
+    if (!floatingAiPanel || !floatingAiToggleBtn) return;
+
+    if (chatInstance && !chatInstance.isPersistentUser()) {
+      chatInstance.destroy();
+      chatInstance = null;
+      resetChatMount();
+    }
+
+    showIntroScreen();
+    floatingAiPanel.hidden = true;
+    floatingAiPanel.setAttribute('aria-hidden', 'true');
+    floatingAiToggleBtn.setAttribute('aria-expanded', 'false');
+  }
+
+  async function mountFloatingChat() {
+    if (!floatingAiPanel) return;
+
+    try {
+      const core = await ensureAiChatCore(root);
+      let chatRoot = getFloatingChatRoot();
+
+      if (!chatRoot) {
+        chatRoot = resetChatMount();
+      }
+
+      if (!chatInstance && chatRoot) {
+        chatInstance = core.create({
+          rootElement: chatRoot,
+          rootPath: root,
+          recommendationTarget: '_blank',
+          openLinksInNewTab: true,
+          welcomeMessage: '안녕하세요. 영주시 공공형 빈집 AI 추천 도우미입니다. 찾으시는 조건을 편하게 말씀해 주세요.',
+          initialPrompt: '예: "풍기읍, 4명, 2박, 조용한 자연 분위기"',
+        });
+      } else if (chatInstance) {
+        if (chatInstance.isPersistentUser()) {
+          chatInstance.restoreConversation();
+        } else {
+          chatInstance.resetConversation();
+        }
+      }
+
+      showChatScreen();
+      openFloatingAiPanel();
+
+      if (chatInstance) {
+        chatInstance.focusInput();
+      }
+    } catch (error) {
+      console.error('AI 채팅 코어를 불러오지 못했습니다.', error);
+    }
+  }
 
   if (floatingAiToggleBtn) {
     floatingAiToggleBtn.addEventListener('click', () => {
@@ -218,7 +327,7 @@ function initFloatingActions() {
         return;
       }
 
-      showFloatingAiIntro();
+      showIntroScreen();
       openFloatingAiPanel();
     });
   }
@@ -228,7 +337,7 @@ function initFloatingActions() {
   }
 
   if (floatingAiInlineBtn) {
-    floatingAiInlineBtn.addEventListener('click', showFloatingAiChat);
+    floatingAiInlineBtn.addEventListener('click', mountFloatingChat);
   }
 
   if (floatingAiOpenPageBtn) {
@@ -244,18 +353,17 @@ function initFloatingActions() {
       }
     });
 
-    document.addEventListener('click', (event) => {
-      if (floatingAiPanel.hidden) return;
-      if (!event.target.closest('.floating-actions')) {
-        closeFloatingAiPanel();
-      }
-    });
-
     window.addEventListener('yeongju:auth-changed', () => {
-      if (!floatingAiIframe || !floatingAiChatInitialized) return;
-      const currentSrc = floatingAiIframe.getAttribute('src');
-      if (currentSrc) {
-        floatingAiIframe.setAttribute('src', currentSrc);
+      if (chatInstance && chatInstance.isPersistentUser()) {
+        chatInstance.restoreConversation();
+      }
+
+      if (!chatInstance) {
+        return;
+      }
+
+      if (!chatInstance.isPersistentUser()) {
+        chatInstance.resetConversation();
       }
     });
   }
@@ -264,7 +372,7 @@ function initFloatingActions() {
     scrollTopBtn.addEventListener('click', () => {
       window.scrollTo({
         top: 0,
-        behavior: 'smooth'
+        behavior: 'smooth',
       });
     });
 
@@ -282,10 +390,6 @@ function initFloatingActions() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  if (isEmbeddedAiMode()) {
-    return;
-  }
-
   renderFooter();
   initFloatingActions();
 });

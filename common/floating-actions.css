@@ -1,44 +1,32 @@
 /**
  * floating-actions.css
- * 영주시 공공형 빈집 활용 플랫폼 - 플로팅 액션 버튼 UI 스타일
- * AI 상담 및 맨 위로 이동 버튼
+ * 영주 빈집 플랫폼 플로팅 액션 및 AI 채팅창 스타일
  */
 
-/* ============================================================
-   플로팅 액션 컨테이너
-   ============================================================ */
 .floating-actions {
   position: fixed;
-  bottom: 32px;
-  right: 32px;
-  z-index: 900;
+  right: 24px;
+  bottom: 24px;
+  z-index: 1200;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  align-items: center;
+  align-items: flex-end;
+  gap: 12px;
 }
 
 .floating-ai-link {
   position: relative;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 90px;
-  height: 90px;
-  gap: 0;
-  text-decoration: none;
+  width: 78px;
+  height: 78px;
+  border: 0;
+  padding: 0;
   border-radius: 50%;
   background: transparent;
-  box-shadow: 0 16px 34px rgba(28, 22, 13, 0.34);
-  overflow: visible;
-  transition: transform 0.28s ease, box-shadow 0.28s ease;
-}
-
-.floating-ai-link:hover,
-.floating-ai-link:focus-visible {
-  transform: none;
-  box-shadow: 0 20px 42px rgba(28, 22, 13, 0.42);
+  cursor: pointer;
+  text-decoration: none;
 }
 
 .floating-ai-link__label {
@@ -46,295 +34,93 @@
 }
 
 .floating-ai-link::after {
-  content: 'AI\C0C1 \B2F4 \C5F0 \ACB0';
+  content: 'AI 채팅 열기';
   position: absolute;
   right: calc(100% + 10px);
   top: 50%;
-  transform: translate(6px, -50%);
-  color: #1f1a0f;
-  font-size: 13px;
-  font-weight: 800;
-  line-height: 1;
-  white-space: nowrap;
-  letter-spacing: 0;
-  background: rgba(255, 255, 255, 0.96);
-  border: 1px solid rgba(44, 36, 22, 0.16);
+  transform: translateY(-50%);
+  padding: 8px 11px;
   border-radius: 999px;
-  padding: 8px 10px;
-  box-shadow: 0 10px 24px rgba(28, 22, 13, 0.2);
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.16);
+  color: #111827;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
   opacity: 0;
   pointer-events: none;
-  z-index: 950;
   transition: opacity 0.18s ease, transform 0.18s ease;
 }
 
 .floating-ai-link:hover::after,
 .floating-ai-link:focus-visible::after {
   opacity: 1;
-  transform: translate(0, -50%);
+  transform: translate(-4px, -50%);
 }
 
-/* ============================================================
-   플로팅 버튼 기본 스타일
-   ============================================================ */
 .floating-btn {
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
-  display: flex;
-  flex-direction: column;
+  width: 78px;
+  height: 78px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  border: 0;
+  border-radius: 50%;
   cursor: pointer;
   text-decoration: none;
-  color: white;
-  border: none;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow: 0 16px 34px rgba(28, 22, 13, 0.34);
-  position: relative;
-  overflow: visible;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.22);
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
 }
 
-.floating-btn:hover {
-  transform: scale(1.12);
-  box-shadow: 0 20px 42px rgba(28, 22, 13, 0.42);
+.floating-btn:hover,
+.floating-btn:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 22px 44px rgba(15, 23, 42, 0.26);
 }
 
-.floating-btn:active {
-  transform: scale(1.08);
-}
-
-/* ============================================================
-   AI 상담 버튼
-   ============================================================ */
 .floating-btn--ai {
-  background: transparent;
-  padding: 0;
   width: 100%;
   height: 100%;
-  margin-top: 0;
-  box-shadow: none;
   overflow: hidden;
-}
-
-.floating-btn--ai:hover {
-  background: transparent;
-  transform: none;
-  box-shadow: none;
+  background: #ffffff;
 }
 
 .floating-btn--ai .floating-btn__img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 50%;
-  border: none;
-  filter: none;
+  display: block;
 }
 
-.floating-btn--ai .floating-btn__label {
-  display: none;
-}
-
-/* ============================================================
-   맨 위로 버튼
-   ============================================================ */
 .floating-btn--top {
   background: linear-gradient(145deg, #ffffff 0%, #f4f6f8 100%);
   border: 1px solid rgba(15, 23, 42, 0.16);
   color: #111827;
-  font-size: 12px;
-  font-weight: 700;
   opacity: 0;
-  transform: scale(0.8) translateY(20px);
+  transform: translateY(18px);
   pointer-events: none;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .floating-btn--top.is-visible {
   opacity: 1;
-  transform: scale(1) translateY(0);
+  transform: translateY(0);
   pointer-events: auto;
 }
 
-.floating-btn--top:hover {
-  background: linear-gradient(145deg, #ffffff 0%, #edf2f7 100%);
-  border-color: rgba(15, 23, 42, 0.28);
-}
-
-.floating-btn--top .floating-btn__label {
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.8px;
-  line-height: 1;
-  color: #111827;
-}
-
-/* ============================================================
-   버튼 라벨 공통 스타일
-   ============================================================ */
 .floating-btn__label {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', Arial, sans-serif;
-  color: white;
-  white-space: nowrap;
-  text-align: center;
-}
-
-.floating-btn__img {
-  object-fit: contain;
-  flex-shrink: 0;
-}
-
-/* ============================================================
-   반응형 - 태블릿
-   ============================================================ */
-@media (max-width: 1024px) {
-  .floating-actions {
-    bottom: 24px;
-    right: 24px;
-    gap: 12px;
-  }
-
-  .floating-ai-link {
-    width: 75px;
-    height: 75px;
-  }
-
-  .floating-btn {
-    width: 75px;
-    height: 75px;
-  }
-
-  .floating-btn--ai {
-    width: 100%;
-    height: 100%;
-    margin-top: 0;
-  }
-
-  .floating-btn--ai .floating-btn__img {
-    width: 100%;
-    height: 100%;
-  }
-
-  .floating-ai-link::after {
-    font-size: 12px;
-  }
-
-  .floating-btn--top .floating-btn__label {
-    font-size: 11px;
-  }
-}
-
-/* ============================================================
-   반응형 - 모바일
-   ============================================================ */
-@media (max-width: 640px) {
-  .floating-actions {
-    bottom: 16px;
-    right: 16px;
-    gap: 10px;
-  }
-
-  .floating-ai-link {
-    width: 65px;
-    height: 65px;
-  }
-
-  .floating-btn {
-    width: 65px;
-    height: 65px;
-    box-shadow: 0 12px 26px rgba(28, 22, 13, 0.32);
-  }
-
-  .floating-btn:hover {
-    transform: scale(1.1);
-    box-shadow: 0 16px 34px rgba(28, 22, 13, 0.38);
-  }
-
-  .floating-btn--ai {
-    width: 100%;
-    height: 100%;
-    margin-top: 0;
-  }
-
-  .floating-btn--ai .floating-btn__img {
-    width: 100%;
-    height: 100%;
-  }
-
-  .floating-ai-link::after {
-    right: auto;
-    left: 50%;
-    top: auto;
-    bottom: calc(100% + 8px);
-    transform: translate(-50%, 4px);
-    font-size: 12px;
-  }
-
-  .floating-ai-link:hover::after,
-  .floating-ai-link:focus-visible::after {
-    transform: translate(-50%, 0);
-  }
-
-  .floating-btn--top .floating-btn__label {
-    font-size: 10px;
-    letter-spacing: 0.5px;
-  }
-}
-
-/* ============================================================
-   접근성 - 포커스 상태
-   ============================================================ */
-.floating-btn:focus {
-  outline: 2px solid #1565c0;
-  outline-offset: 2px;
-}
-
-.floating-btn--top:focus {
-  outline: 2px solid #111827;
-  outline-offset: 2px;
-}
-
-/* ============================================================
-   프린트 - 숨김
-   ============================================================ */
-@media print {
-  .floating-actions {
-    display: none;
-  }
-}
-
-/* ============================================================
-   Floating AI Panel Upgrade
-   ============================================================ */
-
-.floating-actions--panel {
-  align-items: flex-end;
-  gap: 14px;
-  z-index: 1200;
-}
-
-.floating-actions--panel .floating-ai-link--toggle {
-  border: 0;
-  padding: 0;
-  cursor: pointer;
-}
-
-.floating-actions--panel .floating-ai-link--toggle::after {
-  content: 'AI 채팅 열기';
-}
-
-.floating-actions--panel .floating-ai-link--toggle[aria-expanded='true']::after {
-  opacity: 0;
-  transform: translate(6px, -50%);
+  color: #111827;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
 }
 
 .floating-ai-panel {
   position: absolute;
   right: 0;
-  bottom: calc(100% + 18px);
-  width: min(390px, calc(100vw - 24px));
+  bottom: calc(100% + 16px);
+  width: min(440px, calc(100vw - 24px));
+  max-width: calc(100vw - 24px);
 }
 
 .floating-ai-panel[hidden],
@@ -346,173 +132,275 @@
 .floating-ai-panel__card {
   display: flex;
   flex-direction: column;
-  min-height: 430px;
-  height: min(680px, calc(100vh - 104px));
-  border-radius: 28px;
-  border: 1px solid rgba(15, 23, 42, 0.12);
-  background: linear-gradient(180deg, #edf4ff 0%, #ffffff 44%);
-  box-shadow: 0 26px 60px rgba(15, 23, 42, 0.22);
+  width: min(440px, calc(100vw - 24px));
+  min-width: 320px;
+  min-height: 420px;
+  height: min(72vh, 720px);
+  max-width: calc(100vw - 24px);
+  max-height: calc(100vh - 32px);
+  resize: both;
   overflow: hidden;
+  border-radius: 28px;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  background: #ffffff;
+  box-shadow: 0 26px 68px rgba(15, 23, 42, 0.24);
 }
 
 .floating-ai-panel__header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
-  padding: 22px 22px 0;
+  gap: 14px;
+  padding: 20px 22px 16px;
+  background: linear-gradient(180deg, #eef4ff 0%, #ffffff 100%);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
 }
 
 .floating-ai-panel__header-copy {
+  min-width: 0;
   display: grid;
   gap: 6px;
-  min-width: 0;
-}
-
-.floating-ai-panel__eyebrow {
-  color: #1f2937;
-  font-size: 0.95rem;
-  font-weight: 800;
-  line-height: 1.3;
 }
 
 .floating-ai-panel__title {
   color: #111827;
-  font-size: 1rem;
+  font-size: 1.06rem;
+  font-weight: 800;
+  line-height: 1.35;
+  white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: normal;
+}
+
+.floating-ai-panel__subtitle {
+  margin: 0;
+  color: #1f2937;
+  font-size: 0.9rem;
   font-weight: 700;
-  line-height: 1.45;
+  line-height: 1.5;
+  white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: normal;
 }
 
 .floating-ai-panel__controls {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   gap: 8px;
-  flex-shrink: 0;
 }
 
 .floating-ai-panel__icon {
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 0;
   border-radius: 12px;
   background: transparent;
   color: #111827;
-  font-size: 1.4rem;
+  font-size: 1.6rem;
   line-height: 1;
   cursor: pointer;
-  transition: background-color 0.18s ease, color 0.18s ease;
 }
 
-.floating-ai-panel__icon:hover {
+.floating-ai-panel__icon:hover,
+.floating-ai-panel__icon:focus-visible {
   background: rgba(37, 99, 235, 0.08);
-  color: #2563eb;
+  color: #1d4ed8;
 }
 
 .floating-ai-panel__body {
-  display: flex;
   flex: 1;
   min-height: 0;
-}
-
-.floating-ai-panel__intro,
-.floating-ai-panel__chat {
   display: flex;
   flex-direction: column;
-  flex: 1;
-  min-height: 0;
 }
 
 .floating-ai-panel__intro {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding: 32px 22px 26px;
-  gap: 18px;
+  gap: 24px;
+  padding: 36px 24px 28px;
+  background: #ffffff;
 }
 
 .floating-ai-panel__date {
-  margin: 6px 0 12px;
-  color: #374151;
-  font-size: 0.9rem;
-  font-weight: 700;
+  margin: 0;
+  color: #4b5563;
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.4;
   text-align: center;
 }
 
 .floating-ai-panel__actions {
+  width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
-  width: 100%;
-  margin-top: 0;
 }
 
 .floating-ai-panel__primary,
 .floating-ai-panel__secondary {
+  min-height: 52px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 52px;
   border-radius: 999px;
   font-size: 1rem;
   font-weight: 800;
   text-decoration: none;
-  transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+  text-align: center;
+  transition: transform 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
 }
 
 .floating-ai-panel__primary {
   border: 0;
-  background: #2563eb;
+  background: #2f61e9;
   color: #ffffff;
-  box-shadow: 0 12px 22px rgba(37, 99, 235, 0.24);
+  box-shadow: 0 14px 28px rgba(47, 97, 233, 0.24);
   cursor: pointer;
 }
 
-.floating-ai-panel__primary:hover {
+.floating-ai-panel__primary:hover,
+.floating-ai-panel__primary:focus-visible {
   transform: translateY(-1px);
-  background: #1d4ed8;
+  background: #1f4fd2;
 }
 
 .floating-ai-panel__secondary {
-  border: 1px solid rgba(37, 99, 235, 0.24);
-  background: rgba(255, 255, 255, 0.86);
-  color: #1d4ed8;
-}
-
-.floating-ai-panel__secondary:hover {
-  transform: translateY(-1px);
+  border: 1px solid rgba(47, 97, 233, 0.22);
   background: #ffffff;
+  color: #2f61e9;
 }
 
-.floating-ai-panel__hint {
-  margin: 16px 0 0;
-  color: #6b7280;
-  font-size: 0.88rem;
-  line-height: 1.65;
+.floating-ai-panel__secondary:hover,
+.floating-ai-panel__secondary:focus-visible {
+  transform: translateY(-1px);
+  background: #f8fbff;
 }
 
 .floating-ai-panel__chat {
+  flex: 1;
+  min-height: 0;
+  display: flex;
   background: #ffffff;
 }
 
-.floating-ai-panel__iframe {
+.floating-chat-shell {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  background: #ffffff;
+}
+
+.floating-chat-shell__messages {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 18px 18px 12px;
+  background: #f8fafc;
+}
+
+.floating-chat-shell__composer {
+  flex-shrink: 0;
+  padding: 14px 16px 10px;
+  background: #ffffff;
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.floating-chat-shell__input-wrap {
   width: 100%;
-  height: 100%;
-  border: 0;
-  background: #ffffff;
 }
 
-@media (max-width: 680px) {
+.floating-chat-shell__input {
+  min-height: 52px;
+  max-height: 140px;
+}
+
+.floating-chat-shell__send {
+  min-width: 110px;
+}
+
+.floating-chat-shell__status {
+  padding: 0 16px 14px;
+}
+
+.floating-chat-shell .ai-chat-message__bubble {
+  max-width: 92%;
+}
+
+.floating-chat-shell .ai-recommendation-card {
+  gap: 10px;
+}
+
+.floating-chat-shell .ai-recommendation-card__title-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+}
+
+.floating-chat-shell .ai-recommendation-card__price {
+  justify-self: start;
+  width: fit-content;
+  max-width: 100%;
+  min-width: 0;
+  text-align: left;
+}
+
+.floating-chat-shell .ai-recommendation-card__actions {
+  justify-content: flex-start;
+}
+
+.floating-btn:focus-visible,
+.floating-ai-link:focus-visible,
+.floating-ai-panel__primary:focus-visible,
+.floating-ai-panel__secondary:focus-visible,
+.floating-ai-panel__icon:focus-visible {
+  outline: 2px solid #2f61e9;
+  outline-offset: 2px;
+}
+
+@media (max-width: 767px) {
+  .floating-actions {
+    right: 16px;
+    bottom: 16px;
+  }
+
+  .floating-ai-link,
+  .floating-btn {
+    width: 68px;
+    height: 68px;
+  }
+
+  .floating-ai-link::after {
+    display: none;
+  }
+
   .floating-ai-panel {
-    width: min(390px, calc(100vw - 18px));
+    width: min(100vw - 16px, 430px);
+    max-width: calc(100vw - 16px);
   }
 
   .floating-ai-panel__card {
-    min-height: 360px;
-    height: min(600px, calc(100vh - 88px));
+    width: min(100vw - 16px, 430px);
+    min-width: 0;
+    min-height: 420px;
+    height: min(78vh, 680px);
+    max-height: calc(100vh - 16px);
+    resize: none;
     border-radius: 24px;
   }
 
   .floating-ai-panel__header {
-    padding: 18px 18px 0;
+    padding: 18px 18px 14px;
   }
 
   .floating-ai-panel__intro {
@@ -521,5 +409,11 @@
 
   .floating-ai-panel__actions {
     grid-template-columns: 1fr;
+  }
+}
+
+@media print {
+  .floating-actions {
+    display: none !important;
   }
 }
