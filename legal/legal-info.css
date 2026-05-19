@@ -802,3 +802,30 @@
     justify-content: flex-start;
   }
 }
+
+.legal-hero__inner {
+  width: min(100%, 1180px);
+  max-width: none;
+  margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+.legal-hero__title {
+  font-size: clamp(1.65rem, 2.8vw, 2.35rem);
+  line-height: 1.16;
+  font-weight: 900;
+}
+
+.legal-hero__desc {
+  margin-top: 12px;
+  max-width: 720px;
+  line-height: 1.72;
+}
+
+@media (max-width: 640px) {
+  .legal-hero__inner {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}

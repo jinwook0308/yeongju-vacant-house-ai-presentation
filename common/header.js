@@ -54,8 +54,13 @@ const navItems = [
     navItems.splice(4, 0, { key: 'register', label: '빈집 등록', href: `${root}owner/owner-register.html` });
   }
 
-  const navHtml = navItems.map(item => `
-    <a href="${item.href}" class="site-header__nav-link ${activePage === item.key ? 'is-active' : ''}">
+  const orderedNavKeys = ['home', 'house-list', 'map', 'vendor', 'community', 'legal-info', 'ai'];
+  const orderedNavItems = orderedNavKeys
+    .map((key) => navItems.find((item) => item.key === key))
+    .filter(Boolean);
+
+  const navHtml = orderedNavItems.map(item => `
+    <a href="${item.href}" data-nav-key="${item.key}" class="site-header__nav-link ${item.key === 'ai' ? 'site-header__nav-link--ai' : ''} ${activePage === item.key ? 'is-active' : ''}">
       ${item.label}
     </a>
   `).join('');
@@ -94,8 +99,8 @@ const navItems = [
     `;
   }
 
-  const mobileNavHtml = navItems.map(item => `
-    <a href="${item.href}" class="site-header__mobile-nav-link ${activePage === item.key ? 'is-active' : ''}">
+  const mobileNavHtml = orderedNavItems.map(item => `
+    <a href="${item.href}" data-nav-key="${item.key}" class="site-header__mobile-nav-link ${item.key === 'ai' ? 'site-header__mobile-nav-link--ai' : ''} ${activePage === item.key ? 'is-active' : ''}">
       ${item.label}
     </a>
   `).join('');
@@ -401,9 +406,9 @@ function setupHeaderNotifications(user, activePage = '') {
     }
     body.user-platform-page.home-page .site-header__nav-link:hover:not(.is-active),
     body.user-platform-page.home-page .site-header__nav-link:focus-visible:not(.is-active) {
-      color: #ffffff !important;
+      color: #7a5a17 !important;
       background: rgba(201, 168, 76, 0.18) !important;
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.34) !important;
+      text-shadow: none !important;
       box-shadow: none !important;
     }
     body.user-platform-page.home-page .site-header__actions .btn,
@@ -462,7 +467,7 @@ function setupHeaderNotifications(user, activePage = '') {
     body.user-platform-page.home-page .site-header.is-home-revealed .site-header__nav-link:focus-visible:not(.is-active),
     body.user-platform-page.home-page .site-header.is-scrolled .site-header__nav-link:hover:not(.is-active),
     body.user-platform-page.home-page .site-header.is-scrolled .site-header__nav-link:focus-visible:not(.is-active) {
-      color: #111111 !important;
+      color: #7a5a17 !important;
       background: rgba(201, 168, 76, 0.12) !important;
       text-shadow: none !important;
       box-shadow: none !important;

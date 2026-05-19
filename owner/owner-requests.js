@@ -48,7 +48,7 @@ function renderRequestsList(statusFilter) {
       <div style="text-align:center;padding:60px 20px;color:var(--color-text-muted);">
         <div style="font-size:3rem;margin-bottom:16px;">📋</div>
         <p>해당 상태의 신청 내역이 없습니다.</p>
-        <a href="owner-register.html" class="btn btn--primary" style="margin-top:16px;">빈집 등록 신청하기</a>
+        <a href="owner-register.html" class="btn btn--owner-positive" style="margin-top:16px;">빈집 등록 신청하기</a>
       </div>
     `;
     return;

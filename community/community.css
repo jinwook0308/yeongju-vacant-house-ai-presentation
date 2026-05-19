@@ -1261,6 +1261,159 @@
 }
 
 /* ============================================================
+   Final community alignment and modal overrides
+   ============================================================ */
+
+.community-page .site-header {
+  position: sticky;
+  top: 0;
+  background: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06) !important;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06) !important;
+}
+
+.community-page .site-header__nav-link {
+  color: #2b2216 !important;
+  font-weight: 800;
+  text-shadow: none !important;
+}
+
+.community-page .site-header__nav-link:hover,
+.community-page .site-header__nav-link:focus-visible {
+  color: #7a5a17 !important;
+  background: rgba(201, 168, 76, 0.12) !important;
+  box-shadow: none !important;
+}
+
+.community-page .site-header__nav-link.is-active {
+  color: #ffffff !important;
+  background: linear-gradient(135deg, #8b6914 0%, #c9a84c 100%) !important;
+}
+
+.community-page .site-header__actions .btn,
+.community-page .site-header__user-link {
+  min-height: 40px;
+}
+
+.community-page .community-hero {
+  min-height: 240px;
+  background:
+    linear-gradient(180deg, rgba(13, 14, 15, 0.56) 0%, rgba(13, 14, 15, 0.32) 50%, rgba(13, 14, 15, 0.6) 100%),
+    url("../assets/images/hero-yeongju.jpg") center center / cover no-repeat;
+}
+
+.community-page .community-hero__inner {
+  width: min(100%, 1180px);
+  margin: 0 auto;
+  padding: calc(var(--header-height) + 34px) 24px 42px;
+  min-height: 240px;
+  justify-content: flex-end;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.community-page .community-hero__title {
+  font-size: clamp(2.2rem, 4.2vw, 4rem);
+  line-height: 1.08;
+  letter-spacing: -0.04em;
+}
+
+.community-page .community-board-shell {
+  width: min(100%, 1180px);
+  padding: 0 24px;
+}
+
+.community-page .community-board-header {
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.community-page .community-board-header__title {
+  font-size: clamp(1.7rem, 2.8vw, 2.35rem);
+  line-height: 1.16;
+}
+
+.community-page .community-board-header__desc {
+  max-width: 720px;
+  margin-top: 12px;
+}
+
+.community-page .community-board-actions {
+  align-items: center;
+}
+
+.community-page .community-summary-card {
+  border: 1px solid rgba(15, 23, 42, 0.16) !important;
+  background: #ffffff !important;
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.04);
+}
+
+.community-page .community-ai-modal.is-open {
+  display: flex;
+}
+
+.community-page .community-ai-modal__dialog {
+  width: min(100%, 480px);
+  border-radius: 28px;
+  overflow: hidden;
+}
+
+.community-page .community-ai-modal__body {
+  padding-top: 8px;
+}
+
+.community-page .community-ai-modal__eyebrow {
+  margin: 0 0 10px;
+  color: #8b6914;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.community-page .community-ai-modal__title-text {
+  margin: 0;
+  color: #111827;
+  font-size: 1.4rem;
+  line-height: 1.35;
+}
+
+.community-page .community-ai-modal__desc {
+  margin: 14px 0 0;
+  color: #4b5563;
+  line-height: 1.7;
+}
+
+.community-page .community-ai-modal__actions {
+  gap: 10px;
+}
+
+@media (max-width: 960px) {
+  .community-page .community-board-header {
+    flex-direction: column;
+  }
+
+  .community-page .community-board-actions {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 640px) {
+  .community-page .community-hero__inner,
+  .community-page .community-board-shell {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .community-page .community-ai-modal__actions {
+    flex-direction: column;
+  }
+}
+
+/* ============================================================
    Pure White Community Redesign
    ============================================================ */
 

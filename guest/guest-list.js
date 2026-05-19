@@ -35,6 +35,7 @@ window.addEventListener('load', () => {
   renderHeader('house-list');
   renderFooter();
   renderStickyHeaderFilter();
+  renderHouseListOwnerAction();
   populateDistrictFilter();
   hydrateFiltersFromUrl();
   syncAllFilterControlsFromState();
@@ -49,6 +50,7 @@ window.addEventListener('scroll', updateStickyFilterHeaderState, { passive: true
 window.addEventListener('resize', updateStickyFilterHeaderState);
 
 window.addEventListener('yeongju:auth-changed', () => {
+  renderHouseListOwnerAction();
   if (latestHouseDataset.length) {
     renderHouseList(latestHouseDataset);
   }
@@ -218,6 +220,23 @@ function syncMainFilterFromHeader() {
   if (main.grade && header.grade) main.grade.value = header.grade.value;
   if (main.capacity && header.capacity) main.capacity.value = header.capacity.value;
   if (main.sort && header.sort) main.sort.value = header.sort.value;
+}
+
+function renderHouseListOwnerAction() {
+  const actionRoot = document.getElementById('houseListOwnerAction');
+  if (!actionRoot) return;
+
+  const currentUser = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
+  if (!currentUser || currentUser.role !== 'owner') {
+    actionRoot.innerHTML = '';
+    return;
+  }
+
+  actionRoot.innerHTML = `
+    <a href="../owner/owner-register.html" class="btn btn--owner-register">
+      + 鍮덉쭛 ?깅줉
+    </a>
+  `;
 }
 
 function setupFilterEvents() {

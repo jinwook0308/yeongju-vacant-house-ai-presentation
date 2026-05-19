@@ -131,6 +131,19 @@ body {
   color: var(--color-text-primary);
 }
 
+.btn--owner-positive {
+  background: linear-gradient(145deg, #3aa45c 0%, #28753f 100%);
+  border: 1px solid rgba(47, 143, 78, 0.36);
+  color: #ffffff;
+  box-shadow: 0 12px 24px rgba(31, 110, 57, 0.16);
+}
+
+.btn--owner-positive:hover:not(:disabled) {
+  background: linear-gradient(145deg, #41b166 0%, #236c39 100%);
+  border-color: rgba(47, 143, 78, 0.48);
+  color: #ffffff;
+}
+
 /* 알림 아이템 */
 .notification-item {
   display: flex;

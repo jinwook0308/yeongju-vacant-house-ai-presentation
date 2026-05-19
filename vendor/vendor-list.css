@@ -956,3 +956,33 @@
   border-color: rgba(17, 24, 39, 0.28) !important;
   transform: translateY(-2px);
 }
+
+.vendor-list-page .page-header {
+  padding: 36px 0 30px;
+}
+
+.vendor-list-page .page-header__inner {
+  width: min(100%, 1180px);
+  margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+.vendor-list-page .page-header__title {
+  font-size: clamp(1.65rem, 2.8vw, 2.35rem);
+  line-height: 1.16;
+  font-weight: 900;
+}
+
+.vendor-list-page .page-header__subtitle {
+  margin-top: 12px;
+  max-width: 720px;
+  line-height: 1.72;
+}
+
+@media (max-width: 640px) {
+  .vendor-list-page .page-header__inner {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}

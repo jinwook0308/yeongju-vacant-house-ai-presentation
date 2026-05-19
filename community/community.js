@@ -37,6 +37,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const noticeWritePanel = document.getElementById("noticeWritePanel");
   const qnaWritePanel = document.getElementById("qnaWritePanel");
   const qnaCancelBtn = document.getElementById("qnaCancelBtn");
+  const communityAiModal = document.getElementById("communityAiModal");
+  const communityAiModalClose = document.getElementById("communityAiModalClose");
+  const communityAiModalCancel = document.getElementById("communityAiModalCancel");
+  const communityAiModalConfirm = document.getElementById("communityAiModalConfirm");
 
   let currentBoard = "notice";
   let currentKeyword = "";
@@ -58,6 +62,27 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     redirectToLogin(message);
     return false;
+  }
+
+  function openCommunityAiModal() {
+    communityAiModal?.classList.add("is-open");
+    document.body.classList.add("modal-open");
+  }
+
+  function closeCommunityAiModal() {
+    communityAiModal?.classList.remove("is-open");
+    document.body.classList.remove("modal-open");
+  }
+
+  function bindCommunityAiModalTriggers() {
+    const aiLinks = document.querySelectorAll('[data-nav-key="ai"]');
+    aiLinks.forEach((link) => {
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        openCommunityAiModal();
+      });
+    });
   }
 
   function getSeedNotices() {
@@ -285,6 +310,7 @@ document.addEventListener("DOMContentLoaded", () => {
       qnaBoard.classList.add("is-active");
       noticeBoard.classList.remove("is-active");
       noticeWritePanel.classList.remove("is-open");
+      qnaWritePanel.classList.add("is-open");
       boardTitle.textContent = "Q&A";
       boardDescription.textContent = "공개·비공개 문의를 남기고 공공기관 답변을 확인할 수 있습니다.";
       renderQnaList();
@@ -302,7 +328,7 @@ document.addEventListener("DOMContentLoaded", () => {
     toggleWritePanels("notice");
   });
 
-  qnaWriteToggle.addEventListener("click", () => {
+  qnaWriteToggle?.addEventListener("click", () => {
     if (!ensureLoggedIn("Q&A 작성은 로그인 후 이용 가능합니다.")) return;
     switchBoard("qna");
     toggleWritePanels("qna");
@@ -310,7 +336,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   qnaCancelBtn?.addEventListener("click", () => {
     resetQnaWriteForm();
-    qnaWritePanel.classList.remove("is-open");
+    qnaWritePanel.classList.add("is-open");
   });
 
   document.getElementById("noticeSubmitBtn").addEventListener("click", () => {
@@ -355,9 +381,23 @@ document.addEventListener("DOMContentLoaded", () => {
       isPrivate: document.getElementById("qnaVisibilityInput").value === "private",
     });
     resetQnaWriteForm();
-    qnaWritePanel.classList.remove("is-open");
+    qnaWritePanel.classList.add("is-open");
     showToast("Q&A가 등록되었습니다.", "success");
     renderQnaList();
+  });
+
+  bindCommunityAiModalTriggers();
+
+  communityAiModalClose?.addEventListener("click", closeCommunityAiModal);
+  communityAiModalCancel?.addEventListener("click", closeCommunityAiModal);
+  communityAiModal?.addEventListener("click", (event) => {
+    if (event.target === communityAiModal) {
+      closeCommunityAiModal();
+    }
+  });
+  communityAiModalConfirm?.addEventListener("click", () => {
+    closeCommunityAiModal();
+    window.location.href = `${getRootPath()}guest/guest-ai.html`;
   });
 
   boardTabs.forEach((tab) => {

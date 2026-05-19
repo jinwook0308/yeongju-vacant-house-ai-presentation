@@ -67,7 +67,7 @@ function renderRecentRequests() {
     container.innerHTML = `
       <p class="owner-empty-state">
         신청 내역이 없습니다.
-        <a href="owner-register.html">빈집 등록 신청하기</a>
+        <a href="owner-register.html" class="btn btn--owner-positive btn--sm">빈집 등록 신청하기</a>
       </p>
     `;
     return;
@@ -122,7 +122,7 @@ function renderOwnerBookingRequests() {
     const actionButtons = booking.status === 'pending'
       ? `
         <div class="owner-booking-card__actions">
-          <button type="button" class="btn btn--primary btn--sm" data-booking-id="${escapeAttr(booking.id)}" data-booking-action="approved">승인</button>
+          <button type="button" class="btn btn--owner-positive btn--sm" data-booking-id="${escapeAttr(booking.id)}" data-booking-action="approved">승인</button>
           <button type="button" class="btn btn--ghost btn--sm" data-booking-id="${escapeAttr(booking.id)}" data-booking-action="hold">보류</button>
           <button type="button" class="btn btn--danger btn--sm" data-booking-id="${escapeAttr(booking.id)}" data-booking-action="rejected">거절</button>
         </div>

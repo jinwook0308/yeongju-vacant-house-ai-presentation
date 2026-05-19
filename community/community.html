@@ -50,7 +50,6 @@
               <button id="communitySearchBtn" type="button">검색</button>
             </div>
             <button id="noticeWriteToggle" class="community-write-btn community-write-btn--notice" type="button">공지 작성</button>
-            <button id="qnaWriteToggle" class="community-write-btn" type="button">Q&A 작성</button>
           </div>
         </div>
 
@@ -101,7 +100,6 @@
           </div>
           <textarea id="qnaDetailInput" class="community-form-control community-form-textarea" rows="4" placeholder="문의 내용을 자세히 입력하세요"></textarea>
           <div class="community-write-panel__actions">
-            <button id="qnaCancelBtn" class="btn btn--ghost btn--sm" type="button">취소</button>
             <button id="qnaSubmitBtn" class="community-write-submit" type="button">Q&A 등록</button>
           </div>
         </div>
@@ -130,6 +128,27 @@
       </div>
     </section>
   </main>
+
+  <div class="modal-overlay community-ai-modal" id="communityAiModal">
+    <div class="modal community-ai-modal__dialog">
+      <div class="modal__header">
+        <h3 class="modal__title">AI 채팅 안내</h3>
+        <button class="modal__close" type="button" id="communityAiModalClose">×</button>
+      </div>
+      <div class="modal__body community-ai-modal__body">
+        <p class="community-ai-modal__eyebrow">영주시 빈집 활용 도우미</p>
+        <h4 class="community-ai-modal__title-text">AI 추천 페이지로 이동하시겠어요?</h4>
+        <p class="community-ai-modal__desc">
+          커뮤니티에서 궁금한 내용을 확인하셨다면, 영주시 빈집 AI 추천 화면에서
+          조건 상담과 추천 결과를 계속 이어갈 수 있습니다.
+        </p>
+      </div>
+      <div class="modal__footer community-ai-modal__actions">
+        <button type="button" class="btn btn--ghost" id="communityAiModalCancel">취소</button>
+        <button type="button" class="btn btn--primary" id="communityAiModalConfirm">AI 채팅으로 이동</button>
+      </div>
+    </div>
+  </div>
 
   <div id="footerPlaceholder"></div>
 
