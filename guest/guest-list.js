@@ -65,7 +65,6 @@ function attachListImageFallbacks(container, selector) {
     if (image.complete && image.naturalWidth === 0) {
       applyFallback();
     }
-
     window.setTimeout(() => {
       if (image.dataset.fallbackApplied === 'true') return;
       if (!image.complete || image.naturalWidth !== 0) return;
