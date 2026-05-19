@@ -237,8 +237,7 @@ function getReviewState(request, user) {
   const canStart = canStartReviewRequest(request, user);
   const canEdit = canEditReviewRequest(request, user);
   const canSubmitForApproval = canEdit
-    && ['submitted', 'under_review', 'site_visit'].includes(String(request.reviewStatus || ''))
-    && !hasAdminPermission('review_approve', user);
+    && ['submitted', 'under_review', 'site_visit'].includes(String(request.reviewStatus || ''));
   const canApprove = canApproveReviewRequest(request, user);
 
   let assignmentLabel = '미배정';
@@ -350,7 +349,7 @@ function renderActionControls(request, reviewState) {
     `);
     controls.push('<button class="btn btn--ghost btn--full" onclick="saveInternalReviewNote()">메모 저장</button>');
     if (reviewState.canSubmitForApproval) {
-      controls.push('<button class="btn btn--primary btn--full" onclick="submitForApproval()">승인 대기로 전달</button>');
+      controls.push('<button class="btn btn--primary btn--full" onclick="submitForApproval()">검토 확인</button>');
     }
   } else if (request.internalReviewNote) {
     controls.push(`
