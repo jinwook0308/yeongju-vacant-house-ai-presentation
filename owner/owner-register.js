@@ -10,6 +10,8 @@ let ownerRegistrationLocked = false;
 const OWNER_REGISTRATION_LIMIT_FALLBACK = 3;
 const OWNER_PHOTO_LIMIT = 5;
 const OWNER_PHOTO_MAX_SIZE = 10 * 1024 * 1024;
+const OWNER_PHOTO_PERSIST_MAX_DIMENSION = 960;
+const OWNER_PHOTO_PERSIST_QUALITY = 0.72;
 
 window.addEventListener('load', function () {
   renderHeader('register');
@@ -195,6 +197,69 @@ function readFileAsDataUrl(file) {
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
+}
+
+function createPersistentPhotoDataUrl(file) {
+  return new Promise((resolve) => {
+    if (!(file instanceof File)) {
+      resolve('');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const image = new Image();
+      image.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          const maxDimension = OWNER_PHOTO_PERSIST_MAX_DIMENSION;
+          const ratio = Math.min(1, maxDimension / Math.max(image.width, image.height));
+          const width = Math.max(1, Math.round(image.width * ratio));
+          const height = Math.max(1, Math.round(image.height * ratio));
+
+          canvas.width = width;
+          canvas.height = height;
+
+          const context = canvas.getContext('2d');
+          if (!context) {
+            resolve('');
+            return;
+          }
+
+          context.drawImage(image, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', OWNER_PHOTO_PERSIST_QUALITY));
+        } catch (error) {
+          console.warn('등록 사진 미리보기 압축에 실패했습니다.', error);
+          resolve('');
+        }
+      };
+
+      image.onerror = () => resolve('');
+      image.src = typeof reader.result === 'string' ? reader.result : '';
+    };
+
+    reader.onerror = () => resolve('');
+    reader.readAsDataURL(file);
+  });
+}
+
+async function buildStoredHousePhotos(uploadedPhotos = []) {
+  const storedPhotos = [];
+
+  for (let index = 0; index < uploadedPhotos.length; index += 1) {
+    const uploadedPhoto = uploadedPhotos[index];
+    const selectedPhoto = selectedHousePhotos[index];
+    const dataUrl = selectedPhoto?.file instanceof File
+      ? await createPersistentPhotoDataUrl(selectedPhoto.file)
+      : '';
+
+    storedPhotos.push({
+      ...uploadedPhoto,
+      dataUrl,
+    });
+  }
+
+  return storedPhotos;
 }
 
 function renderPhotoPreviewsLegacy() {
@@ -518,6 +583,7 @@ async function saveOwnerRegistrationRequest(usageTypes) {
   const conditionSelect = document.getElementById('buildingCondition');
   const ownerTypeSelect = document.getElementById('ownerIdType');
   const uploadedPhotos = await uploadSelectedHousePhotos();
+  const storedPhotos = await buildStoredHousePhotos(uploadedPhotos);
 
   const request = {
     id: `req-${Date.now()}`,
@@ -547,8 +613,8 @@ async function saveOwnerRegistrationRequest(usageTypes) {
     }[type] || type)),
     needsCleaning: document.querySelector('input[name="needsCleaning"]:checked')?.value || '',
     needsRepair: document.querySelector('input[name="needsRepair"]:checked')?.value || '',
-    photos: uploadedPhotos,
-    photoCount: uploadedPhotos.length,
+    photos: storedPhotos,
+    photoCount: storedPhotos.length,
     cityVerificationCode: '',
     cityVerificationRequired: false,
     cityVerificationStatus: 'not_required',
