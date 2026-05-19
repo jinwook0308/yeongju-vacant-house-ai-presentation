@@ -36,6 +36,14 @@ const DETAIL_OPERATION_EMOJIS = {
   review_needed: '🔍',
 };
 
+const DETAIL_FALLBACK_GALLERY = [
+  '../assets/images/hero-yeongju.jpg',
+  '../assets/images/yeongju_spring.jpg',
+  '../assets/images/yeongju_summer.jpg',
+  '../assets/images/yeongju_autumn.jpg',
+  '../assets/images/yeongju_winter.jpg',
+];
+
 window.addEventListener('load', initHouseDetailPage);
 window.addEventListener('yeongju:auth-changed', syncDetailWishlistButton);
 window.addEventListener('yeongju:wishlist-changed', syncDetailWishlistButton);
@@ -67,6 +75,30 @@ function formatDetailShortDate(value) {
   const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
   return `${date.getMonth() + 1}.${date.getDate()}(${weekdays[date.getDay()]})`;
 }
+
+function getDetailFallbackPhoto(index = 0) {
+  const safeIndex = Math.max(0, Number(index) || 0);
+  return DETAIL_FALLBACK_GALLERY[safeIndex % DETAIL_FALLBACK_GALLERY.length];
+}
+
+function handleDetailGalleryImageError(imageElement) {
+  if (!imageElement) return;
+
+  const fallbackPhoto = imageElement.dataset.fallback || getDetailFallbackPhoto(0);
+  const currentPhoto = imageElement.getAttribute('src') || '';
+  const normalizedCurrent = currentPhoto.split('?')[0];
+  const normalizedFallback = fallbackPhoto.split('?')[0];
+
+  if (normalizedCurrent !== normalizedFallback) {
+    imageElement.src = fallbackPhoto;
+    imageElement.classList.add('house-gallery__image--fallback');
+    return;
+  }
+
+  imageElement.classList.add('house-gallery__image--fallback');
+}
+
+window.handleDetailGalleryImageError = handleDetailGalleryImageError;
 
 function buildDetailSearchSummary(params, house) {
   const chips = [];
@@ -258,7 +290,7 @@ function renderHouseDetailTopRedesign(house, similarHouses = [], params = {}) {
   const main = document.getElementById('houseDetailMain');
   if (!main) return;
 
-  const defaultDetailPhoto = '../assets/images/hero-yeongju.jpg';
+  const defaultDetailPhoto = getDetailFallbackPhoto(0);
   const primaryPhoto = (typeof getHousePhotoUrl === 'function' ? getHousePhotoUrl(house) : '') || defaultDetailPhoto;
   const housePhotos = buildHouseGalleryPhotos(house, primaryPhoto);
   const isWishlisted = getWishlist().includes(house.id);
@@ -296,12 +328,13 @@ function renderHouseDetailTopRedesign(house, similarHouses = [], params = {}) {
   });
 
   const listHref = `guest-list.html${listSearchParams.toString() ? `?${listSearchParams.toString()}` : ''}`;
-  const galleryMainPhoto = housePhotos[0] || primaryPhoto;
-  const gallerySidePhotos = housePhotos.slice(1, 5);
-
-  while (gallerySidePhotos.length < 4) {
-    gallerySidePhotos.push(galleryMainPhoto);
+  const galleryDisplayPhotos = housePhotos.slice(0, 5);
+  while (galleryDisplayPhotos.length < 5) {
+    galleryDisplayPhotos.push(getDetailFallbackPhoto(galleryDisplayPhotos.length));
   }
+
+  const galleryMainPhoto = galleryDisplayPhotos[0] || defaultDetailPhoto;
+  const gallerySidePhotos = galleryDisplayPhotos.slice(1, 5);
 
   const detailTabs = [
     { id: 'detailOverview', label: '\uAC1C\uC694' },
@@ -345,7 +378,7 @@ function renderHouseDetailTopRedesign(house, similarHouses = [], params = {}) {
 
           <div class="house-gallery__layout">
             <div class="house-gallery__main">
-              <img class="house-gallery__image" src="${galleryMainPhoto}" alt="${houseName}">
+              <img class="house-gallery__image" src="${escapeAttr(galleryMainPhoto)}" data-fallback="${escapeAttr(getDetailFallbackPhoto(0))}" onerror="handleDetailGalleryImageError(this)" alt="${houseName}">
               <div class="house-gallery__overlay">
                 <div class="house-gallery__headline">
                   <span class="house-gallery__district">\uC601\uC8FC\uC2DC ${districtName}</span>
@@ -359,7 +392,7 @@ function renderHouseDetailTopRedesign(house, similarHouses = [], params = {}) {
             <div class="house-gallery__side">
               ${gallerySidePhotos.map((photo, index) => `
                 <div class="house-gallery__side-card">
-                  <img class="house-gallery__side-image" src="${photo}" alt="${houseName} \uBCF4\uC870 \uC0AC\uC9C4 ${index + 1}">
+                  <img class="house-gallery__side-image" src="${escapeAttr(photo)}" data-fallback="${escapeAttr(getDetailFallbackPhoto(index + 1))}" onerror="handleDetailGalleryImageError(this)" alt="${houseName} \uBCF4\uC870 \uC0AC\uC9C4 ${index + 1}">
                   ${index === 3 ? '<span class="house-gallery__side-overlay">\uD604\uC7A5 \uC0AC\uC9C4 \uC815\uBCF4</span>' : ''}
                 </div>
               `).join('')}
