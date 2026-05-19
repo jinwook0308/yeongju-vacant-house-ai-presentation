@@ -31,6 +31,42 @@ const fallbackListImages = [
   '../assets/images/yeongju_mas.jpg',
 ];
 
+function getFallbackListImage(index = 0) {
+  return fallbackListImages[index % fallbackListImages.length];
+}
+
+function buildListCardImageMarkup(displayPhoto, houseName, fallbackIndex, imageClass, placeholderClass) {
+  const fallbackImage = getFallbackListImage(fallbackIndex);
+  const safeAltText = houseName || '영주시 승인 빈집';
+
+  if (!displayPhoto) {
+    return `<div class="${placeholderClass}">영주시 승인 빈집</div>`;
+  }
+
+  return `<img class="${imageClass}" src="${displayPhoto}" alt="${safeAltText}" onerror="this.onerror=null;this.src='${fallbackImage}'">`;
+}
+
+function attachListImageFallbacks(container, selector) {
+  if (!container) return;
+
+  const images = container.querySelectorAll(selector);
+  images.forEach((image, index) => {
+    const fallbackImage = getFallbackListImage(index);
+
+    const applyFallback = () => {
+      if (image.dataset.fallbackApplied === 'true') return;
+      image.dataset.fallbackApplied = 'true';
+      image.src = fallbackImage;
+    };
+
+    image.addEventListener('error', applyFallback, { once: true });
+
+    if (image.complete && image.naturalWidth === 0) {
+      applyFallback();
+    }
+  });
+}
+
 window.addEventListener('load', () => {
   renderHeader('house-list');
   renderFooter();
@@ -476,6 +512,8 @@ function renderHouseList(houses) {
       </article>
     `;
   }).join('');
+
+  attachListImageFallbacks(list, '.house-list-card__image');
 }
 
 function setupNewHouseSectionToggle() {
@@ -573,6 +611,7 @@ function renderNewHouseSection(houses) {
     `;
   }).join('');
 
+  attachListImageFallbacks(grid, '.new-house-card__image');
   applyNewHouseSectionState();
   syncNewHouseSlider();
 }
