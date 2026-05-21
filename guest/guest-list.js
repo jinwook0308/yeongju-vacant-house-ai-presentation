@@ -59,11 +59,18 @@ function attachListImageFallbacks(container, selector) {
       image.src = fallbackImage;
     };
 
+    image.onerror = applyFallback;
     image.addEventListener('error', applyFallback, { once: true });
 
     if (image.complete && image.naturalWidth === 0) {
       applyFallback();
     }
+
+    window.setTimeout(() => {
+      if (image.dataset.fallbackApplied === 'true') return;
+      if (!image.complete || image.naturalWidth !== 0) return;
+      applyFallback();
+    }, 120);
   });
 }
 
