@@ -1303,7 +1303,7 @@
 }
 
 .community-page .community-hero {
-  min-height: 240px;
+  min-height: 270px;
   background:
     linear-gradient(180deg, rgba(13, 14, 15, 0.56) 0%, rgba(13, 14, 15, 0.32) 50%, rgba(13, 14, 15, 0.6) 100%),
     url("../assets/images/hero-yeongju.jpg") center center / cover no-repeat;
@@ -1313,16 +1313,19 @@
   width: min(100%, 1180px);
   margin: 0 auto;
   padding: calc(var(--header-height) + 34px) 24px 42px;
-  min-height: 240px;
-  justify-content: flex-end;
-  align-items: flex-start;
-  text-align: left;
+  min-height: 270px;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
 .community-page .community-hero__title {
-  font-size: clamp(2.2rem, 4.2vw, 4rem);
-  line-height: 1.08;
+  margin: 0;
+  font-size: clamp(2.4rem, 4.8vw, 4.6rem);
+  line-height: 1.06;
   letter-spacing: -0.04em;
+  font-weight: 900;
+  text-shadow: 0 14px 30px rgba(0, 0, 0, 0.34);
 }
 
 .community-page .community-board-shell {
@@ -1412,6 +1415,12 @@
   .community-page .community-board-shell {
     padding-left: 16px;
     padding-right: 16px;
+  }
+
+  .community-page .community-hero__inner {
+    min-height: 250px;
+    padding-top: calc(var(--header-height) + 30px);
+    padding-bottom: 36px;
   }
 
   .community-page .community-ai-modal__actions {
